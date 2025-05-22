@@ -1,0 +1,141 @@
+/* ====================== Vazir-FD-UI ====================== */
+@font-face {
+  font-family: vazir;
+  font-weight: 100;
+  font-style: normal;
+  src: url('./fonts/Vazir/Vazir-Thin-FD-UI.woff2') format('woff2'),
+       url('./fonts/Vazir/Vazir-Thin-FD-UI.woff')  format('woff'),
+       url('./fonts/Vazir/Vazir-Thin-FD-UI.ttf')   format('truetype'),
+       url('./fonts/Vazir/Vazir-Thin-FD-UI.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: vazir;
+  font-weight: 300;
+  font-style: normal;
+  src: url('./fonts/Vazir/Vazir-Light-FD-UI.woff2') format('woff2'),
+       url('./fonts/Vazir/Vazir-Light-FD-UI.woff')  format('woff'),
+       url('./fonts/Vazir/Vazir-Light-FD-UI.ttf')   format('truetype'),
+       url('./fonts/Vazir/Vazir-Light-FD-UI.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: vazir;
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/Vazir/Vazir-Regular-FD-UI.woff2') format('woff2'),
+       url('./fonts/Vazir/Vazir-Regular-FD-UI.woff')  format('woff'),
+       url('./fonts/Vazir/Vazir-Regular-FD-UI.ttf')   format('truetype'),
+       url('./fonts/Vazir/Vazir-Regular-FD-UI.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: vazir;
+  font-weight: 500;
+  font-style: normal;
+  src: url('./fonts/Vazir/Vazir-Medium-FD-UI.woff2') format('woff2'),
+       url('./fonts/Vazir/Vazir-Medium-FD-UI.woff')  format('woff'),
+       url('./fonts/Vazir/Vazir-Medium-FD-UI.ttf')   format('truetype'),
+       url('./fonts/Vazir/Vazir-Medium-FD-UI.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: vazir;
+  font-weight: 700;
+  font-style: normal;
+  src: url('./fonts/Vazir/Vazir-Bold-FD-UI.woff2') format('woff2'),
+       url('./fonts/Vazir/Vazir-Bold-FD-UI.woff')  format('woff'),
+       url('./fonts/Vazir/Vazir-Bold-FD-UI.ttf')   format('truetype'),
+       url('./fonts/Vazir/Vazir-Bold-FD-UI.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: vazir;
+  font-weight: 900;
+  font-style: normal;
+  src: url('./fonts/Vazir/Vazir-Black-FD-UI.woff2') format('woff2'),
+       url('./fonts/Vazir/Vazir-Black-FD-UI.woff')  format('woff'),
+       url('./fonts/Vazir/Vazir-Black-FD-UI.ttf')   format('truetype'),
+       url('./fonts/Vazir/Vazir-Black-FD-UI.eot')   format('embedded-opentype');
+}
+
+/* ====================== BRoya ====================== */
+@font-face {
+  font-family: roya;
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/Roya/BRoya.woff2') format('woff2'),
+       url('./fonts/Roya/BRoya.woff')  format('woff'),
+       url('./fonts/Roya/BRoya.ttf')   format('truetype'),
+       url('./fonts/Roya/BRoya.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: roya;
+  font-weight: 700;
+  font-style: normal;
+  src: url('./fonts/Roya/BRoyaBold.woff2') format('woff2'),
+       url('./fonts/Roya/BRoyaBold.woff')  format('woff'),
+       url('./fonts/Roya/BRoyaBold.ttf')   format('truetype'),
+       url('./fonts/Roya/BRoyaBold.eot')   format('embedded-opentype');
+}
+
+/* ====================== IranSansWeb ====================== */
+@font-face {
+  font-family: iransans;
+  font-weight: 200;
+  font-style: normal;
+  src: url('./fonts/IranSans/IranSansWeb_UltraLight.woff2') format('woff2'),
+       url('./fonts/IranSans/IranSansWeb_UltraLight.woff')  format('woff'),
+       url('./fonts/IranSans/IranSansWeb_UltraLight.ttf')   format('truetype'),
+       url('./fonts/IranSans/IranSansWeb_UltraLight.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: iransans;
+  font-weight: 300;
+  font-style: normal;
+  src: url('./fonts/IranSans/IranSansWeb_Light.woff2') format('woff2'),
+       url('./fonts/IranSans/IranSansWeb_Light.woff')  format('woff'),
+       url('./fonts/IranSans/IranSansWeb_Light.ttf')   format('truetype'),
+       url('./fonts/IranSans/IranSansWeb_Light.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: iransans;
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/IranSans/IranSansWeb.woff2') format('woff2'),
+       url('./fonts/IranSans/IranSansWeb.woff')  format('woff'),
+       url('./fonts/IranSans/IranSansWeb.ttf')   format('truetype'),
+       url('./fonts/IranSans/IranSansWeb.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: iransans;
+  font-weight: 500;
+  font-style: normal;
+  src: url('./fonts/IranSans/IranSansWeb_Medium.woff2') format('woff2'),
+       url('./fonts/IranSans/IranSansWeb_Medium.woff')  format('woff'),
+       url('./fonts/IranSans/IranSansWeb_Medium.ttf')   format('truetype'),
+       url('./fonts/IranSans/IranSansWeb_Medium.eot')   format('embedded-opentype');
+}
+
+@font-face {
+  font-family: iransans;
+  font-weight: 900;
+  font-style: normal;
+  src: url('./fonts/IranSans/IranSansWeb_Black.woff2') format('woff2'),
+       url('./fonts/IranSans/IranSansWeb_Black.woff')  format('woff'),
+       url('./fonts/IranSans/IranSansWeb_Black.ttf')   format('truetype'),
+       url('./fonts/IranSans/IranSansWeb_Black.eot')   format('embedded-opentype');
+}
+.font-IranSans {
+  font-family: iransans, vazir, roya, sans-serif;
+}
+.font-Vazir {
+  font-family: vazir, iransans, roya, sans-serif;
+}
+.font-Roya {
+  font-family: roya, iransans, 'Vazir', sans-serif;
+}
