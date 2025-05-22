@@ -1,6 +1,5 @@
 <script setup>
 import { useNuxtApp } from "#imports";
-import Spinner from "../../src/runtime/components/Spinner.vue";
 
 const nuxtApp = useNuxtApp();
 const { pending, error, data, request } = useApi();

@@ -1,5 +1,5 @@
 // src/module.ts
-import { defineNuxtModule, createResolver, extendPages, addLayout, installModule, addComponent, addPlugin, addImportsDir } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, extendPages, addLayout, installModule, addComponent, addPlugin, addImportsDir, addServerHandler } from '@nuxt/kit'
 import { defu } from 'defu'
 
 export interface ModuleOptions {
@@ -29,7 +29,14 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-
+    nuxt.options.nitro = defu(nuxt.options.nitro, {
+      routeRules: {
+        // دقیقا همین مسیر رو multipart-ready کن
+        '/api/images-list': { bodyParser: false }
+        // یا اگر خواستی روی همه‌ی api ها:
+        // '/api/**': { bodyParser: false }
+      }
+    })
     // Merge کردن اسم در runtimeConfig
     nuxt.options.runtimeConfig.public.vornaPanel = defu(
       nuxt.options.runtimeConfig.public.vornaPanel,
@@ -43,7 +50,6 @@ export default defineNuxtModule<ModuleOptions>({
         notifications: options.notifications,
       },
     )
-
     // نصب و پیکربندی Tailwind
     await installModule('@nuxtjs/tailwindcss', {
       exposeConfig: true,
@@ -67,6 +73,10 @@ export default defineNuxtModule<ModuleOptions>({
     addLayout({
       src: resolve('./runtime/layouts/admin.vue'),
       filename: 'admin.vue',
+    })
+    addLayout({
+      src: resolve('./runtime/layouts/modal.vue'),
+      filename: 'modal.vue',
     })
     addComponent({
       filePath: resolve('./runtime/components/Sidebar.vue'),
@@ -96,6 +106,22 @@ export default defineNuxtModule<ModuleOptions>({
       filePath: resolve('./runtime/components/Breadcrumb.vue'),
       name: 'Breadcrumb',
     })
+    addComponent({
+      filePath: resolve('./runtime/components/DropDown.vue'),
+      name: 'DropDown',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/Editor.vue'),
+      name: 'Editor',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/ImageUploader.vue'),
+      name: 'ImageUploader',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/ImageP.vue'),
+      name: 'ImageP',
+    })
     extendPages((pages) => {
       pages.push({
         name: 'hello',
@@ -108,6 +134,20 @@ export default defineNuxtModule<ModuleOptions>({
 
     addPlugin(resolve('./runtime/plugins/notifications.js'))
     addPlugin(resolve('./runtime/plugins/pinia.js'))
-
+    addServerHandler({
+      method: 'GET',
+      route: '/api/images-list',
+      handler: resolve('./runtime/server/api/images-list.get.js')
+    })
+    addServerHandler({
+      method: 'POST',
+      route: '/api/images-list',
+      handler: resolve('./runtime/server/api/images.post.js')
+    })
+    addServerHandler({
+      method: 'DELETE',
+      route: '/api/images-list/:id',
+      handler: resolve('./runtime/server/api/images-list.delete.js')
+    })
   },
 })

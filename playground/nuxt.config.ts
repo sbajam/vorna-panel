@@ -7,6 +7,16 @@ export default defineNuxtConfig({
     resolve(__dirname, '../src/module.ts'),
   ],
   css: ['./assets/css/main.css'],
+  nitro: {
+    // هر چیزی داخل public/uploads رو با URL زیر /uploads سرو کن
+    publicAssets: [
+      {
+        dir: 'public/uploads',
+        baseURL: '/uploads',
+        maxAge: 60 * 60 * 24 * 365
+      }
+    ]
+  },
   vornaPanel: {
     name: 'پنل فروشگاه وندو',
     logo: 'https://vendow.ir/_ipx/assets/img/logo.png',

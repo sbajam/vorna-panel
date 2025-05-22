@@ -152,3 +152,39 @@ button.button-white:hover {
     max-height: 70vh;
     overflow: auto;
 }
+.input-div {
+  @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
+
+  label {
+    @apply text-primary-100  text-lg text-right whitespace-nowrap font-semibold w-4/12;
+  }
+
+  div {
+    @apply w-full;
+  }
+
+  input,
+  textarea,
+  .input {
+    @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full focus:border-secondary-100;
+    &:read-only,
+    &.read-only {
+      @apply bg-gray-100 border-primary-10;
+    }
+  }
+  a.input {
+    @apply cursor-pointer text-primary-100 font-bold text-center border-b !border-primary-100 block;
+  }
+  &.box-1 {
+    @apply mb-4;
+
+    input,
+    .input {
+      @apply border-[3px];
+    }
+  }
+}
+.tiptap.ProseMirror {
+    max-height: 70vh;
+    overflow: auto;
+}
