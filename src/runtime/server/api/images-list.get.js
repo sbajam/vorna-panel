@@ -1,24 +1,27 @@
-import { defineEventHandler } from 'h3'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { defineEventHandler } from "h3";
+import { promises as fs } from "fs";
+import path from "path";
+import { useRuntimeConfig } from "#imports";
 
 export default defineEventHandler(async (event) => {
-  const metaPath = path.resolve('./public/uploads/images.json')
+  // Determine the project root directory (set via middleware)
+  const config = useRuntimeConfig();
+  const rootDir = config.vornaPanel?.rootDir ?? process.cwd();
+  const metaPath = path.join(rootDir, "public", "uploads", "images.json");
   try {
-    const list = JSON.parse(await fs.readFile(metaPath, 'utf-8'))
-    return { 
+    const list = JSON.parse(await fs.readFile(metaPath, "utf-8"));
+    return {
       status: true,
       data: {
-        images: list
-      }
-    }
+        images: list,
+      },
+    };
   } catch (error) {
-    return { 
-      status: false,
-      message: 'خطا در بارگذاری تصاویر',
+    return {
+      status: true,
       data: {
-        images: []
-      }
-    }
+        images: [],
+      },
+    };
   }
-})
+});

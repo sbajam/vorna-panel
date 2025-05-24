@@ -10,6 +10,8 @@ const { $notifyDanger, $notifySuccess } = useNuxtApp();
 const { pending, request: submitRequest } = useApi();
 const { pending: listPending, request: listRequest } = useApi();
 const { pending: deletePending, request: deleteRequest } = useApi();
+const config = useRuntimeConfig()
+const rootDir = config.vornaPanel?.rootDir 
 
 // بارگذاری لیست تصاویر
 async function fetchImages() {
@@ -65,6 +67,7 @@ async function submit() {
 
     if (response?.success) {
       $notifySuccess("تصویر با موفقیت ارسال شد.");
+      image.value = null; // پاک کردن تصویر انتخاب شده
       await fetchImages(); // رفرش لیست تصاویر
     } else {
       $notifyDanger(response?.error || "خطا در ارسال تصویر.");
@@ -119,8 +122,9 @@ onMounted(fetchImages);
           :key="img.id"
           class="relative cursor-pointer"
         >
+        <!-- TODO :check work -->
           <img
-            :src="`..${img.url}`"
+            :src="`${img.url}`"
             class="w-full h-32 object-cover rounded-lg border hover:border-primary-100 transition"
             @click="choose(img.url)"
           />

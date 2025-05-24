@@ -1,100 +1,161 @@
-<!-- pages/playground/button-playground.vue -->
-<script setup>
-const countries = [
-  { label: "ایران", value: "ir", code: "+98" },
-  { label: "آمریکا", value: "us", code: "+1" },
-  { label: "کانادا", value: "ca", code: "+1" },
-];
-let text = ref("sghl");
-const single = ref(null);
-const singleWithCode = ref(null);
-const singleEmpty = ref(null);
-const multi = ref([]);
-const images = ref(null);
-const config = useRuntimeConfig();
-</script>
-
 <template>
   <NuxtLayout name="admin">
     <template #main>
-      <Box class="space-y-6">
-        <Header>DropDown Playground</Header>
-        <div class=" grid grid-cols-4 gap-4">
-          <div class="space-y-4">
-            <h3 class="font-medium">تک انتخاب (clearable)</h3>
-            <DropDown
-              v-model="single"
-              :items="countries"
-              labelField="label"
-              valueField="value"
-              placeholder="یک کشور انتخاب کنید"
-              :clearable="true"
-            />
-            <div>انتخاب‌شده: {{ single }}</div>
-          </div>
+      <Box class="">
+        <Header class="text-2xl font-bold">InputField Variants Test</Header>
+        <div class="grid grid-cols-1 gap-4">
+          <!-- Text Input -->
+          <InputField
+            v-model="textValue"
+            label="فیلد متنی:"
+            placeholder="نامت رو بنویس"
+            errorMessage=""
+          />
 
-          <div class="space-y-4">
-            <h3 class="font-medium">تک انتخاب با نمایش code</h3>
-            <DropDown
-              v-model="singleWithCode"
-              :items="countries"
-              labelField="label"
-              valueField="value"
-              displayField="code"
-              placeholder="یک کشور"
-              :clearable="true"
-            />
-            <div>انتخاب‌شده: {{ singleWithCode }}</div>
-          </div>
+          <!-- Number Input -->
+          <InputField
+            v-model="numberValue"
+            label="فیلد عددی:"
+            type="number"
+            placeholder="123"
+          />
 
-          <div class="space-y-4">
-            <h3 class="font-medium">تک انتخاب با گزینه خالی</h3>
-            <DropDown
-              v-model="singleEmpty"
-              :items="[...countries]"
-              labelField="label"
-              valueField="value"
-              placeholder="یا هیچ"
-              :clearable="true"
-            />
-            <div>انتخاب‌شده: {{ singleEmpty }}</div>
-          </div>
-          <div class="space-y-4">
-            <h3 class="font-medium">چند انتخابی + جستجو</h3>
-            <DropDown
-              v-model="multi"
-              :items="['1', '2', '3', '4', '5', '6', '7', '8', '9']"
-              multiple
-              searchable
-              placeholder="چند کشور"
-              :clearable="true"
-            />
-            <div>لیست انتخاب‌شده: {{ multi }}</div>
-          </div>
-          <div class="space-y-4">
-            <h3 class="font-medium">چند انتخابی + جستجو</h3>
-            <DropDown
-              v-model="multi"
-              :items="countries"
-              multiple
-              searchable
-              labelField="label"
-              valueField="value"
-              placeholder="چند کشور"
-              :clearable="true"
-            />
-            <div>لیست انتخاب‌شده: {{ multi }}</div>
-          </div>
+          <!-- Email Input -->
+          <InputField
+            v-model="emailValue"
+            label="Email"
+            type="email"
+            placeholder="user@example.com"
+            :errorMessage="emailError"
+          />
+          <button
+            @click="validateEmail"
+            class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Validate Email
+          </button>
+          <p v-if="emailError" class="text-red-600">{{ emailError }}</p>
+
+          <!-- Password Input -->
+          <InputField
+            v-model="passwordValue"
+            label="Password"
+            type="password"
+            placeholder="رمز عبور خود را وارد کنید"
+          />
+
+          <!-- Textarea -->
+          <InputField
+            v-model="textareaValue"
+            label="توضیحات"
+            label-position="top"
+            type="textarea"
+            placeholder="Write something..."
+            box
+          />
+
+          <!-- Disabled -->
+          <InputField
+            v-model="disabledValue"
+            label="Disabled"
+            placeholder="Can't type here"
+            disabled
+          />
+
+          <!-- With Icon & Tooltip -->
+          <InputField
+            v-model="iconValue"
+            label="جستجو"
+            placeholder="Search..."
+            icon="fa6-solid:magnifying-glass"
+            tooltip="Type to search"
+          />
+
+          <!-- Error Message -->
+          <InputField
+            v-model="errorValue"
+            label="Required Field"
+            :errorMessage="errorMsg"
+          />
+          <button
+            @click="checkRequired"
+            class="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg"
+          >
+            Check
+          </button>
         </div>
-        <ImageUploader
-          v-model:images="images"
-          :multiple="true"
-          :watermark="true"
-          watermarkText="Watermark Text"
-          :baseUrl="config.public.baseURL"
+      </Box>
+      <Box>
+        <!-- تک‌انتخابی -->
+        <!-- <DropDown
+          v-model="singleValue"
+          :items="options"
+          placeholder="یک گزینه انتخاب کنید"
+          label="تک انتخابی"
+          :clearable="true"
+          :searchable="true"
+        /> -->
+        <p class="mt-2">مقدار انتخاب‌شده: {{ singleValue }}</p>
+
+        <!-- چندانتخابی -->
+        <!-- <DropDown
+          v-model="multiValue"
+          :items="options"
+          multiple
+          placeholder="چند گزینه انتخاب کنید"
+          label="چند انتخابی"
+          :clearable="true"
+          :searchable="true"
+       
+        /> -->
+        <p class="mt-2">مقادیر انتخاب‌شده: {{ multiValue.join(", ") }}</p>
+
+        <!-- بدون جستجو و بدون پاک کردن -->
+        <DropDown
+          v-model="simpleValue"
+          :items="options"
+          placeholder="انتخاب کنید"
+          label="ساده"
         />
-        <Editor v-model="text" />
+        <p class="mt-2">مقدار انتخاب‌شده: {{ simpleValue }}</p>
       </Box>
     </template>
   </NuxtLayout>
 </template>
+
+<script setup lang="ts">
+
+// تعریف گزینه‌ها
+const options = [
+  { label: "گزینه اول", value: "one" },
+  { label: "گزینه دوم", value: "two" },
+  { label: "گزینه سوم", value: "three" },
+  { label: "گزینه چهارم", value: "four" },
+  "five"
+];
+
+// مقادیر بایند شده
+const singleValue = ref<string | null>(null);
+const multiValue = ref<string[]>([]);
+const simpleValue = ref<string | null>(null);
+
+const textValue = ref("");
+const numberValue = ref<number | "">("");
+const emailValue = ref("");
+const emailError = ref("");
+const passwordValue = ref("");
+const textareaValue = ref("");
+const disabledValue = ref("Disabled");
+const iconValue = ref("");
+const errorValue = ref("");
+const errorMsg = ref("");
+
+function validateEmail() {
+  const re = /^\S+@\S+\.\S+$/;
+  emailError.value = re.test(emailValue.value) ? "" : "ایمیل نامعتبر است";
+}
+
+function checkRequired() {
+  errorMsg.value = errorValue.value ? "" : "این فیلد الزامی است";
+}
+</script>

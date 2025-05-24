@@ -1,6 +1,7 @@
 // src/module.ts
 import { defineNuxtModule, createResolver, extendPages, addLayout, installModule, addComponent, addPlugin, addImportsDir, addServerHandler } from '@nuxt/kit'
 import { defu } from 'defu'
+import path from 'path'
 
 export interface ModuleOptions {
   name?: string
@@ -29,14 +30,43 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-    nuxt.options.nitro = defu(nuxt.options.nitro, {
-      routeRules: {
-        // دقیقا همین مسیر رو multipart-ready کن
+    // nuxt.options.nitro = defu(nuxt.options.nitro, {
+    //   routeRules: {
+    //     '/api/images-list': { bodyParser: false }
+    //   },
+    //   publicAssets: [
+    //     {
+    //       dir: path.resolve(nuxt.options.rootDir, 'public', 'uploads'),
+    //       baseURL: '/uploads',
+    //       maxAge: 60 * 60 * 24 * 30
+    //     }
+    //   ]
+    // })
+    nuxt.hook('nitro:config', (config) => {
+      // 1) خاموش کردن bodyParser برای این endpoint
+      config.routeRules = {
+        ...(config.routeRules || {}),
         '/api/images-list': { bodyParser: false }
-        // یا اگر خواستی روی همه‌ی api ها:
-        // '/api/**': { bodyParser: false }
       }
+
+      // 2) سرو کردن فایل‌های runtime در public/uploads
+      config.publicAssets = [
+        ...(config.publicAssets || []),
+        {
+          dir: path.resolve(nuxt.options.rootDir, 'public', 'uploads'),
+          baseURL: '/uploads',
+          maxAge: 60 * 60 * 24 * 30
+        }
+      ]
     })
+    nuxt.options.runtimeConfig.private = defu(
+      nuxt.options.runtimeConfig.private,
+      {
+        vornaPanel: {
+          rootDir: nuxt.options.rootDir
+        }
+      }
+    )
     // Merge کردن اسم در runtimeConfig
     nuxt.options.runtimeConfig.public.vornaPanel = defu(
       nuxt.options.runtimeConfig.public.vornaPanel,
@@ -122,6 +152,10 @@ export default defineNuxtModule<ModuleOptions>({
       filePath: resolve('./runtime/components/ImageP.vue'),
       name: 'ImageP',
     })
+    addComponent({
+      filePath: resolve('./runtime/components/InputField.vue'),
+      name: 'InputField',
+    })
     extendPages((pages) => {
       pages.push({
         name: 'hello',
@@ -134,16 +168,28 @@ export default defineNuxtModule<ModuleOptions>({
 
     addPlugin(resolve('./runtime/plugins/notifications.js'))
     addPlugin(resolve('./runtime/plugins/pinia.js'))
+    // ۲) middleware فقط برای تزریق rootDir
+    addServerHandler({
+      route: '/api/images-list',
+      middleware: true,
+      handler: resolve('./runtime/server/api/_inject-rootdir.js')
+    })
+
+    // ۳) GET handler
     addServerHandler({
       method: 'GET',
       route: '/api/images-list',
       handler: resolve('./runtime/server/api/images-list.get.js')
     })
+
+    // ۴) POST handler (بدون middleware:true)
     addServerHandler({
       method: 'POST',
       route: '/api/images-list',
-      handler: resolve('./runtime/server/api/images.post.js')
+      handler: resolve('./runtime/server/api/images-list.post.js')
     })
+
+    // ۵) DELETE handler
     addServerHandler({
       method: 'DELETE',
       route: '/api/images-list/:id',
