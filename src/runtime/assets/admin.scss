@@ -149,8 +149,8 @@ button.button-white:hover {
   }
 }
 .tiptap.ProseMirror {
-    max-height: 70vh;
-    overflow: auto;
+  max-height: 70vh;
+  overflow: auto;
 }
 .input-div {
   @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
@@ -185,6 +185,21 @@ button.button-white:hover {
   }
 }
 .tiptap.ProseMirror {
-    max-height: 70vh;
-    overflow: auto;
+  max-height: 70vh;
+  overflow: auto;
+}
+.pdp-group {
+  @apply items-stretch;
+  .pdp-icon.pdp-pointer {
+    @apply w-auto flex items-center justify-center rounded-r-lg;
+    max-height: none !important;
+  }
+  input:last-of-type {
+    @apply rounded-l-lg !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+}
+.pdp-column,.pdp-picker.rtl {
+  width: auto !important;
 }

@@ -1,91 +1,87 @@
 <template>
   <!--
     InputField Component
-    - Supports text, number, email, password, and textarea types
+    - Supports text, number, email, password, textarea, date, time, datetime types
     - Displays a label either on top or on the right
     - Shows error messages and supports disabled state
     - Includes optional icon with tooltip or password visibility toggle
+    - For date/time types uses vue3-persian-datepicker with full options
   -->
   <div
     :class="['input-div', { 'flex-col !items-start': labelPosition === 'top' }]"
   >
-    <!-- Label (when provided) -->
+    <!-- Label -->
     <label
       v-if="label"
+      :for="id"
       class="text-primary-100 text-lg flex items-center gap-2 font-semibold w-4/12 text-right whitespace-nowrap"
     >
       <Icon v-if="icon" :name="icon" />
       {{ label }}
     </label>
 
-    <!-- Field wrapper for input/textarea and icons -->
+    <!-- Field wrapper -->
     <div class="w-full relative">
-      <!--
-        Input element (for types other than textarea)
-        - bound to modelValue via v-model pattern
-        - type controlled by computedType (handles password toggle)
-      -->
-      <input
-        v-if="type !== 'textarea'"
-        :id="id"
-        :type="computedType"
+      <!-- Date/Time Picker -->
+      <DatePicker
+        v-if="isDateType"
+        ref="picker"
+        v-model="innerValue"
+        :type="type"
+        :input-format="inputFormat"
+        :display-format="displayFormat"
         :placeholder="placeholder"
-        :value="modelValue"
+        :clearable="clearable"
+        :calendar-type="calendarType"
         :disabled="disabled"
-        @input="$emit('update:modelValue', $event.target.value)"
-        class="input"
-        :class="{ '!border-red-600': errorMessage }"
+        :mode="single ? 'single' : 'multiple'"
+        :column="1"
+        @submit="onDateChange"
+        class="w-full"
+        :style="{
+          '--primary-color': primary,
+          '--secondary-color': secondary,
+        }"
       />
-
-      <!--
-        Textarea element (when type='textarea')
-        - bound to modelValue via v-model pattern
-      -->
-      <textarea
-        v-else
-        :id="id"
-        :placeholder="placeholder"
-        :value="modelValue"
-        :disabled="disabled"
-        @input="$emit('update:modelValue', $event.target.value)"
-        class="input resize-none"
-        :class="{ '': errorMessage }"
-      ></textarea>
-
-      <!--
-        Password Toggle Icon
-        - visible only for password type
-        - toggles showPassword state
-      -->
-      <span
-        v-if="type === 'password'"
-        class="absolute top-1/2 transform -translate-y-1/2 left-4 cursor-pointer text-primary-100"
-        @click="togglePassword"
+      <div
+        v-else-if="type !== 'textarea'"
+        class="w-full relative flex items-stretch input focus:border-secondary-100 bg-white !p-0 overflow-hidden"
       >
-        <Icon :name="`fa6-solid:${showPassword ? 'eye-slash' : 'eye'}`" />
-      </span>
-
-      <!--
-        Custom Icon with Tooltip
-        - shows when icon prop is provided
-        - displays tooltip text on hover
-      -->
-      <span
-        v-else-if="icon"
-        class="absolute top-1/2 transform flex items-center justify-center px-1.5 aspect-square bg-secondary-100 text-white rounded-full -translate-y-1/2 left-4 cursor-pointer"
-        :title="tooltip"
-      >
-        <Icon name="fa6-solid:question" />
-      </span>
+        <!-- اگر mask پر شده، از imask و prefix/suffix استفاده کن -->
+        <!-- پیشوند -->
+        <span
+          v-if="prefix"
+          class="px-2 bg-gray-100 text-gray-600 text-xs flex items-center justify-center"
+          >{{ prefix }}</span
+        >
+        <!-- خود input با ماسک -->
+        <!-- Standard Input/Textarea -->
+        <input
+          v-imask="maskOptions"
+          v-model="maskedValue"
+          :id="id"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          :type="computedType"
+          :class="{
+            '!border-red-600': errorMessage,
+            '!rounded-r': prefix,
+            '!rounded-l': suffix,
+          }"
+          class="input flex-1 outline-none px-2 py-1 !border-none"
+        />
+        <!-- پسوند -->
+        <span
+          v-if="suffix"
+          class="px-2 bg-gray-100 text-gray-600 text-xs flex items-center justify-center"
+          >{{ suffix }}</span
+        >
+      </div>
+      <!-- Error message -->
+      <p v-if="errorMessage" class="text-xs text-red-600 mt-1">
+        {{ errorMessage }}
+      </p>
     </div>
-
-    <!--
-      Error message display
-      - shows when errorMessage prop is non-empty
-    -->
-    <p v-if="errorMessage" class="text-xs text-red-600 mt-1">
-      {{ errorMessage }}
-    </p>
   </div>
 </template>
 
@@ -93,25 +89,26 @@
 /**
  * InputField.vue
  *
- * Props:
- * @prop {string|number} modelValue - Bound value for v-model
- * @prop {string} label - Optional label text
- * @prop {'top'|'right'} labelPosition - Position of the label relative to the field
- * @prop {string} placeholder - Placeholder text
- * @prop {'text'|'number'|'email'|'password'|'textarea'} type - Field type
- * @prop {boolean} disabled - Disables the field if true
- * @prop {string} errorMessage - Error message text
- * @prop {string} icon - Optional icon name from lucide icons
- * @prop {string} tooltip - Tooltip text for the icon
+ * Supports:
+ * - Types: text, number, email, password, textarea
+ * - Date/Time: date, time, datetime with Persian/Gregorian, range, clearable
+ * - Label positioning: top or right
+ * - Disabled, error states, icons, tooltips
  */
-import { ref, computed } from "vue";
+import { ref, computed, toRef } from "vue";
 import { nanoid } from "nanoid";
 import type { PropType } from "vue";
-
-// Define component props
+import { IMaskDirective } from "vue-imask"; // For masking input
+defineOptions({
+  directives: {
+    imask: IMaskDirective,
+  },
+});
 const props = defineProps({
   modelValue: {
-    type: [String, Number] as PropType<string | number>,
+    type: [String, Number, Date, Array] as PropType<
+      string | number | Date | (string | Date)[]
+    >,
     default: "",
   },
   label: { type: String, default: "" },
@@ -122,7 +119,14 @@ const props = defineProps({
   placeholder: { type: String, default: "" },
   type: {
     type: String as PropType<
-      "text" | "number" | "email" | "password" | "textarea"
+      | "text"
+      | "number"
+      | "email"
+      | "password"
+      | "textarea"
+      | "date"
+      | "time"
+      | "datetime"
     >,
     default: "text",
   },
@@ -130,35 +134,97 @@ const props = defineProps({
   errorMessage: { type: String, default: "" },
   icon: { type: String, default: "" },
   tooltip: { type: String, default: "" },
+  mask: { type: [Object, String], default: null }, // e.g. { mask: Number, thousandsSeparator: ',' }
+  prefix: { type: String, default: "" }, // e.g. 'تومان'
+  suffix: { type: String, default: "" },
+  // password-specific props
+  paswordOptions: { type: Boolean, default: true },
+  // DatePicker-specific props
+  inputFormat: { type: String, default: "YYYY-MM-DD" },
+  displayFormat: { type: String, default: "YYYY-MM-DD" },
+  clearable: { type: Boolean, default: false },
+  single: { type: Boolean, default: true },
+  calendarType: {
+    type: String as PropType<"persian" | "gregorian">,
+    default: "persian",
+  },
 });
+// ////////////////////
+const rawMask = toRef(props, 'mask')
+const maskOptions = computed(() => {
+  if (typeof rawMask.value === 'object' && rawMask.value !== null) {
+    return { ...rawMask.value, unmask: true }
+  }
+  return rawMask.value
+})
+const maskedValue = computed({
+  get: () => props.modelValue,
+  set: (val: any) => emit('update:modelValue', val)
+})
+const displayValue = ref(props.modelValue); // مقداری که در input واقعاً نمایش داده می‌شود
 
-// Emit update event for v-model compatibility
+// هر بار مدل خارجی تغییر کند، نمایش را هم بروزرسانی می‌کنیم
+watch(
+  toRef(props, "modelValue"),
+  (val) => {
+    displayValue.value = val;
+  },
+  { immediate: true }
+);
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string): void;
+  (e: "update:modelValue", value: any): void;
 }>();
 
-// Unique ID for accessibility linking label and field
+
+// Unique ID
 const id = ref(`input-${nanoid(6)}`);
-
-// Compute CSS class for optional box styling
-
-// Password visibility toggle state
-const showPassword = ref(false);
-// Computed type switches between 'text' and 'password'
-const computedType = computed(() => {
-  return props.type === "password" && showPassword.value ? "text" : props.type;
+// state برای سنجش قدرت
+const strength = computed(() => {
+  let pwd = props.modelValue as string;
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[a-z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  return { score, percent: (score / 5) * 100 };
 });
-// Toggle function for password visibility
+// تولید رمز تصادفی
+function generatePassword() {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+  let pwd = "";
+  for (let i = 0; i < 12; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  // بروزرسانی ورودی و سنجش مجدد
+  emit("update:modelValue", pwd);
+}
+
+// Password toggle
+const showPassword = ref(false);
+const computedType = computed(() =>
+  props.type === "password" && showPassword.value ? "text" : props.type
+);
 function togglePassword() {
   showPassword.value = !showPassword.value;
+}
+
+// Date type check
+const isDateType = computed(() =>
+  ["date", "time", "datetime"].includes(props.type)
+);
+// Manage internal date value for v-model compatibility
+const innerValue = ref<any>(props.modelValue);
+watch(toRef(props, "modelValue"), (v) => {
+  innerValue.value = v;
+});
+function onDateChange(val: any) {
+  emit("update:modelValue", val);
 }
 </script>
 
 <style lang="scss" scoped>
-/*
-  .input-div applies overall flex layout
-  label and .input are styled based on provided SCSS
-*/
 .input-div {
   @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
 }
@@ -168,9 +234,11 @@ function togglePassword() {
 .input-div > div {
   @apply w-full;
 }
-.input,
-textarea.input {
-  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full focus:border-secondary-100;
+.input {
+  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full ;
+  &[type="color"] {
+    @apply py-1;
+  }
 }
 .input:read-only,
 textarea.input:read-only,

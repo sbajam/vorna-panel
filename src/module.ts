@@ -91,7 +91,9 @@ export default defineNuxtModule<ModuleOptions>({
         darkMode: 'class',
       },
     })
-
+    nuxt.options.build!.transpile.push('@alireza-ab/vue3-persian-datepicker')
+    addPlugin(resolve('./runtime/plugins/datepicker.client.js'))
+ 
     // اضافه کردن فایل SCSS
     nuxt.options.css.unshift(resolve('./runtime/assets/admin.scss'))
     nuxt.options.css.unshift(resolve('./runtime/assets/font.scss'))
@@ -155,6 +157,18 @@ export default defineNuxtModule<ModuleOptions>({
     addComponent({
       filePath: resolve('./runtime/components/InputField.vue'),
       name: 'InputField',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/RadioGroup.vue'),
+      name: 'RadioGroup',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/CheckBoxGroup.vue'),
+      name: 'CheckBoxGroup',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/ToggleSwitch.vue'),
+      name: 'ToggleSwitch',
     })
     extendPages((pages) => {
       pages.push({

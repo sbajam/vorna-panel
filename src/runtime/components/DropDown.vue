@@ -142,7 +142,7 @@ const props = defineProps({
   labelField:      { type: String, default: 'label' },
   valueField:      { type: String, default: 'value' },
   displayField:    { type: String, default: '' },
-  returnObject:    { type: Boolean, default: true }
+  // returnObject:    { type: Boolean, default: true }
 })
 const emit = defineEmits<{
   (e: 'update:modelValue', value: any): void
