@@ -1,3 +1,60 @@
+<!--
+/**
+ * @component FileUploader
+ * @description A drag-and-drop file upload component with preview support for images
+ * 
+ * @features
+ * 1. Upload Functionality:
+ *    - Drag and drop support
+ *    - Click to select files
+ *    - Multiple file upload support
+ *    - File type restrictions
+ * 
+ * 2. Preview Capabilities:
+ *    - Image preview for image files
+ *    - File type icons for non-image files
+ *    - File name display
+ *    - Hover delete functionality
+ * 
+ * 3. Advanced Features:
+ *    - Maximum file count limit
+ *    - File size restrictions
+ *    - Visual feedback during drag
+ *    - File type detection and icons
+ *    - Memory management (auto-revoke object URLs)
+ * 
+ * @example Basic Usage
+ * ```vue
+ * <FileUploader
+ *   v-model:files="uploadedFiles"
+ *   accept="image/*"
+ * />
+ * ```
+ * 
+ * @example Advanced Configuration
+ * ```vue
+ * <FileUploader
+ *   v-model:files="documents"
+ *   accept=".pdf,.doc,.docx"
+ *   :multiple="true"
+ *   :maxFiles="5"
+ *   :maxSize="5000000"
+ *   :isImageUploader="false"
+ * />
+ * ```
+ * 
+ * @example Image Gallery Mode
+ * ```vue
+ * <FileUploader
+ *   v-model:files="images"
+ *   accept="image/jpeg,image/png,image/webp"
+ *   :multiple="true"
+ *   :isImageUploader="true"
+ *   :maxFiles="10"
+ * />
+ * ```
+ */
+-->
 <template>
   <div
     class="file-uploader"

@@ -1,3 +1,64 @@
+<!--
+/**
+ * @component RadioGroup
+ * @description A versatile radio button component that supports both single radio and group modes
+ * 
+ * @features
+ * 1. Dual Mode Operation:
+ *    - Single Radio: Simple standalone radio button with label
+ *    - Group Mode: Multiple radio options in a group
+ * 
+ * 2. Layout & Styling:
+ *    - Custom styled radio buttons with smooth animations
+ *    - Flexible label positioning (top/right)
+ *    - Horizontal or vertical group layout
+ *    - Consistent styling with design system
+ * 
+ * 3. Advanced Features:
+ *    - Accessible (WAI-ARIA compliant)
+ *    - Icon support with tooltips
+ *    - Error state handling
+ *    - Disabled state support
+ *    - Required field validation
+ * 
+ * @example Single Radio Usage
+ * ```vue
+ * <RadioGroup
+ *   v-model="agreed"
+ *   label="I agree to terms"
+ *   :value="true"
+ * />
+ * ```
+ * 
+ * @example Group Mode Usage
+ * ```vue
+ * <RadioGroup
+ *   v-model="selectedOption"
+ *   groupLabel="Select a plan"
+ *   :options="[
+ *     { label: 'Basic', value: 'basic' },
+ *     { label: 'Pro', value: 'pro' },
+ *     { label: 'Enterprise', value: 'enterprise' }
+ *   ]"
+ *   direction="vertical"
+ * />
+ * ```
+ * 
+ * @example With Icon and Tooltip
+ * ```vue
+ * <RadioGroup
+ *   v-model="preference"
+ *   label="Newsletter Subscription"
+ *   icon="mail"
+ *   tooltip="Choose your newsletter preference"
+ *   :options="[
+ *     { label: 'Daily', value: 'daily' },
+ *     { label: 'Weekly', value: 'weekly' }
+ *   ]"
+ * />
+ * ```
+ */
+-->
 <template>
   <!--
     UnifiedRadio Component

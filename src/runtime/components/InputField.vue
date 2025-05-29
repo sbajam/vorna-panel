@@ -1,3 +1,86 @@
+<!--
+/**
+ * @component InputField
+ * @description A versatile input field component that supports various input types and features
+ * 
+ * @features
+ * - Multiple input types: text, number, email, password, textarea, date, time, datetime
+ * - Label positioning: top or right alignment
+ * - Input masking with IMask support
+ * - Prefix and suffix support
+ * - Password strength meter and generator
+ * - Date picker integration (Persian/Gregorian calendar)
+ * - Error message display
+ * - Icon support with tooltips
+ * - Disabled state support
+ * - RTL/LTR support
+ * 
+ * @props {string|number|Date|Array} modelValue - The v-model value
+ * @props {string} label - Input label text
+ * @props {string} labelPosition - Label position ('top' or 'right')
+ * @props {string} placeholder - Input placeholder text
+ * @props {string} type - Input type (text/number/email/password/textarea/date/time/datetime)
+ * @props {boolean} disabled - Disabled state
+ * @props {string} errorMessage - Error message to display
+ * @props {string} icon - Icon name for the label
+ * @props {string} tooltip - Tooltip text for the icon
+ * @props {object|string} mask - IMask configuration for number formatting
+ * @props {string} prefix - Text or symbol to show before input
+ * @props {string} suffix - Text or symbol to show after input
+ * @props {boolean} passwordOptions - Enable password features (strength meter + generator)
+ * @props {string} inputFormat - Date format for input (YYYY-MM-DD)
+ * @props {string} displayFormat - Date format for display
+ * @props {boolean} clearable - Allow clearing date value
+ * @props {boolean} single - Single or multiple date selection
+ * @props {string} calendarType - Calendar type (persian/gregorian)
+ * 
+ * @emits {update:modelValue} - Emitted when the input value changes
+ * 
+ * @example Basic usage
+ * <InputField
+ *   v-model="value"
+ *   label="Username"
+ *   type="text"
+ *   placeholder="Enter username"
+ * />
+ * 
+ * @example With mask and prefix (for currency)
+ * <InputField
+ *   v-model="price"
+ *   type="number"
+ *   :mask="{ mask: Number, thousandsSeparator: ',' }"
+ *   prefix="$"
+ *   label="Price"
+ * />
+ * 
+ * @example Persian date picker
+ * <InputField
+ *   v-model="date"
+ *   type="date"
+ *   calendarType="persian"
+ *   :clearable="true"
+ *   label="تاریخ"
+ *   inputFormat="YYYY/MM/DD"
+ * />
+ * 
+ * @example Password with strength meter
+ * <InputField
+ *   v-model="password"
+ *   type="password"
+ *   :passwordOptions="true"
+ *   label="Password"
+ *   tooltip="Must be at least 8 characters"
+ * />
+ * 
+ * @example Textarea with error
+ * <InputField
+ *   v-model="description"
+ *   type="textarea"
+ *   label="Description"
+ *   errorMessage="This field is required"
+ * />
+ */
+-->
 <template>
   <!--
     InputField Component
@@ -77,23 +160,70 @@
           >{{ suffix }}</span
         >
       </div>
+         <textarea
+        v-else
+        :id="id"
+        :placeholder="placeholder"
+        :value="modelValue"
+        :disabled="disabled"
+        @input="$emit('update:modelValue', $event.target.value)"
+        class="input resize-none"
+      ></textarea>
+      <div
+        v-if="type === 'password' && !disabled && paswordOptions"
+        class="flex gap-4 items-center mt-4 justify-between px-2"
+      >
+        <div
+          class="h-2 mt-2 bg-gray-200 rounded-lg flex items-stretch justify-end"
+        >
+          <div
+            :style="{ width: strength.percent + '%' }"
+            class="bg-green-800 h-full transition-width rounded-lg"
+          ></div>
+        </div>
+        <Button
+          @click="generatePassword"
+          class="text-xs bg-secondary-70 text-white"
+          >generate</Button
+        >
+      </div>
+
+      <!-- Password Toggle Icon -->
+      <span
+        v-if="type === 'password'"
+        class="absolute top-[0.75rem] left-4 cursor-pointer text-primary-100"
+        @click="togglePassword"
+      >
+        <Icon :name="`fa6-solid:${showPassword ? 'eye-slash' : 'eye'}`" />
+      </span>
+
+      <!-- Tooltip Icon -->
+      <span
+        v-else-if="tooltip"
+        class="absolute top-1/2 transform flex items-center justify-center px-1.5 aspect-square bg-secondary-100 text-white rounded-full -translate-y-1/2 left-4 cursor-pointer"
+        :title="tooltip"
+      >
+        <Icon name="fa6-solid:question" />
+      </span>
       <!-- Error message -->
       <p v-if="errorMessage" class="text-xs text-red-600 mt-1">
         {{ errorMessage }}
       </p>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 /**
- * InputField.vue
- *
- * Supports:
- * - Types: text, number, email, password, textarea
- * - Date/Time: date, time, datetime with Persian/Gregorian, range, clearable
- * - Label positioning: top or right
- * - Disabled, error states, icons, tooltips
+ * Component Logic for InputField
+ * 
+ * Features implemented:
+ * 1. Unique ID generation for input elements
+ * 2. Password strength calculation and toggle visibility
+ * 3. Date picker integration with format handling
+ * 4. Input masking with IMask
+ * 5. Value synchronization with v-model
  */
 import { ref, computed, toRef, watch } from "vue";
 import { nanoid } from "nanoid";
@@ -102,7 +232,7 @@ import { IMask, IMaskDirective } from "vue-imask";
 
 defineOptions({
   directives: {
-    imask: IMaskDirective,
+    imask: IMaskDirective as any,
   },
 });
 
@@ -246,6 +376,13 @@ function onDateChange(val: any) {
 </script>
 
 <style lang="scss" scoped>
+/**
+ * Styling for InputField component
+ * - Responsive layout with flexbox
+ * - Custom styling for different input types
+ * - RTL/LTR support
+ * - Read-only state styling
+ */
 .input-div {
   @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
 

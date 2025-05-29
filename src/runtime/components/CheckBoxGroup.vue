@@ -1,3 +1,63 @@
+<!--
+/**
+ * @component CheckBoxGroup
+ * @description A flexible checkbox component supporting both single checkbox and group modes
+ * 
+ * @features
+ * 1. Dual Mode Operation:
+ *    - Single Checkbox: Standalone checkbox with label
+ *    - Group Mode: Multiple selectable options
+ * 
+ * 2. Layout & Styling:
+ *    - Custom styled checkboxes with check animation
+ *    - Flexible label positioning (top/right)
+ *    - Horizontal or vertical group layout
+ *    - Consistent with design system
+ * 
+ * 3. Advanced Features:
+ *    - Multiple selection in group mode
+ *    - Icon support with tooltips
+ *    - Error state handling with messages
+ *    - Required field validation
+ *    - Disabled state support
+ *    - Accessible (WAI-ARIA compliant)
+ * 
+ * @example Single Checkbox Usage
+ * ```vue
+ * <CheckBoxGroup
+ *   v-model="agreed"
+ *   label="Accept terms and conditions"
+ * />
+ * ```
+ * 
+ * @example Group Mode Usage
+ * ```vue
+ * <CheckBoxGroup
+ *   v-model="selectedFeatures"
+ *   groupLabel="Select features"
+ *   :options="[
+ *     { label: 'Auto-save', value: 'autosave' },
+ *     { label: 'Dark mode', value: 'darkmode' },
+ *     { label: 'Notifications', value: 'notifications' }
+ *   ]"
+ *   direction="vertical"
+ * />
+ * ```
+ * 
+ * @example With Validation
+ * ```vue
+ * <CheckBoxGroup
+ *   v-model="interests"
+ *   groupLabel="Select at least one interest"
+ *   :options="interestOptions"
+ *   :required="true"
+ *   errorMessage="Please select at least one option"
+ *   icon="star"
+ *   tooltip="Choose your areas of interest"
+ * />
+ * ```
+ */
+-->
 <template>
   <!--
     UnifiedCheckbox Component

@@ -1,3 +1,57 @@
+<!--
+/**
+ * @component ToggleSwitch
+ * @description A customizable toggle switch component for boolean inputs with multiple size variants
+ * 
+ * @features
+ * 1. Visual Styling:
+ *    - Three size variants (sm, md, lg)
+ *    - Customizable colors for on/off states
+ *    - Smooth transition animations
+ *    - Custom label support
+ * 
+ * 2. Layout Options:
+ *    - Flexible label positioning (top/right)
+ *    - Icon support with tooltip
+ *    - Error state display
+ * 
+ * 3. Interaction States:
+ *    - Disabled state with visual feedback
+ *    - Focus and hover states
+ *    - Keyboard navigation support
+ *    - Accessible (WAI-ARIA compliant)
+ * 
+ * @example Basic Usage
+ * ```vue
+ * <ToggleSwitch
+ *   v-model="isEnabled"
+ *   label="Enable notifications"
+ * />
+ * ```
+ * 
+ * @example Custom Styling
+ * ```vue
+ * <ToggleSwitch
+ *   v-model="isDarkMode"
+ *   label="Dark Mode"
+ *   size="lg"
+ *   onColor="bg-purple-600"
+ *   offColor="bg-gray-400"
+ * />
+ * ```
+ * 
+ * @example With Icon and Tooltip
+ * ```vue
+ * <ToggleSwitch
+ *   v-model="isActive"
+ *   label="Account Status"
+ *   icon="user"
+ *   tooltip="Toggle account activation status"
+ *   :disabled="!hasPermission"
+ * />
+ * ```
+ */
+-->
 <template>
   <!--
     ToggleSwitch Component
