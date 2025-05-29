@@ -95,15 +95,17 @@
  * - Label positioning: top or right
  * - Disabled, error states, icons, tooltips
  */
-import { ref, computed, toRef } from "vue";
+import { ref, computed, toRef, watch } from "vue";
 import { nanoid } from "nanoid";
 import type { PropType } from "vue";
-import { IMaskDirective } from "vue-imask"; // For masking input
+import { IMask, IMaskDirective } from "vue-imask";
+
 defineOptions({
   directives: {
     imask: IMaskDirective,
   },
 });
+
 const props = defineProps({
   modelValue: {
     type: [String, Number, Date, Array] as PropType<
@@ -149,32 +151,51 @@ const props = defineProps({
     default: "persian",
   },
 });
-// ////////////////////
-const rawMask = toRef(props, 'mask')
-const maskOptions = computed(() => {
-  if (typeof rawMask.value === 'object' && rawMask.value !== null) {
-    return { ...rawMask.value, unmask: true }
-  }
-  return rawMask.value
-})
-const maskedValue = computed({
-  get: () => props.modelValue,
-  set: (val: any) => emit('update:modelValue', val)
-})
-const displayValue = ref(props.modelValue); // مقداری که در input واقعاً نمایش داده می‌شود
-
-// هر بار مدل خارجی تغییر کند، نمایش را هم بروزرسانی می‌کنیم
-watch(
-  toRef(props, "modelValue"),
-  (val) => {
-    displayValue.value = val;
-  },
-  { immediate: true }
-);
 const emit = defineEmits<{
   (e: "update:modelValue", value: any): void;
 }>();
 
+const valueRef = ref<string | number>("");
+
+// پردازش ماسک
+const rawMask = toRef(props, "mask");
+const maskOptions = computed(() => {
+  if (typeof rawMask.value === "object" && rawMask.value !== null) {
+    const options = { ...rawMask.value };
+    delete options.unmask; // حذف unmask از تنظیمات ماسک
+    return options;
+  }
+  return rawMask.value;
+});
+
+// تبدیل مقدار به عدد خالص
+const toNumericValue = (val: any): number | "" => {
+  if (!val && val !== 0) return "";
+  const numStr = val.toString().replace(/[^\d.-]/g, "");
+  return numStr ? Number(numStr) : "";
+};
+
+// مدیریت مقدار نمایشی و واقعی
+const maskedValue = computed({
+  get: () => valueRef.value ?? "",
+  set: (val: any) => {
+    valueRef.value = val;
+    if (typeof rawMask.value === "object" && rawMask.value?.unmask) {
+      emit("update:modelValue", toNumericValue(val));
+    } else {
+      emit("update:modelValue", val);
+    }
+  },
+});
+
+// به روز رسانی مقدار داخلی وقتی prop تغییر می‌کند
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    valueRef.value = newVal ?? "";
+  },
+  { immediate: true }
+);
 
 // Unique ID
 const id = ref(`input-${nanoid(6)}`);
@@ -227,6 +248,11 @@ function onDateChange(val: any) {
 <style lang="scss" scoped>
 .input-div {
   @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
+
+  &.number input {
+    direction: ltr;
+    text-align: left;
+  }
 }
 .input-div label {
   @apply text-primary-100 text-lg text-right whitespace-nowrap font-semibold w-4/12;
@@ -235,7 +261,7 @@ function onDateChange(val: any) {
   @apply w-full;
 }
 .input {
-  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full ;
+  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full;
   &[type="color"] {
     @apply py-1;
   }

@@ -8,7 +8,15 @@
           <InputField
             v-model="price"
             label="قیمت"
-            :mask="{ mask: Number, thousandsSeparator: ',', unmask: true }"
+            :mask="{
+              mask: Number,
+              thousandsSeparator: ',',
+              allowMinus: true,
+              normalizeZeros: true,
+              padFractionalZeros: false,
+              scale: 0, // بدون اعشار برای تومان
+              unmask: true, // فقط عدد خالی در خروجی
+            }"
             suffix="تومان"
           />
           <p class="text-gray-600">مقدار بایند شده: {{ price }}</p>
@@ -16,16 +24,74 @@
             v-model="amount"
             label="مبلغ پرداختی"
             :mask="{
-              mask: Number, // عدد
-              thousandsSeparator: ',', // جداکننده هزارگان
-              scale: 2, // دو رقم اعشار
-              radix: '.', // جداکننده اعشار
-              mapToRadix: ['.'], // ورودی نقطه را به radix تبدیل کن
+              mask: Number,
+              thousandsSeparator: ',',
+              scale: 2,
+              radix: '.',
+              mapToRadix: ['.'],
+              allowMinus: true,
+              normalizeZeros: false,
+              padFractionalZeros: false,
+              unmask: true,
             }"
             prefix="$"
             placeholder="مثال: $ 1,234.50"
           />
           <p>مقدار خام: {{ amount }}</p>
+          <!-- شماره کارت -->
+          <InputField
+            v-model="cardNumber"
+            label="شماره کارت"
+            :mask="{
+              mask: '0000 0000 0000 0000',
+              lazy: false,
+              placeholderChar: '_',
+            }"
+            class="number"
+            placeholder="مثال: 6037-9974-1234-5678"
+          />
+          <p class="text-gray-600">مقدار بایند شده: {{ cardNumber }}</p>
+
+          <!-- شماره موبایل -->
+          <InputField
+            v-model="mobileNumber"
+            label="شماره موبایل"
+            :mask="{
+              mask: '09000000000',
+              lazy: false,
+              placeholderChar: '_',
+            }"
+            class="number"
+            placeholder="مثال: 09123456789"
+          />
+          <p class="text-gray-600">مقدار بایند شده: {{ mobileNumber }}</p>
+
+          <!-- شماره تلفن ثابت -->
+          <InputField
+            v-model="phoneNumber"
+            label="تلفن ثابت"
+            :mask="{
+              mask: '000 0000 0000',
+              lazy: false,
+              placeholderChar: '_',
+            }"
+            class="number"
+            placeholder="مثال: 021 1234 5678"
+          />
+          <p class="text-gray-600">مقدار بایند شده: {{ phoneNumber }}</p>
+
+          <FileUploader
+            v-model:files="uploaded"
+            accept="image/*"
+            :multiple="true"
+            :isImageUploader="true"
+          />
+          <FileUploader
+            v-model:files="uploaded"
+            :multiple="true"
+          />
+          <pre>{{ uploaded }}</pre>
+
           <InputField
             v-model="textValue"
             label="فیلد متنی:"
@@ -331,13 +397,17 @@ const textareaValue = ref("");
 const disabledValue = ref("Disabled");
 const iconValue = ref("");
 const errorValue = ref("");
-const amount = ref(0);
+const amount = ref<string | number>("");
 const errorMsg = ref("");
-const price = ref("");
+const price = ref<string | number>("");
+const cardNumber = ref<string>("");
+const mobileNumber = ref<string>("");
+const phoneNumber = ref<string>("");
 const single = ref(false);
 const singleDisabled = ref(false);
 const singleError = ref(false);
 const group = ref<string[]>([]);
+const uploaded = ref<File[]>([])
 const colorOptions = [
   { label: "قرمز", value: "red" },
   { label: "سبز", value: "green" },

@@ -151,6 +151,10 @@ export default defineNuxtModule<ModuleOptions>({
       name: 'ImageUploader',
     })
     addComponent({
+      filePath: resolve('./runtime/components/FileUploader.vue'),
+      name: 'FileUploader',
+    })
+    addComponent({
       filePath: resolve('./runtime/components/ImageP.vue'),
       name: 'ImageP',
     })
