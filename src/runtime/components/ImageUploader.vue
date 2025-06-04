@@ -1,5 +1,11 @@
 <template>
-  <div v-if="!isInitializing" class="w-full space-y-4">
+  <div
+    v-if="!isInitializing"
+    class="w-full space-y-4"
+    @dragenter.prevent
+    @dragover.prevent
+    @drop.prevent
+  >
     <!-- ===== بخش اطلاعات و قوانین بارگذاری ===== -->
     <div v-if="showInfo" class="flex flex-col flex-wrap gap-4">
       <!-- اگر کاربر slot ویژه info پر نکرده، از prop infoText استفاده شود -->
@@ -21,7 +27,12 @@
       <!-- دکمهٔ آپلود / نمای پیش‌رو تک‌انتخاب -->
       <label
         :for="inputId"
-        class="group relative flex-shrink-0 w-[200px] h-[200px] bg-gray-50 rounded-xl shadow flex items-center justify-center cursor-pointer overflow-hidden"
+        class="group relative flex-shrink-0 w-[200px] h-[200px] bg-gray-50 rounded-xl shadow flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200"
+        @dragenter.prevent="dragEnter"
+        @dragleave.prevent="dragLeave"
+        @dragover.prevent
+        @drop.prevent="handleDrop"
+        :class="{ 'border-2 border-dashed border-secondary-100 scale-105': isDragging }"
       >
         <template v-if="!multiple && previews.length">
           <img
@@ -37,7 +48,12 @@
           </button>
         </template>
         <template v-else>
-          <Icon name="fa6-solid:plus" class="text-3xl text-secondary-100" />
+          <div class="flex flex-col items-center gap-2 p-4 text-center">
+            <Icon name="fa6-solid:plus" class="text-3xl text-secondary-100" />
+            <p class="text-sm text-gray-500">
+              برای آپلود کلیک کنید یا فایل را بکشید و رها کنید
+            </p>
+          </div>
         </template>
         <input
           :id="inputId"
@@ -75,6 +91,7 @@
 
 <script setup>
 import { useRuntimeConfig } from "nuxt/app";
+import { ref } from 'vue';
 
 /**
  * Props:
@@ -103,7 +120,7 @@ import { useRuntimeConfig } from "nuxt/app";
  *   اگر پر شود، اولویت اول واترمارک تصویر است.
  *
  * - watermarkText : string  (default: '')
- *   اگر watermarkImage پر نبود و این prop پر باشد، متن واترمارک را می‌زند.
+ *   اگر watermarkImage پر نبود و این prop پر باشد، متن واترمارک را می‌زنه.
  *
  * Emits:
  * - update:images : (File|File[])
@@ -137,6 +154,7 @@ const isInitializing = ref(true);
 const files = ref([]);
 const previews = ref([]);
 const addWatermark = ref(false);
+const isDragging = ref(false);
 // شناسه تصادفی برای input[type="file"]
 const inputId = `img-upl-${Math.random().toString(36).substr(2, 8)}`;
 
@@ -275,4 +293,52 @@ function removeFile(i) {
 function emitCurrent() {
   emit("update:images", props.multiple ? files.value : files.value[0] || null);
 }
+
+// Event handlers for drag and drop
+const dragEnter = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  isDragging.value = true;
+};
+
+const dragLeave = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  isDragging.value = false;
+};
+
+const handleDrop = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  isDragging.value = false;
+  
+  const droppedFiles = event.dataTransfer.files;
+  
+  if (droppedFiles && droppedFiles.length > 0) {
+    // فیلتر کردن فایل‌های تصویری
+    const imageFiles = Array.from(droppedFiles).filter(file => 
+      file.type.startsWith('image/') && 
+      ['image/webp', 'image/jpeg', 'image/png', 'image/gif'].includes(file.type)
+    );
+
+    if (imageFiles.length === 0) {
+      console.error('⛔ فقط فایل‌های تصویری با فرمت WEBP، JPEG، PNG یا GIF مجاز هستند');
+      return;
+    }
+
+    // در حالت تک انتخابی، فقط اولین فایل
+    if (!props.multiple) {
+      const fileList = new DataTransfer();
+      fileList.items.add(imageFiles[0]);
+      onFileChange({ target: { files: fileList.files } });
+    } else {
+      // در حالت چند انتخابی، همه فایل‌ها تا سقف مجاز
+      const fileList = new DataTransfer();
+      imageFiles.slice(0, props.maxFiles - files.value.length).forEach(file => {
+        fileList.items.add(file);
+      });
+      onFileChange({ target: { files: fileList.files } });
+    }
+  }
+};
 </script>

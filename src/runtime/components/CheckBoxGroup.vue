@@ -70,7 +70,7 @@
   <div
     v-if="isGroup"
     :class="[
-      labelPosition === 'top' ? 'flex flex-col' : 'flex',
+      labelPosition === 'top' ? 'flex flex-col' : 'flex items-center',
       'gap-x-6 gap-y-2',
     ]"
     role="group"

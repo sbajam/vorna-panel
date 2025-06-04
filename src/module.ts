@@ -93,7 +93,7 @@ export default defineNuxtModule<ModuleOptions>({
     })
     nuxt.options.build!.transpile.push('@alireza-ab/vue3-persian-datepicker')
     addPlugin(resolve('./runtime/plugins/datepicker.client.js'))
- 
+
     // اضافه کردن فایل SCSS
     nuxt.options.css.unshift(resolve('./runtime/assets/admin.scss'))
     nuxt.options.css.unshift(resolve('./runtime/assets/font.scss'))
@@ -174,11 +174,40 @@ export default defineNuxtModule<ModuleOptions>({
       filePath: resolve('./runtime/components/ToggleSwitch.vue'),
       name: 'ToggleSwitch',
     })
+    addComponent({
+      filePath: resolve('./runtime/components/FormBuilder.vue'),
+      name: 'FormBuilder',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/FieldArray.vue'),
+      name: 'FieldArray',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/PropertiesPanel.vue'),
+      name: 'PropertiesPanel',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/FieldPalette.vue'),
+      name: 'FieldPalette',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/FormSettingsPanel.vue'),
+      name: 'FormSettingsPanel',
+    })
+    addComponent({
+      filePath: resolve('./runtime/components/SectionSettingsPanel.vue'),
+      name: 'SectionSettingsPanel',
+    })
     extendPages((pages) => {
       pages.push({
         name: 'hello',
         path: '/hello',
         file: resolve('./runtime/pages/hello.vue'),
+      })
+      pages.push({
+        name: 'formBuilder',
+        path: '/formBuilder',
+        file: resolve('./runtime/pages/formBuilder.vue'),
       })
     })
     // اگر از toast استفاده می‌کنند، ماژول tailvue را نصب کن

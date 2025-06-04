@@ -71,7 +71,7 @@
   <div
     v-if="isGroup"
     :class="[
-      labelPosition === 'top' ? 'flex flex-col' : 'flex',
+      labelPosition === 'top' ? 'flex flex-col' : 'flex items-center',
       'gap-x-6 gap-y-2',
     ]"
     role="radiogroup"
@@ -95,7 +95,7 @@
       :class="
         direction === 'horizontal' ? 'flex gap-2' : 'flex flex-col space-y-3'
       "
-    >
+    >{{ direction }}
       <!-- Iterate over options array -->
       <label
         v-for="opt in options"

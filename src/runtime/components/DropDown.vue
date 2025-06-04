@@ -11,7 +11,7 @@
       v-if="label"
       class="text-primary-100 text-lg font-semibold w-4/12 text-right whitespace-nowrap"
     >
-      {{ label }}
+      {{ label }} - {{ internal }}
     </label>
     <div class="w-full relative">
       <Menu as="div" class="relative inline-block text-left w-full">

@@ -170,7 +170,7 @@
         class="input resize-none"
       ></textarea>
       <div
-        v-if="type === 'password' && !disabled && paswordOptions"
+        v-if="type === 'password' && !disabled && passwordOptions"
         class="flex gap-4 items-center mt-4 justify-between px-2"
       >
         <div
@@ -270,7 +270,7 @@ const props = defineProps({
   prefix: { type: String, default: "" }, // e.g. 'تومان'
   suffix: { type: String, default: "" },
   // password-specific props
-  paswordOptions: { type: Boolean, default: true },
+  passwordOptions: { type: Boolean, default: true },
   // DatePicker-specific props
   inputFormat: { type: String, default: "YYYY-MM-DD" },
   displayFormat: { type: String, default: "YYYY-MM-DD" },
