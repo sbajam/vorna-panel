@@ -45,9 +45,7 @@
       <div :class="gridClass">
         <!-- اگر sections داریم -->
         <template
-          v-for="section in config.sections || [
-            { title: '', fields: config.fields },
-          ]"
+          v-for="section in config.sections || [{ title: '', fields: config.fields }]"
           :key="section.title || 'default'"
         >
           <template v-for="field in section.fields" :key="field.key">
@@ -57,9 +55,7 @@
                 1
               )}`"
             >
-              <div
-                class="animate-pulse bg-gray-200 h-10 w-full rounded mb-2"
-              ></div>
+              <div class="animate-pulse bg-gray-200 h-10 w-full rounded mb-2"></div>
               <div class="animate-pulse bg-gray-200 h-4 w-1/2 rounded"></div>
             </div>
           </template>
@@ -77,7 +73,6 @@
         @dragover.prevent
         @drop.prevent="handleDrop"
       >
-        <!-- <form > -->
         <!-- اگر بخش‌بندی (sections) داریم -->
         <template v-if="config.sections">
           <div v-for="(section, sidx) in config.sections" :key="sidx">
@@ -94,9 +89,7 @@
                 class="flex items-center justify-center w-6 h-6 rounded-full aspect-square text-white bg-primary-100"
               >
                 <Icon
-                  :name="`fa6-solid:${
-                    section._open ? 'chevron-down' : 'chevron-left'
-                  }`"
+                  :name="`fa6-solid:${section._open ? 'chevron-down' : 'chevron-left'}`"
                 />
               </div>
             </div>
@@ -110,10 +103,14 @@
                   <template v-for="field in section.fields" :key="field.key">
                     <div
                       v-if="!field.showIf || field.showIf(formValues)"
-                      :class="`col-span-1 md:col-span-${resolveResponsive(
-                        field.layout?.colSpan,
-                        1
-                      )}`"
+                      :class="[
+                        `col-span-1 md:col-span-${resolveResponsive(
+                          field.layout?.colSpan,
+                          1
+                        )}`,
+                        { 'ring-2 ring-blue-400': field.key === activeFieldKey }
+                      ]"
+                      @click.stop="selectField(field.key)"
                     >
                       <component
                         v-if="field.type !== 'array'"
@@ -145,10 +142,14 @@
             <template v-for="field in config.fields" :key="field.key">
               <div
                 v-if="!field.showIf || field.showIf(formValues)"
-                :class="`col-span-1 md:col-span-${resolveResponsive(
-                  field.layout?.colSpan,
-                  1
-                )}`"
+                :class="[
+                  `col-span-1 md:col-span-${resolveResponsive(
+                    field.layout?.colSpan,
+                    1
+                  )}`,
+                  { 'ring-2 ring-blue-400': field.key === activeFieldKey }
+                ]"
+                @click.stop="selectField(field.key)"
               >
                 <component
                   v-if="field.type !== 'array'"
@@ -188,7 +189,6 @@
           {{ config.submitButton.text }}
         </Button>
       </div>
-      <!-- </form> -->
     </div>
   </div>
 </template>
@@ -208,7 +208,21 @@ import Spinner from "./Spinner.vue";
 import FieldArray from "./FieldArray.vue";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 
-// IndexedDB helper
+const props = defineProps<{
+  config: FormConfig;
+  initialValues?: Record<string, any>;
+  activeFieldKey?: string | null;
+}>();
+
+const emit = defineEmits<{
+  (e: "submitForm", values: Record<string, any>): void;
+  (e: "validationError", payload: { field: string; message: string }): void;
+  (e: "addField", type: string): void;
+  (e: "selectField", key: string): void;
+}>();
+
+// IndexedDB helper (بی‌تغییر از قبل)
+
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open("FormBuilderDB", 1);
@@ -243,7 +257,7 @@ async function idbGet(key: string): Promise<any> {
   });
 }
 
-// TypeScript Interfaces
+// TypeScript Interfaces (بی‌تغییر از قبل)
 interface ValidatorConfig {
   type: string;
   value?: any;
@@ -343,17 +357,6 @@ interface FormConfig {
     pending?: boolean;
   };
 }
-
-const props = defineProps<{
-  config: FormConfig;
-  initialValues?: Record<string, any>;
-}>();
-
-const emit = defineEmits<{
-  (e: "submitForm", values: Record<string, any>): void;
-  (e: "validationError", payload: { field: string; message: string }): void;
-  (e: "addField", type: string): void;
-}>();
 
 // ۱. تشخیص Breakpoint (responsive)
 const windowWidth = ref(0);
@@ -736,15 +739,6 @@ async function onSubmit() {
     return;
   }
   console.log("Form is valid, proceeding with submission...");
-  // پس از ارسال فرم، اگر می‌خواهید دادهٔ ذخیره‌شده را پاک کنید:
-  //   if (props.config.formProps.autoSaveKey) {
-  //     try {
-  //       await idbSet(props.config.formProps.autoSaveKey!, null);
-  //     } catch {
-  //       // نادیده بگیر
-  //       console.error("Failed to clear auto-save data.");
-  //     }
-  //   }
   emit("submitForm", JSON.parse(JSON.stringify(formValues)));
 }
 
@@ -844,7 +838,7 @@ function buildFieldProps(field: FieldConfig) {
         onColor: field.onColor || "blue-500",
         offColor: field.offColor || "gray-300",
         labelPosition: resolveResponsive(field.labelPosition, "right"),
-      };
+      };  
 
     case "file":
       return {
@@ -910,16 +904,22 @@ const gridClass = computed(() => {
 
 // ۱۳. مدیریت باز/بسته کردن سکشن‌ها
 function toggleSection(index: number) {
-  //   const section = allSections[index
   if (allSections[index]?.collapsible) {
     allSections[index]._open = !allSections[index]._open;
   }
 }
+
+// متد Drop از FieldPalette
 function handleDrop(e: DragEvent) {
   const type = e.dataTransfer?.getData("text/plain");
   if (type) {
     emit("addField", type);
   }
+}
+
+// متد انتخاب فیلد جهت PropertiesPanel
+function selectField(key: string) {
+  emit("selectField", key);
 }
 </script>
 

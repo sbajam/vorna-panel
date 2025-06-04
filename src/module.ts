@@ -2,6 +2,8 @@
 import { defineNuxtModule, createResolver, extendPages, addLayout, installModule, addComponent, addPlugin, addImportsDir, addServerHandler } from '@nuxt/kit'
 import { defu } from 'defu'
 import path from 'path'
+import { resolve as resolvePath } from 'path'
+import { execSync } from 'child_process'
 
 export interface ModuleOptions {
   name?: string
@@ -11,7 +13,8 @@ export interface ModuleOptions {
   font?: string// Vazir , IranSans , Roya
   baseUrl?: string,
   notifications?: String
-
+  logBehavior?: boolean  // آیا لاگ‌گیری رفتار (PAGE_VIEW, API_REQUEST) فعال باشد؟
+  logErrors?: boolean  // آیا لاگ‌گیری خطا (ErrorLog) فعال باشد؟
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -27,21 +30,32 @@ export default defineNuxtModule<ModuleOptions>({
     showOnlineStatus: true,
     font: 'Vazir',
     notifications: 'toast',
+    logBehavior: true,
+    logErrors: true,
   },
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-    // nuxt.options.nitro = defu(nuxt.options.nitro, {
-    //   routeRules: {
-    //     '/api/images-list': { bodyParser: false }
-    //   },
-    //   publicAssets: [
-    //     {
-    //       dir: path.resolve(nuxt.options.rootDir, 'public', 'uploads'),
-    //       baseURL: '/uploads',
-    //       maxAge: 60 * 60 * 24 * 30
-    //     }
-    //   ]
-    // })
+
+    // ———————————————
+    // الف) (اختیاری) اجرای خودکار Prisma Migrate برای ساخت جدول UserLog
+    // اگر از Prisma استفاده نمی‌کنید یا نمی‌خواهید خودکار مایگریشن باشد،
+    // مثلاً اینجاست که prisma/schema.prisma شما قرار گرفته.
+    nuxt.hook('ready', () => {
+      try {
+        const schemaPath = resolvePath(
+          nuxt.options.rootDir,
+          'node_modules/@VornaCo/vorna-panel/prisma/schema.prisma'
+        )
+        // در لحظهٔ اجرا، دستور migrate deploy را صدا می‌زنیم
+        execSync(`npx prisma migrate deploy --schema="${schemaPath}"`, {
+          stdio: 'inherit',
+        })
+      } catch (e) {
+        console.warn('[vorna-panel] Prisma migrate failed:', e.message)
+      }
+    })
+    // ———————————————
+
     nuxt.hook('nitro:config', (config) => {
       // 1) خاموش کردن bodyParser برای این endpoint
       config.routeRules = {
@@ -78,6 +92,8 @@ export default defineNuxtModule<ModuleOptions>({
         font: options.font,
         baseUrl: options.baseUrl,
         notifications: options.notifications,
+        logBehavior: options.logBehavior,
+        logErrors: options.logErrors,
       },
     )
     // نصب و پیکربندی Tailwind
@@ -101,6 +117,12 @@ export default defineNuxtModule<ModuleOptions>({
 
     addImportsDir(resolve('./runtime/composables'))
     addImportsDir(resolve('./runtime/stores'))
+
+    // ———————————————
+    // ب) ثبت پلاگین‌های Client-Side برای لاگِ درخواست‌ها و لاگِ تغییر صفحه:
+    //    این دو فایل در runtime/plugins قرار می‌گیرند:
+
+    // ———————————————
 
     addLayout({
       src: resolve('./runtime/layouts/admin.vue'),
@@ -212,9 +234,12 @@ export default defineNuxtModule<ModuleOptions>({
     })
     // اگر از toast استفاده می‌کنند، ماژول tailvue را نصب کن
     await installModule('@tailvue/nuxt')
-
     addPlugin(resolve('./runtime/plugins/notifications.js'))
-    addPlugin(resolve('./runtime/plugins/pinia.js'))
+    addPlugin({
+      src: resolve('./runtime/plugins/pinia.js'),
+      mode: 'client',
+    })
+    // addPlugin(resolve('./runtime/plugins/pinia.js'))
     // ۲) middleware فقط برای تزریق rootDir
     addServerHandler({
       route: '/api/images-list',
@@ -242,5 +267,43 @@ export default defineNuxtModule<ModuleOptions>({
       route: '/api/images-list/:id',
       handler: resolve('./runtime/server/api/images-list.delete.js')
     })
+
+    // ———————————————
+    // پ) ثبت API handler لاگِ شما (/api/logs):
+    if (options.logBehavior) {
+      addPlugin({
+        src: resolve('./runtime/plugins/axios-logger.client.js'),
+        mode: 'client',
+      })
+      addPlugin({
+        src: resolve('./runtime/plugins/router-logger.client.js'),
+        mode: 'client',
+      })
+      addServerHandler({
+        method: 'POST',
+        route: '/api/logs',
+        handler: resolve('./runtime/server/api/logs.post.ts'),
+      })
+      addServerHandler({
+        method: 'GET',
+        route: '/api/logs',
+        handler: resolve('./runtime/server/api/logs.get.ts'),
+      })
+      extendPages((pages) => {
+        pages.push({
+          name: 'logs',
+          path: '/logs',
+          file: resolve('./runtime/pages/logs.vue'),
+        })
+      })
+    }
+    // این فایل logs.post.ts در مسیر runtime/server/api/logs.post.ts قرار دارد
+    // و باید محتوای آن همان کدی باشد که با Prisma یا دسترسی مستقیم به دیتابیس،
+    // اطلاعات لاگ را در جدول UserLog ذخیره می‌کند.
+    // مثلاً:
+    //   import { defineEventHandler, readBody, getRequestHeader } from 'h3'
+    //   import { prisma } from '../utils/db'
+    //   export default defineEventHandler(async (event) => { … prisma.userLog.create({ data: { … } }) })
+    // ———————————————
   },
 })

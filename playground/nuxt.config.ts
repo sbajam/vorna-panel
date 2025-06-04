@@ -2,8 +2,8 @@ import { resolve } from 'pathe'
 
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss',
-    'nuxt-icon',         // ← این خط
-
+    '@pinia/nuxt',
+    'nuxt-icon',  
     resolve(__dirname, '../src/module.ts'),
   ],
   css: ['./assets/css/main.css'],

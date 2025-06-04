@@ -1,0 +1,33 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// تعریفِ enumِ جدید برای نوع لاگ
+enum LogType {
+  PAGE_VIEW    // زمانی که کاربر صفحه‌ای را باز می‌کند
+  API_REQUEST  // زمانی که یک Axios (یا هر) درخواست API زده می‌شود
+}
+
+model UserLog {
+  id           BigInt   @id @default(autoincrement())
+  username     String
+  type         LogType
+  url          String
+  method       String?
+  status       Int?
+  params       Json?
+  responseData Json?      // ← اضافه شد
+  user_agent   String
+  ip           String
+  timestamp    DateTime @default(now())
+  device       String?
+  os           String?
+  browser      String?
+  location     Json?
+}
+

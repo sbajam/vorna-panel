@@ -108,6 +108,9 @@ const localProps = ref({
   showErrorsAs: props.initialProps.showErrorsAs || 'inline',
   disabledAll: props.initialProps.disabledAll || false,
   autoSaveKey: props.initialProps.autoSaveKey || '',
+  direction: props.initialProps.direction || 'rtl',
+  validationMode: props.initialProps.validationMode || 'onChange',
+  defaultValues: props.initialProps.defaultValues || {},
 })
 
 // سینک با props

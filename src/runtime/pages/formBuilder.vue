@@ -46,14 +46,64 @@
         </button>
       </div>
 
-      <FormBuilder
-        :config="config"
-        :initialValues="formValues"
-        @addField="onDropField"
-        @submitForm="onSubmitForm"
-        @validationError="onValidationError"
-        class="border rounded shadow"
-      />
+      <!-- ─── Canvas ساده (به جای <FormBuilder>) ─── -->
+      <div
+        class="min-h-[400px] border-2 border-dashed border-gray-300 rounded p-4 relative"
+        @dragover.prevent
+        @drop.prevent="handleDrop"
+      >
+        <template v-if="config.sections && config.sections.length">
+          <div v-for="(section, sidx) in config.sections" :key="sidx">
+            <!-- سربرگ سکشن -->
+            <div
+              v-if="section.title"
+              :class="{ 'mt-8': sidx > 0 }"
+              @click="toggleSection(sidx)"
+              class="cursor-pointer flex gap-2 items-center flex-row-reverse justify-end bg-gray-100 p-2 rounded-t"
+            >
+              <h3 class="font-semibold">{{ section.title }}</h3>
+              <div
+                v-if="section.collapsible"
+                class="flex items-center justify-center w-6 h-6 rounded-full aspect-square text-white bg-primary-100"
+              >
+                <Icon :name="`fa6-solid:${section._open ? 'chevron-down' : 'chevron-left'}`" />
+              </div>
+            </div>
+            <!-- محتوای بخش -->
+            <Vue3SlideUpDown v-model="section._open">
+              <div
+                v-show="!section.collapsible || section._open"
+                class="mt-2 px-2"
+              >
+                <div :class="gridClass">
+                  <template v-for="field in section.fields" :key="field.key">
+                    <div
+                      v-if="!field.showIf || field.showIf(formValues)"
+                      :class="[
+                        `col-span-1 md:col-span-${resolveResponsive(field.layout?.colSpan, 1)}`,
+                        { 'ring-2 ring-blue-400': field.key === activeFieldKey }
+                      ]"
+                      @click.stop="selectField(field.key)"
+                    >
+                      <div class="border rounded p-2 bg-gray-50 cursor-pointer">
+                        {{ field.label || field.type }}
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </Vue3SlideUpDown>
+          </div>
+        </template>
+
+        <!-- اگر بخش‌بندی نداریم -->
+        <template v-else>
+          <div class="text-gray-400 text-center py-8">
+            هیچ سکشنی وجود ندارد. یک سکشن جدید اضافه کنید.
+          </div>
+        </template>
+      </div>
+      <!-- ──────────────────────────────────────── -->
     </main>
 
     <!-- ستون راست: FieldPalette و دکمهٔ افزودن سکشن -->
@@ -72,13 +122,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 
 import FieldPalette from '../components/FieldPalette.vue'
 import PropertiesPanel from '../components/PropertiesPanel.vue'
 import SectionSettingsPanel from '../components/SectionSettingsPanel.vue'
 import FormSettingsPanel from '../components/FormSettingsPanel.vue'
-import FormBuilder from '../components/FormBuilder.vue'
 
 interface ResponsiveProp<T> {
   base?: T
@@ -125,6 +174,9 @@ interface FormConfig {
     loadingMode?: 'skeleton' | 'spinner' | 'button'
     showErrorsAs?: 'inline' | 'notify'
     autoSaveKey?: string
+    direction?: 'rtl' | 'ltr'
+    validationMode?: 'onChange' | 'onBlur' | 'onSubmit'
+    defaultValues?: Record<string, any>
   }
   sections: SectionConfig[]
   submitButton: {
@@ -144,6 +196,9 @@ const config = reactive<FormConfig>({
     loadingMode: 'spinner',
     showErrorsAs: 'inline',
     autoSaveKey: '',
+    direction: 'rtl',
+    validationMode: 'onChange',
+    defaultValues: {},
   },
   sections: [
     {
@@ -160,6 +215,40 @@ const config = reactive<FormConfig>({
     pending: false,
   },
 })
+
+// متد برای دراپ فیلد از FieldPalette
+function handleDrop(e: DragEvent) {
+  const type = e.dataTransfer?.getData("text/plain");
+  if (!type) return;
+  const key = `field_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+  const newField: FieldConfig = {
+    key,
+    type,
+    label: `New ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+    placeholder: "",
+    required: false,
+    layout: { colSpan: { base: 1, md: 1 } },
+    items: type === "select" ? [] : undefined,
+    options:
+      type === "checkboxGroup" || type === "radioGroup" ? [] : undefined,
+    direction: { base: "vertical" },
+    showIf: undefined,
+    tooltip: "",
+    icon: "",
+    disabled: false,
+    multipleFile: false,
+  };
+  config.sections[0].fields.push(newField);
+  formValues[newField.key] = initializeFormValue(newField);
+  activeFieldKey.value = newField.key;
+}
+
+// متد برای انتخاب فیلد (هایلایت و باز شدن PropertiesPanel)
+function selectField(key: string) {
+  activeFieldKey.value = key;
+  sectionEditingIndex.value = null;
+  formSettingsOpen.value = false;
+}
 
 const formValues = reactive<Record<string, any>>({})
 const allFields = computed(() =>
@@ -179,6 +268,7 @@ function initializeFormValue(field: FieldConfig) {
   return ''
 }
 
+// برای هر فیلد، یک مقدار اولیه تنظیم کن
 allFields.value.forEach((f) => {
   formValues[f.key] = initializeFormValue(f)
 })
@@ -188,45 +278,38 @@ const sectionEditingIndex = ref<number | null>(null)
 const formSettingsOpen = ref(false)
 
 const activeField = computed(() => {
-  if (!activeFieldKey.value) return null
+  if (!activeFieldKey.value || allFields.value.length === 0) return null
   return allFields.value.find((f) => f.key === activeFieldKey.value) || null
 })
 
-function onStartDrag(type: string) {
-  // در FieldPalette.vue دادهٔ type را در dataTransfer می‌گذاریم؛
-  // اگر لازم باشد اینجا هم کاری انجام دهید.
-}
-
-function onDropField(type: string) {
-  if (!type) return
-  const key = `field_${Date.now()}_${Math.floor(Math.random() * 1000)}`
-  const newField: FieldConfig = {
-    key,
-    type,
-    label: `New ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-    placeholder: '',
-    required: false,
-    layout: { colSpan: { base: 1, md: 1 } },
-    items: type === 'select' ? [] : undefined,
-    options:
-      type === 'checkboxGroup' || type === 'radioGroup' ? [] : undefined,
-    direction: { base: 'vertical' },
-    showIf: undefined,
-    tooltip: '',
-    icon: '',
-    disabled: false,
-    multipleFile: false,
+// اگر بعداً فیلد حذف شد و activeFieldKey دیگر وجود نداشت، آن را ریست کن
+watch(
+  () => allFields.value.map(f => f.key),
+  (keys) => {
+    if (activeFieldKey.value && !keys.includes(activeFieldKey.value)) {
+      activeFieldKey.value = null
+    }
   }
-  config.sections[0].fields.push(newField)
-  formValues[newField.key] = initializeFormValue(newField)
-  activeFieldKey.value = newField.key
-}
+)
 
+// ─── اینجا تغییر اصلی: به جای Replace کاملِ آبجکت، فقط صفت‌های تغییرکرده را ست می‌کنیم ───
 function onUpdateField(updatedField: FieldConfig) {
   for (const section of config.sections) {
     const idx = section.fields.findIndex((f) => f.key === updatedField.key)
     if (idx !== -1) {
-      section.fields[idx] = { ...updatedField }
+      // فقط ویژگی‌های اصلی را روی شیٔ موجود ست می‌کنیم:
+      const orig = section.fields[idx]
+      orig.label = updatedField.label
+      orig.placeholder = updatedField.placeholder
+      orig.required = updatedField.required
+      orig.validators = updatedField.validators
+      orig.layout = updatedField.layout
+      orig.items = updatedField.items
+      orig.options = updatedField.options
+      orig.tooltip = updatedField.tooltip
+      orig.icon = updatedField.icon
+      orig.disabled = updatedField.disabled
+      orig.showIf = updatedField.showIf
       return
     }
   }
@@ -291,6 +374,24 @@ function onSubmitForm(values: Record<string, any>) {
 
 function onValidationError(payload: { field: string; message: string }) {
   console.log('خطای اعتبارسنجی:', payload.field, payload.message)
+}
+
+const gridClass = computed(() => {
+  const cols = config.formProps.columns?.md || 1
+  if (cols === 2) return 'grid grid-cols-1 md:grid-cols-2 gap-4'
+  return 'grid grid-cols-1 gap-4'
+})
+
+function resolveResponsive<T>(prop: ResponsiveProp<T> | undefined, defaultValue: T): T {
+  if (!prop) return defaultValue
+  return prop.md || prop.base || defaultValue
+}
+
+function toggleSection(sidx: number) {
+  if (config.sections[sidx]?.collapsible) {
+    config.sections[sidx]._open = !config.sections[sidx]._open
+  }
+  openSectionSettings(sidx)
 }
 </script>
 
