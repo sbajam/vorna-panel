@@ -23,19 +23,21 @@
           @closePanel="activeFieldKey = null"
         />
 
-        <!-- SectionSettingsPanel وقتی سکشن فعال است -->
+         <!-- SectionSettingsPanel وقتی سکشن فعال است -->
         <SectionSettingsPanel
           v-else-if="sectionEditingIndex !== null"
           :section="config.sections[sectionEditingIndex]"
-          :index="sectionEditingIndex"
           @updateSection="onUpdateSection"
           @deleteSection="onDeleteSection"
+          @closePanel="closeAllPanels"
         />
+
         <!-- FormSettingsPanel وقتی تنظیمات فرم باز است -->
         <FormSettingsPanel
           v-else-if="formSettingsOpen"
-          :initialProps="config.formProps"
+          :formProps="config.formProps"
           @updateFormProps="onUpdateFormProps"
+          @closePanel="closeAllPanels"
         />
       </aside>
     </transition>
@@ -509,7 +511,59 @@ watch(
     }
   }
 );
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ۴. متدهای مورد نیاز در والد:
 
+// وقتی PropertiesPanel یک فیلد را آپدیت می‌کند:
+// function onUpdateField(updatedField: FieldConfig) {
+//   // (همان کدی که از قبل داشتید)
+// }
+
+// وقتی PropertiesPanel بخواهد کلید (key) یک فیلد را تغییر دهد:
+// function onRenameField(payload: { oldKey: string; newKey: string }) {
+//   // حتماً باید در formValues و formErrors و در config.sections هم کلیدها را اصلاح کنید.
+//   // به طور خلاصه:
+//   // 1. مقدار قدیمی را از formValues و formErrors بردارید،
+//   // 2. بخشِ مربوطه در config.sections را پیدا کنید و آن‌جا key را عوض کنید.
+//   // ۳. اگر لازم است، سایر ارجاعات به آن کلید را هم اصلاح کنید.
+// }
+
+// وقتی PropertiesPanel بخواهد یک فیلد را حذف کند:
+// function onDeleteField(fieldKey: string) {
+//   // (کدی که از قبل داشتید)
+// }
+
+// وقتی SectionSettingsPanel می‌گوید بخش ویرایش شده:
+// function onUpdateSection(updatedSection: SectionConfig) {
+//   // اکنون به جای این‌که کل شیٔ config.sections[index] را تعویض کنید،
+//   // شما همان شیٔ اولیه را shallow update کنید یا به کل جایگزین کنید (هر دو روش درست است)
+//   config.sections[sectionEditingIndex] = { ...updatedSection };
+// }
+
+// وقتی SectionSettingsPanel می‌گوید بخش را حذف کن:
+function onDeleteSection() {
+  const idx = sectionEditingIndex.value!;
+  // حذف مقادیر formValues مرتبط با فیلدهای آن بخش
+  const keysToRemove = config.sections[idx].fields.map((f) => f.key);
+  keysToRemove.forEach((k) => delete formValues[k]);
+  // حذف خود بخش
+  config.sections.splice(idx, 1);
+  sectionEditingIndex.value = null;
+}
+
+// وقتی FormSettingsPanel درخواست می‌کند که formProps به‌روز شود:
+function onUpdateFormProps(updated: Partial<typeof config.formProps>) {
+  config.formProps = { ...config.formProps, ...updated };
+}
+
+// وقتی هرکدام از پنل‌ها می‌خواهند بسته شوند:
+function closeAllPanels() {
+  activeFieldKey.value = null;
+  sectionEditingIndex.value = null;
+  formSettingsOpen.value = false;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function openSectionSettings(index: number) {
   sectionEditingIndex.value = index;
@@ -520,14 +574,15 @@ function openSectionSettings(index: number) {
 function onUpdateSection(updated: SectionConfig) {
   if (sectionEditingIndex.value === null) return;
   config.sections[sectionEditingIndex.value] = { ...updated };
+
 }
 
-function onDeleteSection(idx: number) {
-  const keysToRemove = config.sections[idx].fields.map((f) => f.key);
-  keysToRemove.forEach((k) => delete formValues[k]);
-  config.sections.splice(idx, 1);
-  sectionEditingIndex.value = null;
-}
+// function onDeleteSection(idx: number) {
+//   const keysToRemove = config.sections[idx].fields.map((f) => f.key);
+//   keysToRemove.forEach((k) => delete formValues[k]);
+//   config.sections.splice(idx, 1);
+//   sectionEditingIndex.value = null;
+// }
 
 function openFormSettings() {
   activeFieldKey.value = null;
@@ -535,9 +590,9 @@ function openFormSettings() {
   formSettingsOpen.value = true;
 }
 
-function onUpdateFormProps(updatedProps: Partial<typeof config.formProps>) {
-  config.formProps = { ...config.formProps, ...updatedProps };
-}
+// function onUpdateFormProps(updatedProps: Partial<typeof config.formProps>) {
+//   config.formProps = { ...config.formProps, ...updatedProps };
+// }
 
 function addNewSection() {
   const newSection: SectionConfig = {
