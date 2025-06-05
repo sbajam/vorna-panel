@@ -297,6 +297,33 @@ export default defineNuxtModule<ModuleOptions>({
         })
       })
     }
+    if (options.logErrors) {
+      addPlugin({
+        src: resolve('./runtime/plugins/router-vue-logger.client.ts'),
+        mode: 'client',
+      })
+      addPlugin({
+        src: resolve('./runtime/plugins/axios-logger.client.ts'),
+        mode: 'client',
+      })
+      addServerHandler({
+        method: 'POST',
+        route: '/api/error-logs',
+        handler: resolve('./runtime/server/api/error-logs.post.ts'),
+      })
+      addServerHandler({
+        method: 'GET',
+        route: '/api/error-logs',
+        handler: resolve('./runtime/server/api/error-logs.get.ts'),
+      })
+      extendPages((pages) => {
+        pages.push({
+          name: 'errorsLog',
+          path: '/errorsLog',
+          file: resolve('./runtime/pages/errorsLog.vue'),
+        })
+      })
+    }
     // این فایل logs.post.ts در مسیر runtime/server/api/logs.post.ts قرار دارد
     // و باید محتوای آن همان کدی باشد که با Prisma یا دسترسی مستقیم به دیتابیس،
     // اطلاعات لاگ را در جدول UserLog ذخیره می‌کند.

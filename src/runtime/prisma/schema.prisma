@@ -31,3 +31,30 @@ model UserLog {
   location     Json?
 }
 
+enum ErrorType {
+  NAVIGATION           // خطای Router (مثلاً 404)
+  COMPONENT            // خطاهای Vue component
+  UNHANDLED_REJECTION  // Promise rejection مدیریت‌نشده
+  API_ERROR            // خطای axios/useFetch
+}
+
+model ErrorLog {
+  id            BigInt     @id @default(autoincrement())
+  username      String
+  type          ErrorType
+  url           String
+  lastRoute     String?    // مسیر قبلی
+  user_agent    String
+  ip            String?    // اختیاری
+  timestamp     DateTime   @default(now())
+  device        String?
+  os            String?
+  browser       String?
+  location      Json?
+
+  // جزئیات همهٔ خطا (errorMessage، stack، vueInfo، formData، performance و غیره)
+  details       Json?
+
+  // اسکرین‌شات صفحه در لحظهٔ خطا (Base64)
+  screenshot    String?
+}
