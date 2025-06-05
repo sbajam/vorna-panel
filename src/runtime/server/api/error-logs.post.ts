@@ -2,8 +2,14 @@
 import { defineEventHandler, readBody, getRequestHeader } from "h3";
 import { prisma } from "../utils/db";
 
+const MAX_ERROR_LOG_COUNT = 10_000; // حداکثر تعداد رکورد در جدول errorLog
+const SIX_MONTHS_AGO = (() => {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 6);
+  return d;
+})();
+
 export default defineEventHandler(async (event) => {
-  // 1. خواندن body
   const body = (await readBody(event)) as {
     username: string;
     type: string;          // NAVIGATION, COMPONENT, UNHANDLED_REJECTION, API_ERROR
@@ -16,12 +22,11 @@ export default defineEventHandler(async (event) => {
     os?: string | null;
     browser?: string | null;
     location?: any;        // می‌تواند JSON باشد
-
     details?: any;         // JSON کلیهٔ جزئیات
     screenshot?: string | null;
   };
 
-  // 2. در صورت لزوم، خودمان IP را از هدر بگیریم (اما چون در پلاگین گرفتیم، body.ip کافیست)
+  // استخراج IP اگر لازم باشد
   let ip = body.ip ?? null;
   if (!ip) {
     const xff = getRequestHeader(event, "x-forwarded-for");
@@ -33,17 +38,17 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // 3. درج رکورد در جدول ErrorLog
   try {
+    // ۱) درج رکورد جدید
     await prisma.errorLog.create({
       data: {
         username: body.username,
-        type: body.type as any,   // Prisma enum
+        type: body.type as any,
         url: body.url,
         lastRoute: body.lastRoute || null,
         user_agent: body.user_agent,
         ip,
-        timestamp: new Date(body.timestamp), // Prisma DateTime
+        timestamp: new Date(body.timestamp),
         device: body.device || null,
         os: body.os || null,
         browser: body.browser || null,
@@ -52,9 +57,19 @@ export default defineEventHandler(async (event) => {
         screenshot: body.screenshot || null,
       },
     });
+
+    // ۲) بررسی تعداد رکوردها
+    const totalCount = await prisma.errorLog.count();
+    if (totalCount > MAX_ERROR_LOG_COUNT) {
+      // حذف رکوردهایی که بیش از ۶ ماه از timestamp شان گذشته
+      await prisma.errorLog.deleteMany({
+        where: { timestamp: { lt: SIX_MONTHS_AGO } },
+      });
+    }
+
     return { success: true };
   } catch (e) {
-    console.error("[error-logs.post] Failed to save error log:", e);
+    console.error("[error-logs.post] Failed to save or prune error log:", e);
     return { success: false };
   }
 });

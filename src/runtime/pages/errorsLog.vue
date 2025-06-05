@@ -224,7 +224,7 @@ async function fetchErrorLogs() {
     perPage.value = data.value.meta.perPage;
   }
 }
-
+fetchErrorLogs()
 function changePage(newPage: number) {
   if (newPage < 1 || newPage > totalPages.value) return;
   page.value = newPage;
