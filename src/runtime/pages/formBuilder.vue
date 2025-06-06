@@ -478,7 +478,7 @@ function selectSection(sidx: number) {
     selectedSectionIndex.value === sidx ? null : sidx;
 
   activeFieldKey.value = null;
-  sectionEditingIndex.value = null;
+  sectionEditingIndex.value = sidx;
   formSettingsOpen.value = false;
   showPreview.value = false;
 }
@@ -612,7 +612,7 @@ function onUpdateSection(updated: SectionConfig) {
 }
 
 /** حذف سکشن */
-function onDeleteSection(idx: number) {
+function onDeleteSection(idx: number = sectionEditingIndex.value!) {
   const keysToRemove = config.sections[idx].fields.map((f) => f.key);
   keysToRemove.forEach((k) => delete formValues[k]);
   keysToRemove.forEach((k) => delete formErrors[k]);
