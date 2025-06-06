@@ -5,9 +5,8 @@
       <div
         v-for="type in fieldTypes"
         :key="type"
-        class="p-3 bg-white border rounded shadow cursor-grab hover:bg-gray-50"
-        draggable="true"
-        @dragstart="handleDragStart($event, type)"
+        class="p-3 bg-white border rounded shadow cursor-pointer hover:bg-gray-50"
+        @click="selectType(type)"
       >
         {{ formatLabel(type) }}
       </div>
@@ -17,10 +16,13 @@
 
 <script setup lang="ts">
 import { defineEmits } from 'vue'
+
 const emits = defineEmits<{
-  (e: 'startDrag', type: string): void
+  /**‌وقتی روی یک نوع فیلد کلیک شد، این ایونت emit شود */
+  (e: 'selectFieldType', type: string): void
 }>()
 
+/** لیست انواع فیلدهایی که قابل اضافه شدن هستند */
 const fieldTypes = [
   'text',
   'email',
@@ -37,21 +39,19 @@ const fieldTypes = [
   'array',
 ]
 
+/** تبدیل نام فنیِ فیلد به یک لیبل خوانا */
 function formatLabel(type: string) {
   return type
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase())
+    .replace(/([A-Z])/g, ' $1')    // CamelCase → فاصله‌گذاری بین حروف
+    .replace(/^./, (str) => str.toUpperCase()) // حرف اول بزرگ
 }
 
-// هنگامی که درگ شروع می‌شود، فقط event emit می‌کنیم
-function handleDragStart(event: DragEvent, type: string) {
-  // می‌توانیم داده را در dataTransfer نیز ست کنیم اگر لازم داریم
-  event.dataTransfer?.setData('text/plain', type)
-  event.dataTransfer!.effectAllowed = 'copy'
-  emits('startDrag', type)
+/** کاربر روی یکی از آیتم‌ها کلیک کرد */
+function selectType(type: string) {
+  emits('selectFieldType', type)
 }
 </script>
 
 <style scoped>
-/* استایل خاص خود را اینجا بنویسید */
+/* استایلی که خودتان می‌توانید تغییرش دهید */
 </style>
