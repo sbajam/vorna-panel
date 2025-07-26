@@ -5,7 +5,9 @@
 
     <!-- ===== Form Title ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">عنوان فرم</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >عنوان فرم</label
+      >
       <input
         v-model="localTitle"
         @input="emitUpdate('title', localTitle)"
@@ -17,7 +19,9 @@
 
     <!-- ===== Columns (Responsive) ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">تعداد ستون‌ها</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >تعداد ستون‌ها</label
+      >
       <div class="grid grid-cols-5 gap-2">
         <div v-for="br in breakpoints" :key="br.key" class="flex flex-col">
           <label class="text-xs text-gray-600">{{ br.label }}</label>
@@ -45,7 +49,9 @@
         class="form-checkbox h-5 w-5 text-blue-600"
         id="disabledAllCheckbox"
       />
-      <label for="disabledAllCheckbox" class="text-sm">غیرفعال‌سازی کلیهٔ فیلدها</label>
+      <label for="disabledAllCheckbox" class="text-sm"
+        >غیرفعال‌سازی کلیهٔ فیلدها</label
+      >
     </div>
 
     <!-- ===== Loading & Loading Mode ===== -->
@@ -59,12 +65,16 @@
           class="form-checkbox h-5 w-5 text-blue-600"
           id="loadingCheckbox"
         />
-        <label for="loadingCheckbox" class="text-sm">حالت بارگذاری فعال باشد</label>
+        <label for="loadingCheckbox" class="text-sm"
+          >حالت بارگذاری فعال باشد</label
+        >
       </div>
 
       <!-- اگر حالت بارگذاری فعال باشد: انتخاب نوع آن -->
-      <div  class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Loading Mode</label>
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Loading Mode</label
+        >
         <select
           v-model="localLoadingMode"
           @change="emitUpdate('loadingMode', localLoadingMode)"
@@ -82,7 +92,9 @@
 
     <!-- ===== Error Display Mode ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">نحوهٔ نمایش ارورها</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >نحوهٔ نمایش ارورها</label
+      >
       <select
         v-model="localShowErrorsAs"
         @change="emitUpdate('showErrorsAs', localShowErrorsAs)"
@@ -95,7 +107,9 @@
 
     <!-- ===== Auto-Save Key ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">کلید ذخیرهٔ خودکار</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >کلید ذخیرهٔ خودکار</label
+      >
       <input
         v-model="localAutoSaveKey"
         @input="emitUpdate('autoSaveKey', localAutoSaveKey)"
@@ -103,12 +117,16 @@
         class="w-full px-2 py-1 border rounded"
         placeholder="مثلاً: myFormDraft"
       />
-      <p class="mt-1 text-xs text-gray-500">اگر خالی بگذارید، ذخیرهٔ خودکار فعال نمی‌شود.</p>
+      <p class="mt-1 text-xs text-gray-500">
+        اگر خالی بگذارید، ذخیرهٔ خودکار فعال نمی‌شود.
+      </p>
     </div>
 
     <!-- ===== Direction (RTL / LTR) ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">جهت فرم</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >جهت فرم</label
+      >
       <select
         v-model="localDirection"
         @change="emitUpdate('direction', localDirection)"
@@ -121,7 +139,9 @@
 
     <!-- ===== Validation Mode ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">حالت اعتبارسنجی</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >حالت اعتبارسنجی</label
+      >
       <select
         v-model="localValidationMode"
         @change="emitUpdate('validationMode', localValidationMode)"
@@ -135,7 +155,9 @@
 
     <!-- ===== Default Values (optional) ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">مقادیر پیش‌فرض (JSON)</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >مقادیر پیش‌فرض (JSON)</label
+      >
       <textarea
         v-model="localDefaultValuesJson"
         @blur="onDefaultValuesBlur"
@@ -147,7 +169,60 @@
         اگر چیزی ننویسید، مقادیر پیش‌فرض وجود نخواهد داشت.
       </p>
     </div>
+    <hr class="border-gray-200" />
+    <h3 class="text-lg font-medium">Submit Button Settings</h3>
+    <div class="space-y-3">
+      <!-- متن دکمه -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700"
+          >Button Text</label
+        >
+        <input
+          v-model="localSubmitText"
+          @input="emitSubmitUpdate('text', localSubmitText)"
+          type="text"
+          class="w-full px-2 py-1 border rounded"
+          placeholder="مثال: ثبت نهایی"
+        />
+      </div>
 
+      <!-- variant -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Variant</label>
+        <select
+          v-model="localSubmitVariant"
+          @change="emitSubmitUpdate('variant', localSubmitVariant)"
+          class="w-full px-2 py-1 border rounded"
+        >
+          <option value="solid">solid</option>
+          <option value="outline">outline</option>
+          <option value="ghost">ghost</option>
+        </select>
+      </div>
+
+      <!-- color -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Color</label>
+        <input
+          v-model="localSubmitColor"
+          @input="emitSubmitUpdate('color', localSubmitColor)"
+          type="text"
+          class="w-full px-2 py-1 border rounded"
+          placeholder="مثال: primary-100"
+        />
+      </div>
+      
+      <!-- pending -->
+      <div class="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          v-model="localSubmitPending"
+          @change="emitSubmitUpdate('pending', localSubmitPending)"
+          class="form-checkbox h-5 w-5 text-blue-600"
+        />
+        <span class="text-sm">Pending (loading state)</span>
+      </div>
+    </div>
     <!-- ===== Bottom: Close Button ===== -->
     <div class="flex justify-end">
       <button
@@ -178,17 +253,40 @@ const props = defineProps<{
     validationMode?: "onChange" | "onBlur" | "onSubmit";
     defaultValues?: Record<string, any>;
   };
+  submitButton: {
+    text: string;
+    variant?: string;
+    color?: string;
+    pending?: boolean;
+  };
 }>();
 
 // تعریف ایونت‌ها
 const emit = defineEmits<{
   (e: "updateFormProps", updated: Partial<typeof props.formProps>): void;
+  (e: "updateSubmitButton", updated: Partial<typeof props.submitButton>): void;
   (e: "closePanel"): void;
 }>();
 
 // — عنوان فرم —
 const localTitle = ref(props.formProps.title || "");
+// ==== local state برای دکمه ====
+const localSubmitText    = ref(props.submitButton.text)
+const localSubmitVariant = ref(props.submitButton.variant || 'solid')
+const localSubmitColor   = ref(props.submitButton.color   || '')
+const localSubmitPending = ref(!!props.submitButton.pending)
 
+// هر بار پروپ‌ها تغییر کرد، localها را سینک کن
+watch(() => props.submitButton, (b) => {
+  localSubmitText.value    = b.text
+  localSubmitVariant.value = b.variant || 'solid'
+  localSubmitColor.value   = b.color   || ''
+  localSubmitPending.value = !!b.pending
+})
+// تابع کمک برای emit
+function emitSubmitUpdate<K extends keyof typeof props.submitButton>(key: K, val: typeof props.submitButton[K]) {
+  emit('updateSubmitButton', { [key]: val } as any)
+}
 // — ستون‌ها در نقاط شکست (breakpoints) —
 const defaultCols = { base: 1, sm: 1, md: 1, lg: 1, xl: 1 };
 const localColumns = reactive<Record<string, number>>({

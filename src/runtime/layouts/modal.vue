@@ -23,7 +23,7 @@ function onBackdropClick(e) {
       @click="onBackdropClick"
     >
       <div
-        class="relative bg-white rounded-xl p-6 md:p-10 w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-h-[90vh] overflow-auto"
+        class="relative bg-white rounded-xl p-6 md:p-10 max-w-11/12 w-fit   max-h-[90vh] overflow-auto"
       >
         <!-- دکمه بستن -->
         <button

@@ -20,7 +20,6 @@
 </template>
 
 <script setup lang="ts">
-import { title } from "process";
 
 // مقادیر اولیه که از قبل پر شده‌اند (مثال)
 

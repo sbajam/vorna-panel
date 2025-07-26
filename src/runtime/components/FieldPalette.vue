@@ -37,6 +37,7 @@ const fieldTypes = [
   'file',
   'richtext',
   'array',
+  
 ]
 
 /** تبدیل نام فنیِ فیلد به یک لیبل خوانا */

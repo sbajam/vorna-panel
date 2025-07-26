@@ -1,7 +1,18 @@
 <template>
   <div class="flex flex-col h-screen overflow-hidden">
+    <PreviewP
+      v-if="showPreview"
+      :show="showPreview"
+      :config="config"
+      :formValues="formValues"
+      @validationError="onValidationError"
+      @close_popup="togglePreview"
+      @submitForm="onSubmitForm"
+    />
     <!-- ====== HEADER با دکمه‌های Settings / Preview / Generate / Import ====== -->
-    <header class="flex items-center justify-between bg-white border-b px-4 py-2 shadow-md">
+    <header
+      class="flex items-center justify-between bg-white border-b px-4 py-2 shadow-md"
+    >
       <h1 class="text-2xl font-semibold text-gray-800">طراح فرم</h1>
       <div class="flex items-center space-x-2">
         <!-- دکمهٔ تنظیمات فرم -->
@@ -24,7 +35,7 @@
         <!-- دکمهٔ تولید کد JSON -->
         <button
           class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-          @click="openGenerateModal"
+          @click="copyFullPage"
         >
           📄 دریافت کد
         </button>
@@ -32,7 +43,7 @@
         <!-- دکمهٔ بارگذاری از کد -->
         <button
           class="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700"
-          @click="importConfigFromJson"
+          @click="importConfigFromCode"
           :disabled="showPreview"
         >
           🔄 بارگذاری از کد
@@ -68,8 +79,10 @@
           <SectionSettingsPanel
             v-else-if="sectionEditingIndex !== null"
             :section="config.sections[sectionEditingIndex]"
+            :submitButton="config.submitButton"
             @updateSection="onUpdateSection"
             @deleteSection="onDeleteSection"
+            @updateSubmitButton="onUpdateSubmitButton"
             @closePanel="closeAllPanels"
           />
 
@@ -99,7 +112,9 @@
             ✕ بستن پیش‌نمایش
           </button>
           <div class="absolute bottom-4 left-4 text-sm text-gray-500">
-            <p class="mb-1">برای تعامل با فرم پیش‌نمایش، می‌توانید روی فیلدها کلیک کنید.</p>
+            <p class="mb-1">
+              برای تعامل با فرم پیش‌نمایش، می‌توانید روی فیلدها کلیک کنید.
+            </p>
           </div>
           <div class="absolute inset-0 bg-white bg-opacity-90"></div>
         </div>
@@ -108,8 +123,13 @@
         <div v-else class="flex flex-col h-full">
           <div class="mb-4 text-gray-600">
             <p>برای انتخاب سکشن، روی کارت آن کلیک کنید (رینگ سبز می‌شود).</p>
-            <p>بعد از انتخاب سکشن، روی یکی از انواع فیلد در Palette کلیک کنید تا اضافه شود.</p>
-            <p>برای جابه‌جایی سکشن‌ها یا فیلدها، روی آیکون «≡» کلیک و درگ کنید.</p>
+            <p>
+              بعد از انتخاب سکشن، روی یکی از انواع فیلد در Palette کلیک کنید تا
+              اضافه شود.
+            </p>
+            <p>
+              برای جابه‌جایی سکشن‌ها یا فیلدها، روی آیکون «≡» کلیک و درگ کنید.
+            </p>
           </div>
 
           <!-- Draggable سکشن‌ها -->
@@ -122,7 +142,9 @@
             <template #item="{ element: section, index: sidx }">
               <div
                 class="border border-gray-300 rounded bg-gray-50"
-                :class="{ 'ring-2 ring-green-500': selectedSectionIndex === sidx }"
+                :class="{
+                  'ring-2 ring-green-500': selectedSectionIndex === sidx,
+                }"
                 @click.stop="selectSection(sidx)"
               >
                 <!-- هدر سکشن با قابلیت درگ و کلیک برای تنظیمات -->
@@ -130,8 +152,12 @@
                   class="section-handle flex justify-between items-center bg-gray-200 px-3 py-2 cursor-move"
                 >
                   <div class="flex items-center space-x-2 group">
-                    <span class="text-gray-500 group-hover:text-gray-700">≡</span>
-                    <h3 class="font-semibold text-gray-800">{{ section.title }}</h3>
+                    <span class="text-gray-500 group-hover:text-gray-700"
+                      >≡</span
+                    >
+                    <h3 class="font-semibold text-gray-800">
+                      {{ section.title }}
+                    </h3>
                   </div>
                   <div class="flex items-center space-x-2">
                     <button
@@ -140,7 +166,9 @@
                       class="text-gray-600 hover:text-gray-800"
                     >
                       <Icon
-                        :name="`fa6-solid:${ section._open ? 'chevron-down' : 'chevron-left' }`"
+                        :name="`fa6-solid:${
+                          section._open ? 'chevron-down' : 'chevron-left'
+                        }`"
                       />
                     </button>
                     <button
@@ -165,7 +193,10 @@
                       class="text-gray-400 text-center py-8"
                     >
                       <p>این سکشن خالی است.</p>
-                      <p>بعد از انتخاب این سکشن، روی یک نوع فیلد در Palette کلیک کنید.</p>
+                      <p>
+                        بعد از انتخاب این سکشن، روی یک نوع فیلد در Palette کلیک
+                        کنید.
+                      </p>
                     </div>
 
                     <!-- Draggable فیلدها -->
@@ -181,7 +212,9 @@
                           v-if="!field.showIf || field.showIf(formValues)"
                           :class="[
                             'flex items-center justify-between bg-white border rounded px-3 py-2 cursor-move',
-                            field.key === activeFieldKey ? 'ring-2 ring-blue-400' : ''
+                            field.key === activeFieldKey
+                              ? 'ring-2 ring-blue-400'
+                              : '',
                           ]"
                           @click.stop="selectField(field.key)"
                         >
@@ -190,7 +223,9 @@
                               class="field-handle text-gray-400 group-hover:text-gray-600"
                               >≡</span
                             >
-                            <span class="text-gray-800">{{ field.label || field.type }}</span>
+                            <span class="text-gray-800">{{
+                              field.label || field.type
+                            }}</span>
                           </div>
                           <button
                             @click.stop="onDeleteField(field.key)"
@@ -219,7 +254,9 @@
       </main>
 
       <!-- ========== ستون راست: FieldPalette و افزودن سکشن ====== -->
-      <aside class="w-1/4 bg-gray-50 border-l border-gray-300 p-4 overflow-auto">
+      <aside
+        class="w-1/4 bg-gray-50 border-l border-gray-300 p-4 overflow-auto"
+      >
         <FieldPalette @selectFieldType="onSelectFieldType" />
 
         <div class="mt-6">
@@ -243,7 +280,10 @@
         <div class="bg-white rounded-lg w-3/4 max-w-2xl p-4 space-y-4">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">کد JSON کانفیگ فرم</h3>
-            <button @click="showGenerateModal = false" class="text-gray-600 hover:text-gray-800">
+            <button
+              @click="showGenerateModal = false"
+              class="text-gray-600 hover:text-gray-800"
+            >
               ✕
             </button>
           </div>
@@ -254,7 +294,7 @@
           ></textarea>
           <div class="flex justify-end">
             <button
-              @click="copyToClipboard"
+              @click="copyFullPage"
               class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               📋 کپی به کلیپ‌بورد
@@ -270,6 +310,11 @@
 import { ref, reactive, computed, watch, nextTick } from "vue";
 import Draggable from "vuedraggable"; // vue-draggable@next
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
+import PreviewP from "../components/PreviewP.vue";
+import { Raw } from "vue";
+import { definePageMeta } from '#imports'
+
+definePageMeta({ auth: false })
 
 // -----------------------------
 //  ۱. TYPE DEFINITIONS
@@ -512,8 +557,7 @@ function onSelectFieldType(type: string) {
     tooltip: "",
     icon: "",
     items: type === "select" ? [] : undefined,
-    options:
-      type === "checkboxGroup" || type === "radioGroup" ? [] : undefined,
+    options: type === "checkboxGroup" || type === "radioGroup" ? [] : undefined,
     direction: { base: "vertical" },
     multipleFile: false,
     itemFields: type === "array" ? [] : undefined,
@@ -672,12 +716,65 @@ function togglePreview() {
 }
 
 /** تولید JSON کانفیگ کنونی */
-function openGenerateModal() {
-  generatedJson.value = JSON.stringify(config, null, 2);
-  showGenerateModal.value = true;
-  showPreview.value = false;
+async function copyFullPage() {
+  // ۱. آبجکت خامِ reactive config
+  const plainConfig = toRaw(config);
+
+  // ۲. استخراج defaultValues به عنوان initialValues
+  const initialVals = plainConfig.formProps.defaultValues || {};
+
+  // ۳. ساخت SFC به صورت یک رشته
+  const code = `
+<template>
+  <NuxtLayout name="admin">
+    <template #main>
+      <Box class="max-w-4xl mx-auto py-8">
+        <Header class="text-3xl font-bold mb-6">
+          نمونه صفحه فرم با تمام قابلیت‌ها
+        </Header>
+
+        <FormBuilder
+          :config="formConfig"
+          :initialValues="initialValues"
+          @validationError="onValidationError"
+          @submitForm="onSubmitForm"
+        />
+      </Box>
+    </template>
+  </NuxtLayout>
+</template>
+
+<script setup lang="ts">
+// مقادیر اولیهٔ فرم
+const initialValues = ${JSON.stringify(initialVals, null, 2)}
+
+// کانفیگِ نهاییِ فرم
+const formConfig    = ${JSON.stringify(plainConfig, null, 2)}
+
+function onValidationError({
+  field,
+  message,
+}: {
+  field: string
+  message: string
+}) {
+  alert('خطا در فیلد «' + field + '»: ' + message)
 }
 
+async function onSubmitForm(values: Record<string, any>) {
+  // TODO: منطق ارسال فرم
+}
+<\/script>
+`.trim();
+
+  // ۴. کپی به کلیپ‌بورد
+  try {
+    await navigator.clipboard.writeText(code);
+    alert("کد کامل صفحه در کلیپ‌بورد کپی شد!");
+  } catch {
+    alert("خطا در کپی به کلیپ‌بورد");
+  }
+}
 /** کپی JSON به کلیپ‌بورد */
 async function copyToClipboard() {
   try {
@@ -688,28 +785,63 @@ async function copyToClipboard() {
   }
 }
 
-/** بارگذاری کانفیگ از JSON */
-function importConfigFromJson() {
-  const userInput = window.prompt(
-    "JSON کانفیگ فرم را اینجا وارد کنید:",
-    JSON.stringify(config, null, 2)
-  );
-  if (!userInput) return;
+/** بارگذاری کانفیگ از JSON یا آبجکت JS */
+/** بارگذاری کانفیگ از JS/TS با استخراج دقیق بلوک آبجکت */
+function importConfigFromCode() {
+  const code = window.prompt("کد کانفیگ را اینجا پیست کنید:", "");
+  if (!code) return;
+
   try {
-    const parsed: FormConfig = JSON.parse(userInput);
-    if (parsed.sections && Array.isArray(parsed.sections)) {
-      config.formProps = { ...parsed.formProps };
-      config.sections.splice(0, config.sections.length, ...parsed.sections);
-      config.submitButton = { ...parsed.submitButton };
-      initializeFormState();
-      showPreview.value = false;
-      alert("کانفیگ فرم با موفقیت بارگذاری شد.");
-    } else {
-      alert("JSON معتبر نیست.");
+    // ۱. پاک‌سازی اولیه
+    let text = code.trim();
+
+    // ۲. حذف کامنت‌های تک‌خطی و چند‌خطی
+    text = text
+      .replace(/\/\/.*$/gm, "") // //…
+      .replace(/\/\*[\s\S]*?\*\//g, ""); // /*…*/
+
+    // ۳. حذف انوتیشن‌های TS در پارامترهای فانکشن
+    text = text.replace(/\(\s*([A-Za-z0-9_$]+)\s*:\s*[^)]+\)/g, "($1)");
+
+    // ۴. پیدا کردن اولین '{' و جفتش
+    const startIdx = text.indexOf("{");
+    if (startIdx === -1) throw new Error('بلوک "{" پیدا نشد.');
+    let depth = 0,
+      endIdx = -1;
+    for (let i = startIdx; i < text.length; i++) {
+      if (text[i] === "{") depth++;
+      else if (text[i] === "}") {
+        depth--;
+        if (depth === 0) {
+          endIdx = i;
+          break;
+        }
+      }
     }
-  } catch (e) {
-    alert("خطا: JSON نامعتبر است.");
+    if (endIdx === -1) throw new Error('بلوک "}" متناسب پیدا نشد.');
+
+    // ۵. استخراج رشته‌ی بلوک آبجکت
+    const objCode = text.slice(startIdx, endIdx + 1);
+
+    // ۶. اجرا و گرفتن JS Object
+    const parsed: FormConfig = new Function(`return ${objCode};`)();
+
+    // ۷. اعمال روی reactive config
+    config.formProps = { ...parsed.formProps };
+    config.sections.splice(0, config.sections.length, ...parsed.sections);
+    config.submitButton = { ...parsed.submitButton };
+
+    // ۸. مقداردهی مجدد فرم و بستن پیش‌نمایش
+    initializeFormState();
+    showPreview.value = false;
+    alert("کانفیگ فرم با موفقیت بارگذاری شد.");
+  } catch (e: any) {
+    console.error(e);
+    alert("خطا در بارگذاری کانفیگ: " + e.message);
   }
+}
+function onUpdateSubmitButton(updated: Partial<typeof config.submitButton>) {
+  config.submitButton = { ...config.submitButton, ...updated }
 }
 </script>
 
