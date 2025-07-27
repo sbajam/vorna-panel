@@ -58,7 +58,9 @@
                 <td class="px-4 py-2 text-center">{{ item.username }}</td>
                 <td class="px-4 py-2 text-center">{{ item.type }}</td>
                 <td class="px-4 py-2 text-center">{{ item.url }}</td>
-                <td class="px-4 py-2 text-center">{{ formatDate(item.timestamp) }}</td>
+                <td class="px-4 py-2 text-center">
+                  {{ formatDate(item.timestamp) }}
+                </td>
                 <!-- ستون اسکرین‌شات: اگر وجود داشت، Thumbnail نشان بده -->
                 <td class="px-4 py-2 text-center">
                   <img
@@ -135,8 +137,9 @@ import { format } from "date-fns";
 import { faIR } from "date-fns/locale";
 import { useFetch } from "#app";
 import Swal from "sweetalert2";
-import "sweetalert2/dist/sweetalert2.min.css";
+import { definePageMeta } from "#imports";
 
+definePageMeta({ auth: false });
 interface ErrorLog {
   id: number;
   username: string;
@@ -224,7 +227,7 @@ async function fetchErrorLogs() {
     perPage.value = data.value.meta.perPage;
   }
 }
-fetchErrorLogs()
+fetchErrorLogs();
 function changePage(newPage: number) {
   if (newPage < 1 || newPage > totalPages.value) return;
   page.value = newPage;

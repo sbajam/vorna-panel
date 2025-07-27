@@ -1,5 +1,6 @@
 // src/runtime/plugins/notifications.js
 import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import { defineNuxtPlugin, useRuntimeConfig } from "#app";
 
 export default defineNuxtPlugin((nuxtApp) => {

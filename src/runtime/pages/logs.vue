@@ -37,35 +37,147 @@
           <table class="min-w-full bg-white shadow rounded">
             <thead>
               <tr class="bg-gray-100">
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('id')">#</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('username')">کاربر</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('type')">نوع</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('url')">مسیر (URL)</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('status')">وضعیت</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('ip')">IP</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('timestamp')">زمان</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('browser')">مرورگر</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('device')">دستگاه</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('os')">سیستم‌عامل</th>
-                <th class="px-4 py-2 text-center cursor-pointer" @click="sortBy('method')">متد</th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('id')"
+                >
+                  #
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('username')"
+                >
+                  کاربر
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('type')"
+                >
+                  نوع
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('url')"
+                >
+                  مسیر (URL)
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('status')"
+                >
+                  وضعیت
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('ip')"
+                >
+                  IP
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('timestamp')"
+                >
+                  زمان
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('browser')"
+                >
+                  مرورگر
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('device')"
+                >
+                  دستگاه
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('os')"
+                >
+                  سیستم‌عامل
+                </th>
+                <th
+                  class="px-4 py-2 text-center cursor-pointer"
+                  @click="sortBy('method')"
+                >
+                  متد
+                </th>
                 <th class="px-4 py-2 text-center">جزئیات</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in paginatedLogs" :key="item.id" class="border-t">
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('id', item.id)">
+              <tr
+                v-for="(item, index) in paginatedLogs"
+                :key="item.id"
+                class="border-t"
+              >
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('id', item.id)"
+                >
                   {{ (page - 1) * perPage + index + 1 }}
                 </td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('username', item.username)">{{ item.username }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('type', item.type)">{{ item.type }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('url', item.url)">{{ item.url }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('status', item.status)">{{ item.status ?? "-" }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('ip', item.ip)">{{ item.ip }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('timestamp', item.timestamp)">{{ formatDate(item.timestamp) }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('browser', item.browser)">{{ item.browser }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('device', item.device)">{{ item.device }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('os', item.os)">{{ item.os }}</td>
-                <td class="px-4 py-2 cursor-pointer !text-xs" @click="filterBy('method', item.method)">{{ item.method }}</td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('username', item.username)"
+                >
+                  {{ item.username }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('type', item.type)"
+                >
+                  {{ item.type }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('url', item.url)"
+                >
+                  {{ item.url }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('status', item.status)"
+                >
+                  {{ item.status ?? "-" }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('ip', item.ip)"
+                >
+                  {{ item.ip }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('timestamp', item.timestamp)"
+                >
+                  {{ formatDate(item.timestamp) }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('browser', item.browser)"
+                >
+                  {{ item.browser }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('device', item.device)"
+                >
+                  {{ item.device }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('os', item.os)"
+                >
+                  {{ item.os }}
+                </td>
+                <td
+                  class="px-4 py-2 cursor-pointer !text-xs"
+                  @click="filterBy('method', item.method)"
+                >
+                  {{ item.method }}
+                </td>
                 <td class="px-4 py-2">
                   <button
                     @click="showDetails(item)"
@@ -131,6 +243,9 @@ import { faIR } from "date-fns/locale";
 import { useFetch } from "#app";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { definePageMeta } from "#imports";
+
+definePageMeta({ auth: false });
 
 interface UserLog {
   id: number;
@@ -164,7 +279,7 @@ const perPage = ref(20);
 const search = ref("");
 const isSmallScreen = ref(false);
 const sortKey = ref<string | null>(null);
-const sortOrder = ref<'asc' | 'desc'>('asc');
+const sortOrder = ref<"asc" | "desc">("asc");
 const meta = ref<LogsResponse["meta"]>({
   total: 0,
   page: 1,
@@ -185,7 +300,9 @@ const paginatedLogs = computed(() => {
   return filteredLogs.value.slice(start, end);
 });
 
-const totalPages = computed(() => Math.ceil(filteredLogs.value.length / perPage.value));
+const totalPages = computed(() =>
+  Math.ceil(filteredLogs.value.length / perPage.value)
+);
 
 // تابعی برای فرمت تاریخ به شمسی یا میلادی
 function formatDate(dateStr: string) {
@@ -196,15 +313,17 @@ function formatDate(dateStr: string) {
 // مرتب‌سازی بر اساس ستون
 function sortBy(key: string) {
   if (sortKey.value === key) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
   } else {
     sortKey.value = key;
-    sortOrder.value = 'asc';
+    sortOrder.value = "asc";
   }
   logs.value.sort((a, b) => {
     const aValue = a[key]?.toString() || "";
     const bValue = b[key]?.toString() || "";
-    return sortOrder.value === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    return sortOrder.value === "asc"
+      ? aValue.localeCompare(bValue)
+      : bValue.localeCompare(aValue);
   });
 }
 
@@ -231,14 +350,15 @@ function updatePagination() {
 
 // بررسی سایز صفحه نمایش
 
-
 // تابع فراخوانی API برای لاگ‌ها
 async function fetchLogs() {
   const query = new URLSearchParams({
     page: String(page.value),
     perPage: String(perPage.value),
     ...(search.value ? { search: search.value } : {}),
-    ...(sortKey.value ? { sortKey: sortKey.value, sortOrder: sortOrder.value } : {}),
+    ...(sortKey.value
+      ? { sortKey: sortKey.value, sortOrder: sortOrder.value }
+      : {}),
   }).toString();
 
   const { data, error } = await useFetch<LogsResponse>(`/api/logs?${query}`, {
@@ -264,28 +384,28 @@ function showDetails(item: UserLog) {
       کاربر: ${item.username}\n
       نوع: ${item.type}\n
       URL: ${item.url}\n
-      متد: ${item.method || '-'}\n
-      وضعیت: ${item.status ?? '-'}\n
+      متد: ${item.method || "-"}\n
+      وضعیت: ${item.status ?? "-"}\n
       پارامترها (Params):${JSON.stringify(item.params, null, 2)}\n
       پاسخ (Response):\n
       ${JSON.stringify(item.responseData, null, 2)}\n
       User-Agent: ${item.user_agent}\n
       IP: ${item.ip}\n
-      دستگاه: ${item.device || '-'}\n
-      سیستم‌عامل: ${item.os || '-'}\n
-      مرورگر: ${item.browser || '-'}\n
+      دستگاه: ${item.device || "-"}\n
+      سیستم‌عامل: ${item.os || "-"}\n
+      مرورگر: ${item.browser || "-"}\n
       محل (Location):${JSON.stringify(item.location, null, 2)}\n
       زمان: ${formatDate(item.timestamp)}\n
     </pre>
   `;
 
   Swal.fire({
-    title: 'جزئیات لاگ',
+    title: "جزئیات لاگ",
     html: content,
-    width: '600px',
+    width: "600px",
     scrollbarPadding: false,
     customClass: {
-      popup: 'text-right',
+      popup: "text-right",
     },
   });
 }

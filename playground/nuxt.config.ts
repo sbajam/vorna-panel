@@ -3,7 +3,7 @@ import { resolve } from 'pathe'
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss',
     '@pinia/nuxt',
-    'nuxt-icon',  
+    '@nuxt/icon',
     resolve(__dirname, '../src/module.ts'),
   ],
   css: ['./assets/css/main.css'],
@@ -15,13 +15,16 @@ export default defineNuxtConfig({
         baseURL: '/uploads',
         maxAge: 60 * 60 * 24 * 365
       }
-    ]
+    ],
+    compatibility: {
+      date: '2025-07-26'
+    }
   },
   vornaPanel: {
     name: 'پنل فروشگاه وندو',
     logo: 'https://vendow.ir/_ipx/assets/img/logo.png',
     font: 'Vazir',
-    baseUrl: 'https://api.vendow.ir',
+    baseUrl: 'https://api.vendow.ir/admins',
     notifications: 'sweetalert',
     menuItems: [
       {

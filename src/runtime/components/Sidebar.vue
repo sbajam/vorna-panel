@@ -1,11 +1,28 @@
 <script setup>
 import { useOnline } from "@vueuse/core";
-import { useBreadcrumbStore } from '~vorna-stores/breadcrumb'
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter, useRuntimeConfig, navigateTo } from 'nuxt/app';
+import { useBreadcrumbStore } from "~vorna-stores/breadcrumb";
+import { useUserStore } from "~vorna-stores/user";
 
 // خواندن menuItems از config اگر از props نفرستاده باشند
 const config = useRuntimeConfig().public.vornaPanel;
+const user = useUserStore();
 
 const emit = defineEmits(["logout", "toggle"]);
+const filteredSections = computed(() =>
+  (config.menuItems || []).map((section) => ({
+    ...section,
+    items: section.items.filter((item) => {
+      // superAdminها همیشه دسترسی دارند
+      if (config.superAdmins?.includes(user?.username || "")) return true;
+      // publicAdmin: هر لاگین‌شده
+      if (item.publicAdmin) return !!user?.token;
+      // چک دسترسی به route
+      return user?.hasRoutePermission?.(item.path) ?? false;
+    }),
+  }))
+);
 
 const collapsed = ref(false);
 const isMobile = ref(false);
@@ -49,7 +66,6 @@ function onClick(to) {
     <div class="sidebar-header">
       <slot name="logo">
         <div class="logo-container">
-          {{ menuItems }}
           <img :src="config.logo" :alt="config.name" class="logo-image" />
           <h3 class="logo-title">
             {{ config.name }}
@@ -75,7 +91,7 @@ function onClick(to) {
 
     <!-- Navigation Menu -->
     <div ref="menuContainer" class="sidebar-menu">
-      <template v-for="(section, index) in config.menuItems" :key="index">
+      <template v-for="(section, index) in filteredSections" :key="index">
         <!-- Section Title -->
         <div v-if="section.title" class="menu-section">
           <h2>{{ section.title }}</h2>
@@ -88,7 +104,7 @@ function onClick(to) {
             :key="item.path"
             v-slot="{ isActive }"
             :to="item.path"
-            @click.native.prevent="onClick(item.path)"
+            @click.prevent="onClick(item.path)"
             class="menu-item"
             :class="{ 'has-badge': item.badge }"
           >
