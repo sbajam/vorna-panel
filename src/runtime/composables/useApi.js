@@ -37,7 +37,7 @@ export function useApi() {
         data: body,
         headers: {
           ...headers,
-          cookie: useCookie("token").value,
+          cookies: useCookie("token").value,
         },
       });
       data.value = response.data;

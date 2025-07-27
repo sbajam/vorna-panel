@@ -195,6 +195,11 @@ export default defineNuxtModule<ModuleOptions>({
         path: '/login',
         file: resolve('./runtime/pages/login.vue')
       })
+      pages.push({
+        name: '403',
+        path: '/403',
+        file: resolve('./runtime/pages/403.vue')
+      })
     })
     extendPages((pages) => {
       pages.push({
@@ -351,6 +356,7 @@ export default defineNuxtModule<ModuleOptions>({
     const permissionHandlers = [
       { route: '/api/permissions', method: 'get', handler: 'permissions.get.js' },
       { route: '/api/permissions', method: 'post', handler: 'permissions.post.js' },
+      { route: '/api/user-permissions', method: 'get', handler: 'user-permissions.get.js' },
     ]
     for (const h of permissionHandlers) {
       addServerHandler({

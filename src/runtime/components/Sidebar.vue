@@ -4,6 +4,8 @@ import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter, useRuntimeConfig, navigateTo } from 'nuxt/app';
 import { useBreadcrumbStore } from "~vorna-stores/breadcrumb";
 import { useUserStore } from "~vorna-stores/user";
+import { Vue3SlideUpDown }  from "vue3-slide-up-down";
+
 
 // خواندن menuItems از config اگر از props نفرستاده باشند
 const config = useRuntimeConfig().public.vornaPanel;
@@ -11,18 +13,25 @@ const user = useUserStore();
 
 const emit = defineEmits(["logout", "toggle"]);
 const filteredSections = computed(() =>
-  (config.menuItems || []).map((section) => ({
-    ...section,
-    items: section.items.filter((item) => {
-      // superAdminها همیشه دسترسی دارند
-      if (config.superAdmins?.includes(user?.username || "")) return true;
-      // publicAdmin: هر لاگین‌شده
-      if (item.publicAdmin) return !!user?.token;
-      // چک دسترسی به route
-      return user?.hasRoutePermission?.(item.path) ?? false;
-    }),
-  }))
-);
+  (config.menuItems || [])
+    .map((section, index) => {
+      const filteredItems = (section.items || []).filter((item) => {
+        if (config.superAdmins?.includes(user.username)) return true
+        if (item.guest) return !!user.token
+        return user?.hasRoutePermission?.(item.path) ?? false
+      })
+
+      return {
+        ...section,
+        _id: `section-${index}`,
+        _collapsed: ref(section.collapsed ?? false),
+        items: filteredItems,
+      }
+    })
+    .filter(section => section.items.length > 0)
+)
+
+
 
 const collapsed = ref(false);
 const isMobile = ref(false);
@@ -91,48 +100,38 @@ function onClick(to) {
 
     <!-- Navigation Menu -->
     <div ref="menuContainer" class="sidebar-menu">
-      <template v-for="(section, index) in filteredSections" :key="index">
-        <!-- Section Title -->
-        <div v-if="section.title" class="menu-section">
-          <h2>{{ section.title }}</h2>
+  <template v-for="section in filteredSections" :key="section._id">
+  <!-- Title + Toggle -->
+  <div v-if="section.title" class="menu-section flex justify-between items-center cursor-pointer px-4 py-1" @click="section._collapsed.value = !section._collapsed.value">
+    <h2>{{ section.title }}</h2>
+    <icon :name="section._collapsed.value ? 'fa-solid:chevron-down' : 'fa-solid:chevron-up'" />
+  </div>
+
+  <!-- Slide menu -->
+  <vue3-slide-up-down v-model="section._collapsed.value" :duration="200">
+    <div class="menu-items">
+      <NuxtLink
+        v-for="item in section.items"
+        :key="item.path"
+        :to="item.path"
+        v-slot="{ isActive }"
+        @click.prevent="onClick(item.path)"
+        class="menu-item"
+        :class="{ 'has-badge': item.badge }"
+      >
+        <div class="item-icon">
+          <icon :name="item.icon" :class="{ 'icon-active': isActive }" class="text-lg" />
+          <icon v-if="item.subIcon" :name="item.subIcon" class="sub-icon text-xs bg-white rounded-full p-0.5" />
         </div>
-
-        <!-- Menu Items -->
-        <div class="menu-items">
-          <NuxtLink
-            v-for="item in section.items"
-            :key="item.path"
-            v-slot="{ isActive }"
-            :to="item.path"
-            @click.prevent="onClick(item.path)"
-            class="menu-item"
-            :class="{ 'has-badge': item.badge }"
-          >
-            <!-- Icon -->
-            <div class="item-icon">
-              <icon
-                :name="item.icon"
-                :class="{ 'icon-active': isActive }"
-                class="text-lg"
-              />
-              <!-- اگر subIcon دارید: -->
-              <icon
-                v-if="item.subIcon"
-                :name="item.subIcon"
-                class="sub-icon text-xs bg-white rounded-full p-0.5"
-              />
-            </div>
-
-            <!-- Label -->
-            <span class="item-label">{{ item.label }}</span>
-
-            <!-- Badge -->
-            <div v-if="item.badge" class="item-badge">
-              {{ typeof item.badge === "function" ? item.badge() : item.badge }}
-            </div>
-          </NuxtLink>
+        <span class="item-label">{{ item.label }}</span>
+        <div v-if="item.badge" class="item-badge">
+          {{ typeof item.badge === "function" ? item.badge() : item.badge }}
         </div>
-      </template>
+      </NuxtLink>
+    </div>
+  </vue3-slide-up-down>
+</template>
+
     </div>
 
     <!-- Footer Actions -->

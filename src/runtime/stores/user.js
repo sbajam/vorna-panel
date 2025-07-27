@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore("user", {
   state: () => ({
     token: "",
-    roles: [],
+    roles: "",
     permissions: [], // لیست دسترسی‌های کاربر
     username: null, // در شروع خالی است
   }),
@@ -16,7 +16,7 @@ export const useUserStore = defineStore("user", {
       this.username = null;
       this.permissions = [];
     },
-    setUser(token, roles, permissions = []) {
+    setUser(token=this.token, roles, permissions = []) {
       this.token = token;
       this.roles = roles;
       this.permissions = permissions;
@@ -35,12 +35,12 @@ export const useUserStore = defineStore("user", {
       return this.permissions.includes(permissionKey);
     },
     // چک کردن دسترسی به یک route
-    hasRoutePermission(route) {
+    hasRoutePermission(route,action = "view") {
       // از route یک key منطقی بساز (مثلاً /roles → roles.view)
       const segments = route.split("/").filter(Boolean);
       const module = segments[0] || "root";
-      const key = `${module}.view`;
-
+      const key = `${module}.${action}`;
+      
       return this.hasPermission(key);
     },
   },

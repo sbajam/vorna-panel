@@ -39,8 +39,13 @@ const login = async () => {
     if (res.status && res.token) {
       document.cookie = `token=${res.token}; path=/;`;
 
-      const permRes = await request("/api/user-permissions");
-      userStore.setUser(res.token, res.roles || [], permRes.data || []);
+      // const permRes = await request(`/api/user-permissions?role=${res.roles || "guest"}`, {
+      //   method: "get",
+      //   headers: { "Cache-Control": "no-cache" },
+      //   baseUrl:' '
+      // });
+      userStore.setUser(res.token, res.roles || "viewer" );
+      userStore.setUsername(username.value.trim());
 
       // فقط اگر روی صفحه login هستی، redirect کن
       if (route.path === "/login") {

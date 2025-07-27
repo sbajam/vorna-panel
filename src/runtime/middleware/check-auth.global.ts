@@ -1,21 +1,22 @@
 import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp, useRuntimeConfig } from '#imports'
 import { useUserStore } from '../stores/user'
 import { useApi } from '../composables/useApi'
+import { showError } from 'nuxt/app'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore()
-  const { $notify } = useNuxtApp()
+  const { $notify, $notifyDanger } = useNuxtApp()
   const config = useRuntimeConfig().public.vornaPanel
   const { request } = useApi()
-  console.log('[✅ Middleware check-auth.global.ts executed]')
 
-  // ۱. چک کردن مسیرهای مهمان
+  // ✅ لاگ اجرایی
+  console.log('[✅ Middleware check-auth.global.ts executed]', process.server ? '[SSR]' : '[Client]')
+  if (['/login', '/403', '/404'].includes(to.path)) return true
+  // ۱. مسیرهای مهمان
   const guestRoutes = config.guestRoutes || ['/login', '/403', '/404']
-  if (guestRoutes.some(route => to.path.startsWith(route))) {
-    return // اجازه دسترسی به مسیرهای مهمان
-  }
+  if (guestRoutes.some(route => to.path.startsWith(route))) return
 
-  // ۲. چک کردن وضعیت لاگین
+  // ۲. بررسی وضعیت لاگین
   let res: any
   try {
     res = await request('/is_login', {
@@ -26,32 +27,48 @@ export default defineNuxtRouteMiddleware(async (to) => {
     res = { status: false, message: 'خطا در ارتباط با سرور' }
   }
 
-  // اگر لاگین نبود، به صفحه لاگین هدایت می‌شود
   if (!res?.status) {
+    userStore.clearUser()
     $notify(res?.message || 'لطفاً ابتدا لاگین کنید.', 'error')
     return navigateTo(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 
-  // ۳. چک کردن نقش superAdmin
-  if (userStore.roles.includes('superadmin')) {
-    return // اگر superAdmin باشد، نیازی به چک کردن دسترسی‌ها نیست
-  }
+  // ۳. تنظیم نقش کاربر
+  const userRole = res?.roles || 'viewer'
+  userStore.setUser(userStore.token, userRole)
 
-  // ۴. به‌روزرسانی اطلاعات دسترسی‌ها
+  // ۴. بررسی نقش سوپرادمین
+  const isSuperAdmin = config.superAdmins?.includes(userRole) || userStore.roles.includes('superAdmin')
+  if (isSuperAdmin) return
+
+  // ۵. دریافت دسترسی‌ها از سرور
   try {
-    const permRes = await request('/api/user-permissions')
-    if (permRes.status) {
-      userStore.setPermissions(permRes.data)
+    const permissionsRes = await request(`/api/user-permissions?role=${userRole}`, { baseUrl: 'http://localhost:3000' })
+    if (permissionsRes.status) {
+      userStore.setPermissions(permissionsRes.data)
+    } else {
+      // throw new Error('دسترسی‌ها دریافت نشد.')
     }
   } catch (error) {
-    console.error('خطا در دریافت دسترسی‌ها:', error)
+    console.log('❌ خطا در دریافت دسترسی‌ها:', error)
+    $notifyDanger('خطا در دریافت دسترسی‌ها')
   }
 
-  // ۵. چک کردن دسترسی به مسیر
-  if (!userStore.hasRoutePermission(to.path)) {
-    $notify('شما دسترسی لازم به این صفحه را ندارید', 'error')
-    return navigateTo('/')
+  try {
+    const hasAccess = userStore.hasRoutePermission(to.path)
+
+    if (process.client) {
+      console.log('👉 مسیر در حال بررسی:', to.path)
+      console.log('🟢 دسترسی‌ها:', userStore.permissions)
+      console.log('✅ مجوز دارد؟', hasAccess)
+    }
+
+    if (!hasAccess) {
+
+      return navigateTo('/403')
+    }
+    else { return true }
+  } catch (e) {
+    console.log('❌ خطا در چک کردن دسترسی مسیر:', e)
   }
 })
-
-

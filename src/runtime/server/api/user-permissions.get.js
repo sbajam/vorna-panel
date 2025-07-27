@@ -1,28 +1,40 @@
-import { defineEventHandler } from 'h3'
-import { prisma } from '../utils/db'
+import { defineEventHandler, getQuery } from "h3";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
-  const { role } = event.context // این از میدلور قبلی ست شده
+  const { role } = getQuery(event);
+
+  if (!role || typeof role !== "string") {
+    return {
+      status: false,
+      message: "پارامتر role ارسال نشده یا نامعتبر است",
+    };
+  }
 
   try {
-    const userRole = await prisma.role.findUnique({
+    const roleData = await prisma.role.findUnique({
       where: { name: role },
       include: {
-        permissions: {
-          select: { key: true }
-        }
-      }
-    })
+        permissions: true,
+      },
+    });
+
+    if (!roleData || !roleData.permissions) {
+      return { status: false, message: "نقش یافت نشد یا دسترسی ندارد" };
+    }
 
     return {
       status: true,
-      data: userRole ? userRole.permissions.map(p => p.key) : []
-    }
+      data: roleData.permissions.map((p) => p.key),
+    };
   } catch (error) {
-    console.error('Error fetching user permissions:', error)
+    console.error("خطا در دریافت دسترسی‌ها:", error);
     return {
       status: false,
-      message: 'خطا در دریافت دسترسی‌های کاربر'
-    }
+      message: "خطا در دریافت دسترسی‌ها",
+      error: error.message,
+    };
   }
-})
+});
