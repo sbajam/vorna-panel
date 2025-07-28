@@ -34,7 +34,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // ۳. تنظیم نقش کاربر
-  const userRole = res?.roles || 'viewer'
+  const userRole = res?.roles || 'superAdmin' //defautl Role
   userStore.setUser(userStore.token, userRole)
 
   // ۴. بررسی نقش سوپرادمین

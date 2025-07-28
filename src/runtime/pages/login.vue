@@ -44,7 +44,7 @@ const login = async () => {
       //   headers: { "Cache-Control": "no-cache" },
       //   baseUrl:' '
       // });
-      userStore.setUser(res.token, res.roles || "viewer" );
+      userStore.setUser(res.token, res.roles || "superAdmin" ); //defautl Role
       userStore.setUsername(username.value.trim());
 
       // فقط اگر روی صفحه login هستی، redirect کن
