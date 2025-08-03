@@ -169,7 +169,15 @@ export default defineNuxtModule<ModuleOptions>({
         darkMode: 'class',
       },
     })
+   
     nuxt.options.build!.transpile.push('@alireza-ab/vue3-persian-datepicker')
+    nuxt.options.build.transpile ||= []
+    nuxt.options.build.transpile.push('vue3-grid-layout')
+
+    nuxt.options.vite.optimizeDeps ||= {}
+    nuxt.options.vite.optimizeDeps.include ||= []
+    nuxt.options.vite.optimizeDeps.include.push('vue3-grid-layout')
+
     addPlugin(resolve('./runtime/plugins/datepicker.client.js'))
 
     // اضافه کردن فایل SCSS
@@ -288,6 +296,20 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'Spinner', file: 'Spinner.vue' },
       { name: 'Button', file: 'Button.vue' }
     ]
+    const dashboardComponents = [
+      { name: 'DashboardGrid', file: 'dashboard/DashboardGrid.vue' },
+      { name: 'DashboardWidget', file: 'dashboard/DashboardWidget.vue' },
+      { name: 'DashboardSwitcher', file: 'dashboard/DashboardSwitcher.vue' },
+      { name: 'DashboardFavorites', file: 'dashboard/DashboardFavorites.vue' },
+      { name: 'DashboardView', file: 'dashboard/DashboardView.vue' },
+      { name: 'BaseCard', file: 'dashboard/BaseCard.vue' },
+      { name: 'AddFavP', file: 'dashboard/AddFavP.vue' },
+      { name: 'ChartWidget', file: 'widgets/ChartWidget.client.vue' },
+      { name: 'RecordList', file: 'widgets/RecordList.vue' },
+      { name: 'statCard', file: 'widgets/statCard.vue' },
+      { name: 'WidgetHeader', file: 'widgets/WidgetHeader.vue' },
+
+    ]
 
     // Register all components
     const allComponents = [
@@ -295,7 +317,8 @@ export default defineNuxtModule<ModuleOptions>({
       ...formComponents,
       ...formBuilderComponents,
       ...mediaComponents,
-      ...utilComponents
+      ...utilComponents,
+      ...dashboardComponents
     ]
 
     allComponents.forEach(component => {
@@ -332,6 +355,11 @@ export default defineNuxtModule<ModuleOptions>({
       src: resolve('./runtime/plugins/pinia.js'),
       mode: 'client',
     })
+    addPlugin({
+      src: resolve(__dirname, 'runtime/plugins/vue-apexcharts.client'),
+      mode: 'client',
+    })
+
     // addPlugin(resolve('./runtime/plugins/pinia.js'))
 
     /**

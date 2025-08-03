@@ -130,28 +130,32 @@ function generateSeriesFromXY(data, config) {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow p-4 flex flex-col gap-3">
-    <WidgetHeader :title="props.config.title" />
+  <BaseCard>
+    <!-- class="bg-white rounded-2xl shadow p-4 flex flex-col gap-3" -->
+    <template #header>
+      <WidgetHeader :title="props.config.title" />
+    </template>
+    <template #widget>
+      <!-- stat / list -->
+      <component
+        v-if="isReady && widgetComponent && props.config.type !== 'chart'"
+        :is="widgetComponent"
+        :config="props.config"
+        :dataSources="getArrayData()"
+      />
 
-    <!-- stat / list -->
-    <component
-       v-if="isReady && widgetComponent && props.config.type !== 'chart'"
-       :is="widgetComponent"
-       :config="props.config"
-       :dataSources="getArrayData()"
-     />
+      <!-- chart -->
+      <ChartWidget
+        v-else-if="isReady && props.config.type === 'chart'"
+        :type="props.config.chartType"
+        :series="normalizedOutput?.series"
+        :options="normalizedOutput?.chartOptions"
+      />
 
-    <!-- chart -->
-    <ChartWidget
-      v-else-if="isReady && props.config.type === 'chart'"
-      :type="props.config.chartType"
-      :series="normalizedOutput?.series"
-      :options="normalizedOutput?.chartOptions"
-    />
-
-    <!-- loading -->
-    <div v-else class="text-sm text-gray-400">
-      ⏳ در حال بارگذاری داده‌ها...
-    </div>
-  </div>
+      <!-- loading -->
+      <div v-else class="text-sm text-gray-400">
+        ⏳ در حال بارگذاری داده‌ها...
+      </div>
+    </template>
+  </BaseCard>
 </template>

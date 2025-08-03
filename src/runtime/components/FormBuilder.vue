@@ -6,7 +6,7 @@
         {{ config.formProps.title }}
       </h2>
       <!-- آیکون کلیپبورد برای ذخیره دستی -->
-      <div
+      <div v-if="props.config.formProps.autoSaveKey"
         class="flex items-center ml-4 px-4 py-2 rounded-lg border border-gray-50 shadow-md gap-x-4"
       >
         <Icon
@@ -69,7 +69,7 @@
     <!-- فرم اصلی وقتی loading=false -->
     <div v-else>
       <div
-        class="min-h-[400px] border-2 border-dashed border-gray-300 rounded p-4 relative"
+        class="min-h-[200px] h-fit  rounded p-4 relative"
         @dragover.prevent
         @drop.prevent="handleDrop"
       >
@@ -184,6 +184,7 @@
           :pending="config.submitButton.pending"
           :variant="config.submitButton.variant || 'solid'"
           :color="config.submitButton.color || 'primary-100'"
+          :size="config.submitButton.size || 'lg'"
           type="submit"
         >
           {{ config.submitButton.text }}
@@ -926,5 +927,6 @@ function selectField(key: string) {
 <style scoped>
 .form-builder {
   /* در صورت نیاز استایل اضافه کنید */
+  direction: rtl; /* راست‌چین */
 }
 </style>
