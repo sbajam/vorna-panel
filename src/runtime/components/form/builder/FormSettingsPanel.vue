@@ -1,239 +1,3 @@
-<template>
-  <div class="p-4 bg-white border rounded-lg shadow-md w-full space-y-4">
-    <!-- ===== Header ===== -->
-    <h3 class="text-lg font-medium">تنظیمات فرم</h3>
-
-    <!-- ===== Form Title ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >عنوان فرم</label
-      >
-      <input
-        v-model="localTitle"
-        @input="emitUpdate('title', localTitle)"
-        type="text"
-        class="w-full px-2 py-1 border rounded"
-        placeholder="مثلاً: فرم ثبت‌نام"
-      />
-    </div>
-
-    <!-- ===== Columns (Responsive) ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >تعداد ستون‌ها</label
-      >
-      <div class="grid grid-cols-5 gap-2">
-        <div v-for="br in breakpoints" :key="br.key" class="flex flex-col">
-          <label class="text-xs text-gray-600">{{ br.label }}</label>
-          <input
-            type="number"
-            min="1"
-            v-model.number="localColumns[br.key]"
-            @input="emitColumns"
-            class="px-2 py-1 border rounded text-sm"
-            :placeholder="`مثلاً ${br.default}`"
-          />
-        </div>
-      </div>
-      <p class="mt-1 text-xs text-gray-500">
-        می‌توانید برای هر نقطهٔ شکست (breakpoint) تعداد ستون را تعیین کنید.
-      </p>
-    </div>
-
-    <!-- ===== Disable All Fields ===== -->
-    <div class="flex items-center space-x-2">
-      <input
-        type="checkbox"
-        v-model="localDisabledAll"
-        @change="emitUpdate('disabledAll', localDisabledAll)"
-        class="form-checkbox h-5 w-5 text-blue-600"
-        id="disabledAllCheckbox"
-      />
-      <label for="disabledAllCheckbox" class="text-sm"
-        >غیرفعال‌سازی کلیهٔ فیلدها</label
-      >
-    </div>
-
-    <!-- ===== Loading & Loading Mode ===== -->
-    <div class="space-y-2">
-      <!-- فعال/غیرفعال کردن حالت بارگذاری -->
-      <div class="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          v-model="localLoading"
-          @change="emitUpdate('loading', localLoading)"
-          class="form-checkbox h-5 w-5 text-blue-600"
-          id="loadingCheckbox"
-        />
-        <label for="loadingCheckbox" class="text-sm"
-          >حالت بارگذاری فعال باشد</label
-        >
-      </div>
-
-      <!-- اگر حالت بارگذاری فعال باشد: انتخاب نوع آن -->
-      <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Loading Mode</label
-        >
-        <select
-          v-model="localLoadingMode"
-          @change="emitUpdate('loadingMode', localLoadingMode)"
-          class="w-full px-2 py-1 border rounded text-sm"
-        >
-          <option value="skeleton">Skeleton</option>
-          <option value="spinner">Spinner</option>
-          <option value="button">Button</option>
-        </select>
-        <p class="mt-1 text-xs text-gray-500">
-          با انتخاب هر حالت، کامپوننت فرم مطابقِ آن رفتار خواهد کرد.
-        </p>
-      </div>
-    </div>
-
-    <!-- ===== Error Display Mode ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >نحوهٔ نمایش ارورها</label
-      >
-      <select
-        v-model="localShowErrorsAs"
-        @change="emitUpdate('showErrorsAs', localShowErrorsAs)"
-        class="w-full px-2 py-1 border rounded text-sm"
-      >
-        <option value="inline">درون هر فیلد</option>
-        <option value="notify">اعلان</option>
-      </select>
-    </div>
-
-    <!-- ===== Auto-Save Key ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >کلید ذخیرهٔ خودکار</label
-      >
-      <input
-        v-model="localAutoSaveKey"
-        @input="emitUpdate('autoSaveKey', localAutoSaveKey)"
-        type="text"
-        class="w-full px-2 py-1 border rounded"
-        placeholder="مثلاً: myFormDraft"
-      />
-      <p class="mt-1 text-xs text-gray-500">
-        اگر خالی بگذارید، ذخیرهٔ خودکار فعال نمی‌شود.
-      </p>
-    </div>
-
-    <!-- ===== Direction (RTL / LTR) ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >جهت فرم</label
-      >
-      <select
-        v-model="localDirection"
-        @change="emitUpdate('direction', localDirection)"
-        class="w-full px-2 py-1 border rounded text-sm"
-      >
-        <option value="rtl">راست به چپ (RTL)</option>
-        <option value="ltr">چپ به راست (LTR)</option>
-      </select>
-    </div>
-
-    <!-- ===== Validation Mode ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >حالت اعتبارسنجی</label
-      >
-      <select
-        v-model="localValidationMode"
-        @change="emitUpdate('validationMode', localValidationMode)"
-        class="w-full px-2 py-1 border rounded text-sm"
-      >
-        <option value="onChange">همزمان با تغییر</option>
-        <option value="onBlur">هنگام خروج از فیلد</option>
-        <option value="onSubmit">هنگام ارسال</option>
-      </select>
-    </div>
-
-    <!-- ===== Default Values (optional) ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1"
-        >مقادیر پیش‌فرض (JSON)</label
-      >
-      <textarea
-        v-model="localDefaultValuesJson"
-        @blur="onDefaultValuesBlur"
-        rows="3"
-        class="w-full px-2 py-1 border rounded text-sm font-mono"
-        placeholder='{"firstName": "علی", "email": "example@..." }'
-      ></textarea>
-      <p class="mt-1 text-xs text-gray-500">
-        اگر چیزی ننویسید، مقادیر پیش‌فرض وجود نخواهد داشت.
-      </p>
-    </div>
-    <hr class="border-gray-200" />
-    <h3 class="text-lg font-medium">Submit Button Settings</h3>
-    <div class="space-y-3">
-      <!-- متن دکمه -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700"
-          >Button Text</label
-        >
-        <input
-          v-model="localSubmitText"
-          @input="emitSubmitUpdate('text', localSubmitText)"
-          type="text"
-          class="w-full px-2 py-1 border rounded"
-          placeholder="مثال: ثبت نهایی"
-        />
-      </div>
-
-      <!-- variant -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Variant</label>
-        <select
-          v-model="localSubmitVariant"
-          @change="emitSubmitUpdate('variant', localSubmitVariant)"
-          class="w-full px-2 py-1 border rounded"
-        >
-          <option value="solid">solid</option>
-          <option value="outline">outline</option>
-          <option value="ghost">ghost</option>
-        </select>
-      </div>
-
-      <!-- color -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Color</label>
-        <input
-          v-model="localSubmitColor"
-          @input="emitSubmitUpdate('color', localSubmitColor)"
-          type="text"
-          class="w-full px-2 py-1 border rounded"
-          placeholder="مثال: primary-100"
-        />
-      </div>
-      
-      <!-- pending -->
-      <div class="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          v-model="localSubmitPending"
-          @change="emitSubmitUpdate('pending', localSubmitPending)"
-          class="form-checkbox h-5 w-5 text-blue-600"
-        />
-        <span class="text-sm">Pending (loading state)</span>
-      </div>
-    </div>
-    <!-- ===== Bottom: Close Button ===== -->
-    <div class="flex justify-end">
-      <button
-        @click="onClose"
-        class="px-3 py-1 text-gray-700 border rounded hover:bg-gray-100"
-      >
-        بستن
-      </button>
-    </div>
-  </div>
-</template>
 
 <script setup lang="ts">
 import { ref, reactive, watch } from "vue";
@@ -394,6 +158,240 @@ function onClose() {
 }
 </script>
 
+<template>
+  <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm w-full space-y-4">
+    <!-- ===== Header ===== -->
+    <h3 class="text-base sm:text-lg font-semibold bg-black text-white px-4 py-2 rounded-md">
+      تنظیمات فرم
+    </h3>
+
+    <!-- ===== Form Title ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">عنوان فرم</label>
+      <input
+        v-model="localTitle"
+        @input="emitUpdate('title', localTitle)"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        placeholder="مثلاً: فرم ثبت‌نام"
+      />
+    </div>
+
+    <!-- ===== Columns (Responsive) ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">تعداد ستون‌ها</label>
+      <div class="grid grid-cols-5 gap-2">
+        <div v-for="(br) in breakpoints" :key="br.key" class="flex flex-col">
+          <label class="text-xs text-gray-600">{{ br.label }}</label>
+          <input
+            type="number"
+            min="1"
+            v-model.number="localColumns[br.key]"
+            @input="emitColumns"
+            class="px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+            :placeholder="`مثلاً ${br.default}`"
+          />
+        </div>
+      </div>
+      <p class="mt-1 text-xs text-gray-500">
+        می‌توانید برای هر نقطهٔ شکست (breakpoint) تعداد ستون را تعیین کنید.
+      </p>
+    </div>
+
+    <!-- ===== Disable All Fields ===== -->
+    <div class="flex items-center gap-2">
+      <input
+        type="checkbox"
+        v-model="localDisabledAll"
+        @change="emitUpdate('disabledAll', localDisabledAll)"
+        class="h-4 w-4 rounded border-gray-300 accent-black"
+        id="disabledAllCheckbox"
+      />
+      <label for="disabledAllCheckbox" class="text-sm">غیرفعال‌سازی کلیهٔ فیلدها</label>
+    </div>
+
+    <!-- ===== Loading & Loading Mode ===== -->
+    <div class="space-y-2">
+      <!-- فعال/غیرفعال کردن حالت بارگذاری -->
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          v-model="localLoading"
+          @change="emitUpdate('loading', localLoading)"
+          class="h-4 w-4 rounded border-gray-300 accent-black"
+          id="loadingCheckbox"
+        />
+        <label for="loadingCheckbox" class="text-sm">حالت بارگذاری فعال باشد</label>
+      </div>
+
+      <!-- اگر حالت بارگذاری فعال باشد: انتخاب نوع آن -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Loading Mode</label>
+        <select
+          v-model="localLoadingMode"
+          @change="emitUpdate('loadingMode', localLoadingMode)"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-sm
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        >
+          <option value="skeleton">Skeleton</option>
+          <option value="spinner">Spinner</option>
+          <option value="button">Button</option>
+        </select>
+        <p class="mt-1 text-xs text-gray-500">
+          با انتخاب هر حالت، کامپوننت فرم مطابقِ آن رفتار خواهد کرد.
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== Error Display Mode ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">نحوهٔ نمایش ارورها</label>
+      <select
+        v-model="localShowErrorsAs"
+        @change="emitUpdate('showErrorsAs', localShowErrorsAs)"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-sm
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+      >
+        <option value="inline">درون هر فیلد</option>
+        <option value="notify">اعلان</option>
+      </select>
+    </div>
+
+    <!-- ===== Auto-Save Key ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">کلید ذخیرهٔ خودکار</label>
+      <input
+        v-model="localAutoSaveKey"
+        @input="emitUpdate('autoSaveKey', localAutoSaveKey)"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        placeholder="مثلاً: myFormDraft"
+      />
+      <p class="mt-1 text-xs text-gray-500">
+        اگر خالی بگذارید، ذخیرهٔ خودکار فعال نمی‌شود.
+      </p>
+    </div>
+
+    <!-- ===== Direction (RTL / LTR) ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">جهت فرم</label>
+      <select
+        v-model="localDirection"
+        @change="emitUpdate('direction', localDirection)"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-sm
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+      >
+        <option value="rtl">راست به چپ (RTL)</option>
+        <option value="ltr">چپ به راست (LTR)</option>
+      </select>
+    </div>
+
+    <!-- ===== Validation Mode ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">حالت اعتبارسنجی</label>
+      <select
+        v-model="localValidationMode"
+        @change="emitUpdate('validationMode', localValidationMode)"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-sm
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+      >
+        <option value="onChange">همزمان با تغییر</option>
+        <option value="onBlur">هنگام خروج از فیلد</option>
+        <option value="onSubmit">هنگام ارسال</option>
+      </select>
+    </div>
+
+    <!-- ===== Default Values (optional) ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">مقادیر پیش‌فرض (JSON)</label>
+      <textarea
+        v-model="localDefaultValuesJson"
+        @blur="onDefaultValuesBlur"
+        rows="3"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-sm font-mono
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        placeholder='{"firstName": "علی", "email": "example@..." }'
+      ></textarea>
+      <p class="mt-1 text-xs text-gray-500">
+        اگر چیزی ننویسید، مقادیر پیش‌فرض وجود نخواهد داشت.
+      </p>
+    </div>
+
+    <hr class="border-gray-200" />
+
+    <h3 class="text-base sm:text-lg font-semibold bg-black text-white px-4 py-2 rounded-md">
+      Submit Button Settings
+    </h3>
+
+    <div class="space-y-3">
+      <!-- متن دکمه -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Button Text</label>
+        <input
+          v-model="localSubmitText"
+          @input="emitSubmitUpdate('text', localSubmitText)"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+          placeholder="مثال: ثبت نهایی"
+        />
+      </div>
+
+      <!-- variant -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Variant</label>
+        <select
+          v-model="localSubmitVariant"
+          @change="emitSubmitUpdate('variant', localSubmitVariant)"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        >
+          <option value="solid">solid</option>
+          <option value="outline">outline</option>
+          <option value="ghost">ghost</option>
+        </select>
+      </div>
+
+      <!-- color -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Color</label>
+        <input
+          v-model="localSubmitColor"
+          @input="emitSubmitUpdate('color', localSubmitColor)"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+          placeholder="مثال: primary-100"
+        />
+      </div>
+
+      <!-- pending -->
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          v-model="localSubmitPending"
+          @change="emitSubmitUpdate('pending', localSubmitPending)"
+          class="h-4 w-4 rounded border-gray-300 accent-black"
+        />
+        <span class="text-sm">Pending (loading state)</span>
+      </div>
+    </div>
+
+    <!-- ===== Bottom: Close Button ===== -->
+    <div class="flex justify-end">
+      <button
+        @click="onClose"
+        class="px-3 py-2 bg-black text-white rounded-md border border-black transition hover:-translate-y-px"
+      >
+        بستن
+      </button>
+    </div>
+  </div>
+</template>
 <style scoped>
-/* اگر لازم است، اینجا استایل اضافه کنید */
+/* مینیمال برای هماهنگی با تم */
+:where(h3) { letter-spacing: 0.2px; }
 </style>

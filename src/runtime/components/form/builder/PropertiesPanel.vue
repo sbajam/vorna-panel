@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 bg-white border rounded-lg shadow-md w-full space-y-4">
+  <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm w-full space-y-4">
     <!-- ============================
          بخش اول: ویرایش کلید و برچسب
          ============================ -->
@@ -9,12 +9,13 @@
         Field Key
       </label>
       <div class="flex flex-col space-y-1">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center gap-2">
           <input
             v-model="localKey"
             @blur="onKeyBlur"
             type="text"
-            class="flex-1 px-2 py-1 border rounded"
+            class="flex-1 px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="Unique field key"
           />
           <p v-if="keyError" class="text-xs text-red-600">
@@ -34,7 +35,8 @@
         v-model="localLabel"
         @input="emitUpdate('label', localLabel)"
         type="text"
-        class="w-full px-2 py-1 border rounded"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
         placeholder="Field label"
       />
     </div>
@@ -42,7 +44,7 @@
     <hr class="border-gray-200" />
 
     <!-- ============================
-         بخش دوم: پراپ‌های مشترک در همهٔ فیلدها
+         بخش دوم: پراپ‌های مشترک
          ============================ -->
     <div class="grid grid-cols-1 gap-4">
       <!-- Placeholder -->
@@ -54,7 +56,8 @@
           v-model="localPlaceholder"
           @input="emitUpdate('placeholder', localPlaceholder)"
           type="text"
-          class="w-full px-2 py-1 border rounded"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           placeholder="Placeholder text"
         />
       </div>
@@ -68,7 +71,8 @@
           v-model="localTooltip"
           @input="emitUpdate('tooltip', localTooltip)"
           type="text"
-          class="w-full px-2 py-1 border rounded"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           placeholder="Tooltip (shown on hover)"
         />
       </div>
@@ -82,34 +86,35 @@
           v-model="localIcon"
           @input="emitUpdate('icon', localIcon)"
           type="text"
-          class="w-full px-2 py-1 border rounded"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           placeholder="Icon name (e.g. fa6-solid:user)"
         />
       </div>
 
       <!-- Required & Disabled -->
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center gap-6">
         <label class="inline-flex items-center">
           <input
             type="checkbox"
             v-model="localRequired"
             @change="emitUpdate('required', localRequired)"
-            class="form-checkbox h-5 w-5 text-blue-600"
+            class="h-4 w-4 rounded border-gray-300 accent-black"
           />
-          <span class="ml-2 text-sm">Required</span>
+          <span class="ms-2 text-sm">Required</span>
         </label>
         <label class="inline-flex items-center">
           <input
             type="checkbox"
             v-model="localDisabled"
             @change="emitUpdate('disabled', localDisabled)"
-            class="form-checkbox h-5 w-5 text-blue-600"
+            class="h-4 w-4 rounded border-gray-300 accent-black"
           />
-          <span class="ml-2 text-sm">Disabled</span>
+          <span class="ms-2 text-sm">Disabled</span>
         </label>
       </div>
 
-      <!-- Layout: Responsive colSpan برای base, sm, md, lg, xl -->
+      <!-- Layout: colSpan -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Layout: Column Span (responsive)
@@ -122,17 +127,18 @@
               min="1"
               v-model.number="localColSpan[br]"
               @input="emitLayout"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="col"
             />
           </div>
         </div>
         <p class="mt-1 text-xs text-gray-500">
-          برای هر نقطهٔ شکست (breakpoint) مشخص کنید که این فیلد چه تعداد ستون اشغال کند.
+          برای هر breakpoint مشخص کنید این فیلد چند ستون اشغال کند.
         </p>
       </div>
 
-      <!-- Label Position: Responsive برای base, sm, md, lg, xl -->
+      <!-- Label Position -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Label Position (responsive)
@@ -143,7 +149,8 @@
             <select
               v-model="localLabelPosition[br]"
               @change="emitLabelPosition"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             >
               <option value="">—</option>
               <option value="top">top</option>
@@ -152,20 +159,20 @@
           </div>
         </div>
         <p class="mt-1 text-xs text-gray-500">
-          تعیین کنید در هر breakpoint موقعیت برچسب (label) چگونه باشد.
+          موقعیت برچسب در هر breakpoint را تعیین کنید.
         </p>
       </div>
 
-      <!-- Conditional Display (showIf) ساده و پیشرفته -->
+      <!-- Conditional Display -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Conditional Display (showIf)
         </label>
-        <!-- انتخاب فیلدی که این فیلد بر اساس مقدار آن نمایش/مخفی شود -->
         <select
           v-model="localShowIfKey"
           @change="onShowIfFieldChange"
-          class="w-full px-2 py-1 border rounded"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white
+                 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
         >
           <option value="">— None —</option>
           <option v-for="f in otherFields" :key="f.key" :value="f.key">
@@ -173,7 +180,6 @@
           </option>
         </select>
 
-        <!-- اگر فیلدی انتخاب شد، مقدار موردنظر برای شرط نمایش -->
         <div v-if="localShowIfKey" class="mt-2">
           <label class="block text-xs text-gray-600">
             Show when {{ localShowIfKey }} equals:
@@ -182,20 +188,20 @@
             v-model="localShowIfValue"
             @input="onShowIfValueChange"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="Value (string/number)"
           />
         </div>
 
-        <!-- حالت پیشرفته: تابع JS دلخواه -->
         <div class="mt-2">
           <label class="inline-flex items-center text-xs">
             <input
               type="checkbox"
               v-model="advancedShowIf"
-              class="form-checkbox h-4 w-4 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2">Advanced JS Function</span>
+            <span class="ms-2">Advanced JS Function</span>
           </label>
         </div>
         <div v-if="advancedShowIf" class="mt-2">
@@ -203,12 +209,12 @@
             v-model="localShowIfFunction"
             @blur="onShowIfFunctionBlur"
             rows="3"
-            class="w-full px-2 py-1 border rounded text-sm font-mono"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm font-mono bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="(values) => values['otherKey'] === 'someValue'"
           ></textarea>
           <p class="mt-1 text-xs text-gray-500">
-            از جاوااسکریپت استفاده کنید. مثال:
-            <code>(values) => values['fieldKey'] === 'abc'</code>
+            مثال: <code>(values) => values['fieldKey'] === 'abc'</code>
           </p>
         </div>
       </div>
@@ -220,25 +226,20 @@
          بخش سوم: Type-Specific Logic
          ============================ -->
     <div class="space-y-6">
-      <!-- ==== ۱. Text-like Inputs (text, email, number, password, textarea) ==== -->
+      <!-- Text-like -->
       <template
-        v-if="[
-          'text',
-          'email',
-          'number',
-          'password',
-          'textarea',
-        ].includes(fieldType)"
+        v-if="['text','email','number','password','textarea'].includes(fieldType)"
       >
         <h3 class="text-sm font-semibold text-gray-700">Text Settings</h3>
 
-        <!-- Mask: نمایش predefinedMasks و گزینهٔ Custom -->
+        <!-- Mask -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Mask</label>
           <select
             v-model="localMaskType"
             @change="onMaskTypeChange"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           >
             <option value="">— None —</option>
             <option v-for="(cfg, key) in predefinedMasks" :key="key" :value="key">
@@ -251,11 +252,12 @@
               v-model="localMaskJson"
               @blur="onMaskBlur"
               rows="2"
-              class="w-full px-2 py-1 border rounded text-sm font-mono"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm font-mono bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder='{ "mask": Number, "thousandsSeparator": "," }'
             ></textarea>
             <p class="mt-1 text-xs text-gray-500">
-              JSON ماسک خود را اینجا وارد کنید.
+              JSON ماسک را وارد کنید.
             </p>
           </div>
         </div>
@@ -267,7 +269,8 @@
             v-model="localPrefix"
             @input="emitUpdate('prefix', localPrefix)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="e.g. $"
           />
         </div>
@@ -279,83 +282,85 @@
             v-model="localSuffix"
             @input="emitUpdate('suffix', localSuffix)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="e.g. kg"
           />
         </div>
 
-        <!-- Password Options (فقط در صورتی که type === 'password') -->
-        <div v-if="fieldType === 'password'" class="flex items-center space-x-2">
+        <!-- Password Options -->
+        <div v-if="fieldType === 'password'" class="flex items-center gap-2">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localPasswordOptions"
               @change="emitUpdate('passwordOptions', localPasswordOptions)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Enable Password Strength Meter</span>
+            <span class="ms-2 text-sm">Enable Password Strength Meter</span>
           </label>
         </div>
       </template>
 
-      <!-- ==== ۲. Date-like Inputs (date, time, datetime) ==== -->
-      <template
-        v-else-if="['date', 'time', 'datetime'].includes(fieldType)"
-      >
+      <!-- Date-like -->
+      <template v-else-if="['date','time','datetime'].includes(fieldType)">
         <h3 class="text-sm font-semibold text-gray-700">Date/Time Settings</h3>
-        <!-- inputFormat -->
+
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Input Format</label>
           <input
             v-model="localInputFormat"
             @input="emitUpdate('inputFormat', localInputFormat)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="e.g. YYYY-MM-DD"
           />
         </div>
-        <!-- displayFormat -->
+
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Display Format</label>
           <input
             v-model="localDisplayFormat"
             @input="emitUpdate('displayFormat', localDisplayFormat)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="e.g. DD/MM/YYYY"
           />
         </div>
-        <!-- clearable -->
+
         <div class="mb-3">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localClearable"
               @change="emitUpdate('clearable', localClearable)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Clearable (allow empty)</span>
+            <span class="ms-2 text-sm">Clearable (allow empty)</span>
           </label>
         </div>
-        <!-- single (فقط برای date و datetime) -->
+
         <div v-if="fieldType === 'date' || fieldType === 'datetime'" class="mb-3">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localSingle"
               @change="emitUpdate('single', localSingle)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Single Date Selection</span>
+            <span class="ms-2 text-sm">Single Date Selection</span>
           </label>
         </div>
-        <!-- calendarType -->
+
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Calendar Type</label>
           <select
             v-model="localCalendarType"
             @change="emitUpdate('calendarType', localCalendarType)"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           >
             <option value="persian">Persian</option>
             <option value="gregorian">Gregorian</option>
@@ -363,31 +368,33 @@
         </div>
       </template>
 
-      <!-- ==== ۳. Select ==== -->
+      <!-- Select -->
       <template v-else-if="fieldType === 'select'">
         <h3 class="text-sm font-semibold text-gray-700">Select Settings</h3>
-        <!-- Options (items array) -->
+
         <div class="mb-3 space-y-2">
           <label class="block text-xs text-gray-600">Options (Label & Value)</label>
-          <div v-for="(item, idx) in localItems" :key="idx" class="flex space-x-2">
+          <div v-for="(item, idx) in localItems" :key="idx" class="flex gap-2">
             <input
               v-model="item.label"
               @input="onItemsChange"
               type="text"
-              class="flex-1 px-2 py-1 border rounded text-sm"
+              class="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Label"
             />
             <input
               v-model="item.value"
               @input="onItemsChange"
               type="text"
-              class="flex-1 px-2 py-1 border rounded text-sm"
+              class="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Value"
             />
             <button
               @click="removeItem(idx)"
               type="button"
-              class="px-2 text-red-600 hover:text-red-800"
+              class="px-2 text-red-600 hover:text-red-700"
             >
               ✕
             </button>
@@ -395,44 +402,42 @@
           <button
             @click="addItem"
             type="button"
-            class="mt-1 px-3 py-1 text-xs text-green-700 border border-green-700 rounded hover:bg-green-50"
+            class="mt-1 px-3 py-1 text-xs bg-white text-black border border-black rounded-md transition hover:-translate-y-px"
           >
             + Add Option
           </button>
         </div>
 
-        <!-- multiple, searchable, clearableSelect -->
-        <div class="flex space-x-4 mb-3">
+        <div class="flex flex-wrap items-center gap-6 mb-3">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localMultiple"
               @change="emitUpdate('multiple', localMultiple)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Multiple</span>
+            <span class="ms-2 text-sm">Multiple</span>
           </label>
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localSearchable"
               @change="emitUpdate('searchable', localSearchable)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Searchable</span>
+            <span class="ms-2 text-sm">Searchable</span>
           </label>
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localClearableSelect"
               @change="emitUpdate('clearableSelect', localClearableSelect)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Clearable</span>
+            <span class="ms-2 text-sm">Clearable</span>
           </label>
         </div>
 
-        <!-- labelField, valueField, displayField -->
         <div class="grid grid-cols-1 gap-3">
           <div>
             <label class="block text-xs text-gray-600 mb-1">labelField</label>
@@ -440,7 +445,8 @@
               v-model="localLabelField"
               @input="emitUpdate('labelField', localLabelField)"
               type="text"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Field name for label"
             />
           </div>
@@ -450,7 +456,8 @@
               v-model="localValueField"
               @input="emitUpdate('valueField', localValueField)"
               type="text"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Field name for value"
             />
           </div>
@@ -460,41 +467,43 @@
               v-model="localDisplayField"
               @input="emitUpdate('displayField', localDisplayField)"
               type="text"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Field name for display"
             />
           </div>
         </div>
       </template>
 
-      <!-- ==== ۴. CheckboxGroup / RadioGroup ==== -->
-      <template v-else-if="['checkboxGroup', 'radioGroup'].includes(fieldType)">
+      <!-- CheckboxGroup / RadioGroup -->
+      <template v-else-if="['checkboxGroup','radioGroup'].includes(fieldType)">
         <h3 class="text-sm font-semibold text-gray-700">
           {{ fieldType === 'checkboxGroup' ? 'Checkbox Group' : 'Radio Group' }} Settings
         </h3>
 
-        <!-- Options -->
         <div class="mb-3 space-y-2">
           <label class="block text-xs text-gray-600">Options (Label & Value)</label>
-          <div v-for="(opt, idx) in localOptions" :key="idx" class="flex space-x-2">
+          <div v-for="(opt, idx) in localOptions" :key="idx" class="flex gap-2">
             <input
               v-model="opt.label"
               @input="onOptionsChange"
               type="text"
-              class="flex-1 px-2 py-1 border rounded text-sm"
+              class="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Label"
             />
             <input
               v-model="opt.value"
               @input="onOptionsChange"
               type="text"
-              class="flex-1 px-2 py-1 border rounded text-sm"
+              class="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Value"
             />
             <button
               @click="removeOption(idx)"
               type="button"
-              class="px-2 text-red-600 hover:text-red-800"
+              class="px-2 text-red-600 hover:text-red-700"
             >
               ✕
             </button>
@@ -502,13 +511,12 @@
           <button
             @click="addOption"
             type="button"
-            class="mt-1 px-3 py-1 text-xs text-green-700 border border-green-700 rounded hover:bg-green-50"
+            class="mt-1 px-3 py-1 text-xs bg-white text-black border border-black rounded-md transition hover:-translate-y-px"
           >
             + Add Option
           </button>
         </div>
 
-        <!-- Direction: Responsive (base, sm, md, lg, xl) -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Direction (responsive)</label>
           <div class="grid grid-cols-5 gap-2">
@@ -517,7 +525,8 @@
               <select
                 v-model="localDirection[br]"
                 @change="emitDirection"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               >
                 <option value="">—</option>
                 <option value="vertical">vertical</option>
@@ -526,23 +535,22 @@
             </div>
           </div>
           <p class="mt-1 text-xs text-gray-500">
-            تعیین کنید در هر breakpoint جهت چیدن گزینه‌ها چگونه باشد.
+            جهت چیدمان گزینه‌ها در هر breakpoint.
           </p>
         </div>
 
-        <!-- Group Label -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Group Label</label>
           <input
             v-model="localGroupLabel"
             @input="emitUpdate('groupLabel', localGroupLabel)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="Group Label"
           />
         </div>
 
-        <!-- Label Position: Responsive مثل بخش بالا -->
         <div>
           <label class="block text-xs text-gray-600 mb-1">Label Position (responsive)</label>
           <div class="grid grid-cols-5 gap-2">
@@ -551,7 +559,8 @@
               <select
                 v-model="localLabelPosition[br]"
                 @change="emitLabelPosition"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               >
                 <option value="">—</option>
                 <option value="top">top</option>
@@ -562,17 +571,17 @@
         </div>
       </template>
 
-      <!-- ==== ۵. Toggle ==== -->
+      <!-- Toggle -->
       <template v-else-if="fieldType === 'toggle'">
         <h3 class="text-sm font-semibold text-gray-700">Toggle Settings</h3>
 
-        <!-- Size -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Size</label>
           <select
             v-model="localSize"
             @change="emitUpdate('size', localSize)"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
           >
             <option value="sm">Small</option>
             <option value="md">Medium</option>
@@ -580,7 +589,6 @@
           </select>
         </div>
 
-        <!-- OnColor & OffColor -->
         <div class="grid grid-cols-1 gap-3 mb-3">
           <div>
             <label class="block text-xs text-gray-600 mb-1">On Color</label>
@@ -588,7 +596,8 @@
               v-model="localOnColor"
               @input="emitUpdate('onColor', localOnColor)"
               type="text"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Tailwind color class (e.g. bg-green-500)"
             />
           </div>
@@ -598,13 +607,13 @@
               v-model="localOffColor"
               @input="emitUpdate('offColor', localOffColor)"
               type="text"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Tailwind color class (e.g. bg-gray-300)"
             />
           </div>
         </div>
 
-        <!-- Label Position: Responsive -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Label Position</label>
           <div class="grid grid-cols-5 gap-2">
@@ -613,7 +622,8 @@
               <select
                 v-model="localLabelPosition[br]"
                 @change="emitLabelPosition"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               >
                 <option value="">—</option>
                 <option value="top">top</option>
@@ -624,36 +634,34 @@
         </div>
       </template>
 
-      <!-- ==== ۶. File Uploader ==== -->
+      <!-- File -->
       <template v-else-if="fieldType === 'file'">
         <h3 class="text-sm font-semibold text-gray-700">File Uploader Settings</h3>
 
-        <!-- accept -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Accept</label>
           <input
             v-model="localAccept"
             @input="emitUpdate('accept', localAccept)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="e.g. image/*, .pdf"
           />
         </div>
 
-        <!-- multipleFile -->
         <div class="mb-3">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localMultipleFile"
               @change="emitUpdate('multipleFile', localMultipleFile)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Allow Multiple Files</span>
+            <span class="ms-2 text-sm">Allow Multiple Files</span>
           </label>
         </div>
 
-        <!-- maxFiles & maxSize -->
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div>
             <label class="block text-xs text-gray-600 mb-1">Max Files</label>
@@ -662,7 +670,8 @@
               @input="emitUpdate('maxFiles', localMaxFiles)"
               type="number"
               min="1"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             />
           </div>
           <div>
@@ -672,25 +681,24 @@
               @input="emitUpdate('maxSize', localMaxSize)"
               type="number"
               min="1"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             />
           </div>
         </div>
 
-        <!-- isImageUploader -->
         <div class="mb-3">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="localIsImageUploader"
               @change="emitUpdate('isImageUploader', localIsImageUploader)"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Image Uploader (preview)</span>
+            <span class="ms-2 text-sm">Image Uploader (preview)</span>
           </label>
         </div>
 
-        <!-- Watermark options (فقط اگر isImageUploader === true) -->
         <div v-if="localIsImageUploader" class="space-y-3 mb-3">
           <div>
             <label class="inline-flex items-center">
@@ -698,9 +706,9 @@
                 type="checkbox"
                 v-model="localWatermark"
                 @change="emitUpdate('watermark', localWatermark)"
-                class="form-checkbox h-5 w-5 text-blue-600"
+                class="h-4 w-4 rounded border-gray-300 accent-black"
               />
-              <span class="ml-2 text-sm">Apply Watermark</span>
+              <span class="ms-2 text-sm">Apply Watermark</span>
             </label>
           </div>
           <div v-if="localWatermark" class="space-y-2">
@@ -710,7 +718,8 @@
                 v-model="localWatermarkImage"
                 @input="emitUpdate('watermarkImage', localWatermarkImage)"
                 type="text"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 placeholder="URL or path"
               />
             </div>
@@ -720,27 +729,28 @@
                 v-model="localWatermarkText"
                 @input="emitUpdate('watermarkText', localWatermarkText)"
                 type="text"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 placeholder="Text watermark if no image"
               />
             </div>
           </div>
         </div>
 
-        <!-- uploadUrl -->
         <div class="mb-3">
           <label class="block text-xs text-gray-600 mb-1">Upload URL</label>
           <input
             v-model="localUploadUrl"
             @input="emitUpdate('uploadUrl', localUploadUrl)"
             type="text"
-            class="w-full px-2 py-1 border rounded text-sm"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="Server endpoint"
           />
         </div>
       </template>
 
-      <!-- ==== ۷. Rich Text ==== -->
+      <!-- Rich Text -->
       <template v-else-if="fieldType === 'richtext'">
         <h3 class="text-sm font-semibold text-gray-700">Rich Text Editor Settings</h3>
         <label class="inline-flex items-center">
@@ -748,26 +758,29 @@
             type="checkbox"
             v-model="localRichtextImage"
             @change="emitUpdate('image', localRichtextImage)"
-            class="form-checkbox h-5 w-5 text-blue-600"
+            class="h-4 w-4 rounded border-gray-300 accent-black"
           />
-          <span class="ml-2 text-sm">Allow Image Insertion</span>
+          <span class="ms-2 text-sm">Allow Image Insertion</span>
         </label>
       </template>
 
-      <!-- ==== ۸. Array ==== -->
+      <!-- Array -->
       <template v-else-if="fieldType === 'array'">
         <h3 class="text-sm font-semibold text-gray-700">Array Field Settings</h3>
 
-        <!-- itemFields: فهرست فیلدهای تو در تو -->
         <div class="mb-3 space-y-2">
           <label class="block text-xs text-gray-600 mb-1">Item Fields</label>
-          <div v-for="(itemF, idx) in localItemFields" :key="idx" class="p-2 border rounded space-y-2">
+          <div
+            v-for="(itemF, idx) in localItemFields"
+            :key="idx"
+            class="p-2 border border-gray-200 rounded-md space-y-2 bg-white"
+          >
             <div class="flex justify-between items-center">
               <span class="text-sm font-medium">{{ itemF.key }} ({{ itemF.type }})</span>
               <button
                 @click="removeItemField(idx)"
                 type="button"
-                class="text-red-600 hover:text-red-800"
+                class="text-red-600 hover:text-red-700"
               >
                 ✕
               </button>
@@ -778,7 +791,8 @@
                 v-model="itemF.label"
                 @input="onItemFieldsChange"
                 type="text"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 placeholder="Item field label"
               />
             </div>
@@ -786,13 +800,12 @@
           <button
             @click="addItemField"
             type="button"
-            class="mt-1 px-3 py-1 text-xs text-green-700 border border-green-700 rounded hover:bg-green-50"
+            class="mt-1 px-3 py-1 text-xs bg-white text-black border border-black rounded-md transition hover:-translate-y-px"
           >
             + Add Item Field
           </button>
         </div>
 
-        <!-- minItems & maxItems -->
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div>
             <label class="block text-xs text-gray-600 mb-1">Min Items</label>
@@ -801,7 +814,8 @@
               @input="emitUpdate('minItems', localMinItems)"
               type="number"
               min="0"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             />
           </div>
           <div>
@@ -811,13 +825,14 @@
               @input="emitUpdate('maxItems', localMaxItems)"
               type="number"
               min="1"
-              class="w-full px-2 py-1 border rounded text-sm"
+              class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                     focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             />
           </div>
         </div>
       </template>
 
-      <!-- ==== ۹. اگر نوع فیلد پیدا نشود ==== -->
+      <!-- Unknown -->
       <template v-else>
         <p class="text-sm text-gray-500">No additional settings for this field type.</p>
       </template>
@@ -826,39 +841,37 @@
     <hr class="border-gray-200" />
 
     <!-- ============================
-         بخش چهارم: لیست Validatorها
+         Validators
          ============================ -->
     <div class="space-y-3">
       <h3 class="text-sm font-semibold text-gray-700 mb-2">Validators</h3>
       <div class="space-y-2">
-        <!-- هر Validator پیش‌فرض را نشان بده -->
         <div
           v-for="(vdef, idx) in validatorDefinitions"
           :key="vdef.type"
-          class="flex items-center space-x-2"
+          class="flex flex-wrap items-center gap-2"
         >
           <input
             type="checkbox"
             :id="`validator_${vdef.type}`"
             v-model="activeValidators[vdef.type]"
             @change="onValidatorToggle(vdef.type)"
-            class="form-checkbox h-5 w-5 text-blue-600"
+            class="h-4 w-4 rounded border-gray-300 accent-black"
           />
           <label :for="`validator_${vdef.type}`" class="text-sm">
             {{ vdef.label }}
           </label>
 
-          <!-- اگر Validator نیاز به مقدار داشت (مثلاً minLength, maxLength, min, max, regex, matchField) -->
           <template v-if="activeValidators[vdef.type] && vdef.hasValue">
-            <div class="ml-4 flex items-center space-x-2">
+            <div class="ms-2 flex items-center gap-2">
               <label class="text-xs text-gray-600">{{ vdef.valueLabel }}:</label>
 
-              <!-- برای matchField یک منوی کشویی از فیلدهای دیگر -->
               <template v-if="vdef.type === 'matchField'">
                 <select
                   v-model="validatorParams[vdef.type]"
                   @change="emitValidators"
-                  class="px-2 py-1 border rounded text-sm"
+                  class="px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                         focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 >
                   <option value="">— select field —</option>
                   <option v-for="f in otherFields" :key="f.key" :value="f.key">
@@ -867,12 +880,12 @@
                 </select>
               </template>
 
-              <!-- برای regex یک منوی predefined plus گزینهٔ custom -->
               <template v-else-if="vdef.type === 'regex'">
                 <select
                   v-model="validatorParams[vdef.type]"
                   @change="emitValidators"
-                  class="px-2 py-1 border rounded text-sm"
+                  class="px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                         focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 >
                   <option value="">— select pattern —</option>
                   <option
@@ -884,24 +897,25 @@
                   </option>
                   <option value="__custom">Custom Regex</option>
                 </select>
-                <div v-if="validatorParams[vdef.type] === '__custom'" class="ml-2">
+                <div v-if="validatorParams[vdef.type] === '__custom'">
                   <input
                     v-model="validatorCustomRegex"
                     @blur="emitValidators"
                     type="text"
-                    class="px-2 py-1 border rounded text-sm font-mono"
+                    class="px-3 py-2 border border-gray-200 rounded-md text-sm font-mono bg-white
+                           focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                     placeholder="e.g. ^[A-Za-z0-9]+$"
                   />
                 </div>
               </template>
 
-              <!-- سایر Validatorهای عددی یا string (minLength, maxLength, min, max) -->
               <template v-else>
                 <input
                   v-model.number="validatorParams[vdef.type]"
                   @input="emitValidators"
                   :type="vdef.isNumber ? 'number' : 'text'"
-                  class="w-20 px-2 py-1 border rounded text-sm"
+                  class="w-24 px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                         focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                   :placeholder="vdef.valueLabel"
                   min="0"
                 />
@@ -909,30 +923,30 @@
             </div>
           </template>
 
-          <!-- پیام خطای مربوط به Validator -->
           <template v-if="activeValidators[vdef.type]">
-            <div class="ml-4 flex-1">
+            <div class="ms-2 flex-1">
               <input
                 v-model="validatorMessages[vdef.type]"
                 @input="emitValidators"
                 type="text"
-                class="w-full px-2 py-1 border rounded text-sm"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                 :placeholder="`Error message for ${vdef.label}`"
               />
             </div>
           </template>
         </div>
 
-        <!-- امکان افزودن Validator دلخواه (custom) -->
+        <!-- Custom validator -->
         <div class="mt-2">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
               v-model="activeValidators['custom']"
               @change="onValidatorToggle('custom')"
-              class="form-checkbox h-5 w-5 text-blue-600"
+              class="h-4 w-4 rounded border-gray-300 accent-black"
             />
-            <span class="ml-2 text-sm">Custom Validator</span>
+            <span class="ms-2 text-sm">Custom Validator</span>
           </label>
         </div>
         <div v-if="activeValidators['custom']" class="mt-2">
@@ -940,14 +954,16 @@
             v-model="validatorCustomFunction"
             @blur="emitValidators"
             rows="3"
-            class="w-full px-2 py-1 border rounded text-sm font-mono"
+            class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm font-mono bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="(value, allValues) => { /* return true if valid */ }"
           ></textarea>
           <input
             v-model="validatorMessages['custom']"
             @input="emitValidators"
             type="text"
-            class="mt-1 w-full px-2 py-1 border rounded text-sm"
+            class="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md text-sm bg-white
+                   focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
             placeholder="Error message for custom validator"
           />
         </div>
@@ -957,24 +973,28 @@
     <hr class="border-gray-200" />
 
     <!-- ============================
-         بخش نهایی: دکمه‌ها (حذف، بستن)
+         دکمه‌ها
          ============================ -->
-    <div class="flex justify-end space-x-2">
+    <div class="flex justify-end gap-2">
       <button
         @click="onClose"
-        class="px-3 py-1 text-gray-700 border rounded hover:bg-gray-100"
+        class="px-3 py-2 bg-black text-white rounded-md border border-black transition hover:-translate-y-px"
       >
         Close
       </button>
       <button
         @click="onDelete"
-        class="px-3 py-1 text-red-700 border border-red-700 rounded hover:bg-red-50"
+        class="px-3 py-2 bg-white text-red-600 border border-red-600 rounded-md transition hover:bg-red-50"
       >
         Delete
       </button>
     </div>
   </div>
 </template>
+<style scoped>
+/* مینیمال برای هماهنگی با تم */
+:where(h3){ letter-spacing: .2px; }
+</style>
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from "vue";
@@ -1722,6 +1742,3 @@ function onClose() {
 }
 </script>
 
-<style scoped>
-/* استایل‌های پایه، می‌توانید بر اساس تم خودتان آن‌ها را تغییر دهید */
-</style>

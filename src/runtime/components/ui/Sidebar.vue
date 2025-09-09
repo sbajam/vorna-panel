@@ -308,7 +308,7 @@ function onClick(to) {
         @apply absolute left-[-15px] rounded-md;
         width: 5px;
         height: 90%;
-        background: theme("colors.primary.DEFAULT", #000);
+        background: theme("colors.primary.DEFAULT", #cecece);
       }
     }
   }

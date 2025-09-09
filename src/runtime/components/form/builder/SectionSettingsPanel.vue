@@ -1,63 +1,3 @@
-<template>
-  <div class="p-4 bg-white border rounded-lg shadow-md w-full space-y-4">
-    <!-- ===== Header ===== -->
-    <h3 class="text-lg font-medium">تنظیمات بخش</h3>
-
-    <!-- ===== Section Title ===== -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">عنوان بخش</label>
-      <input
-        v-model="localTitle"
-        @input="emitUpdate('title', localTitle)"
-        type="text"
-        class="w-full px-2 py-1 border rounded"
-        placeholder="مثلاً: اطلاعات پایه"
-      />
-    </div>
-
-    <!-- ===== Collapsible Toggle ===== -->
-    <div class="flex items-center space-x-2">
-      <input
-        type="checkbox"
-        v-model="localCollapsible"
-        @change="emitUpdate('collapsible', localCollapsible)"
-        class="form-checkbox h-5 w-5 text-blue-600"
-        id="collapsibleCheckbox"
-      />
-      <label for="collapsibleCheckbox" class="text-sm">امکان باز/بسته شدن</label>
-    </div>
-
-    <!-- ===== If collapsible: Default Open State ===== -->
-    <div v-if="localCollapsible">
-      <label class="inline-flex items-center text-sm">
-        <input
-          type="checkbox"
-          v-model="localDefaultOpen"
-          @change="emitUpdate('_open', localDefaultOpen)"
-          class="form-checkbox h-5 w-5 text-blue-600"
-          id="defaultOpenCheckbox"
-        />
-        <span class="ml-2">به طور پیش‌فرض باز باشد</span>
-      </label>
-    </div>
-
-    <!-- ===== Bottom Buttons ===== -->
-    <div class="flex justify-end space-x-2">
-      <button
-        @click="onClose"
-        class="px-3 py-1 text-gray-700 border rounded hover:bg-gray-100"
-      >
-        بستن
-      </button>
-      <button
-        @click="onDelete"
-        class="px-3 py-1 text-red-700 border border-red-700 rounded hover:bg-red-50"
-      >
-        حذف بخش
-      </button>
-    </div>
-  </div>
-</template>
 
 <script setup lang="ts">
 // -------------------------------
@@ -132,7 +72,75 @@ function onClose() {
   emit("closePanel");
 }
 </script>
+<template>
+  <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm w-full space-y-4">
+    <!-- ===== Header ===== -->
+    <h3 class="text-base sm:text-lg font-semibold bg-black text-white px-4 py-2 rounded-md">
+      Section Settings
+    </h3>
+
+    <!-- ===== Section Title ===== -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
+      <input
+        v-model="localTitle"
+        @input="emitUpdate('title', localTitle)"
+        type="text"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        placeholder="e.g. Basic Info"
+      />
+    </div>
+
+    <!-- ===== Collapsible Toggle ===== -->
+    <div class="flex items-center gap-2">
+      <input
+        type="checkbox"
+        v-model="localCollapsible"
+        @change="emitUpdate('collapsible', localCollapsible)"
+        class="h-4 w-4 rounded border-gray-300 accent-black"
+        id="collapsibleCheckbox"
+      />
+      <label for="collapsibleCheckbox" class="text-sm">Collapsible</label>
+    </div>
+
+    <!-- ===== If collapsible: Default Open State ===== -->
+    <div v-if="localCollapsible">
+      <label class="inline-flex items-center text-sm">
+        <input
+          type="checkbox"
+          v-model="localDefaultOpen"
+          @change="emitUpdate('_open', localDefaultOpen)"
+          class="h-4 w-4 rounded border-gray-300 accent-black"
+          id="defaultOpenCheckbox"
+        />
+        <span class="ms-2">Open by Default</span>
+      </label>
+    </div>
+
+    <!-- ===== Bottom Buttons ===== -->
+    <div class="flex justify-end gap-2">
+      <button
+        @click="onClose"
+        class="px-3 py-2 bg-black text-white rounded-md border border-black transition hover:-translate-y-px"
+      >
+        Close
+      </button>
+      <button
+        @click="onDelete"
+        class="px-3 py-2 bg-white text-red-600 border border-red-600 rounded-md transition hover:bg-red-50"
+      >
+        Delete Section
+      </button>
+    </div>
+  </div>
+</template>
+
+
 
 <style scoped>
-/* در صورت نیاز می‌توانید استایل اضافه کنید */
+:where(h3){ letter-spacing:.2px; }
 </style>
+
+
+
