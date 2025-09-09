@@ -1,309 +1,316 @@
 <template>
-  <div class="flex flex-col h-screen overflow-hidden">
-    <PreviewP
-      v-if="showPreview"
-      :show="showPreview"
-      :config="config"
-      :formValues="formValues"
-      @validationError="onValidationError"
-      @close_popup="togglePreview"
-      @submitForm="onSubmitForm"
-    />
-    <!-- ====== HEADER با دکمه‌های Settings / Preview / Generate / Import ====== -->
-    <header
-      class="flex items-center justify-between bg-white border-b px-4 py-2 shadow-md"
-    >
-      <h1 class="text-2xl font-semibold text-gray-800">طراح فرم</h1>
-      <div class="flex items-center space-x-2">
-        <!-- دکمهٔ تنظیمات فرم -->
-        <button
-          class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          @click="openFormSettings"
-          :disabled="showPreview"
+  <NuxtLayout name="builder">
+    <template>
+      <div class="flex flex-col h-screen overflow-hidden">
+        <PreviewP
+          v-if="showPreview"
+          :show="showPreview"
+          :config="config"
+          :formValues="formValues"
+          @validationError="onValidationError"
+          @close_popup="togglePreview"
+          @submitForm="onSubmitForm"
+        />
+        <!-- ====== HEADER با دکمه‌های Settings / Preview / Generate / Import ====== -->
+        <header
+          class="flex items-center justify-between bg-white border-b px-4 py-2 shadow-md"
         >
-          ⚙️ تنظیمات فرم
-        </button>
+          <h1 class="text-2xl font-semibold text-gray-800">طراح فرم</h1>
+          <div class="flex items-center space-x-2">
+            <!-- دکمهٔ تنظیمات فرم -->
+            <button
+              class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              @click="openFormSettings"
+              :disabled="showPreview"
+            >
+              ⚙️ تنظیمات فرم
+            </button>
 
-        <!-- دکمهٔ پیش‌نمایش -->
-        <button
-          class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-          @click="togglePreview"
-        >
-          👁 پیش‌نمایش
-        </button>
+            <!-- دکمهٔ پیش‌نمایش -->
+            <button
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              @click="togglePreview"
+            >
+              👁 پیش‌نمایش
+            </button>
 
-        <!-- دکمهٔ تولید کد JSON -->
-        <button
-          class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-          @click="copyFullPage"
-        >
-          📄 دریافت کد
-        </button>
+            <!-- دکمهٔ تولید کد JSON -->
+            <button
+              class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+              @click="copyFullPage"
+            >
+              📄 دریافت کد
+            </button>
 
-        <!-- دکمهٔ بارگذاری از کد -->
-        <button
-          class="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700"
-          @click="importConfigFromCode"
-          :disabled="showPreview"
-        >
-          🔄 بارگذاری از کد
-        </button>
-      </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden">
-      <!-- ========== ستون چپ: PropertiesPanel یا SectionSettingsPanel یا FormSettingsPanel ========== -->
-      <transition name="slide-fade">
-        <aside
-          v-if="
-            activeFieldKey !== null ||
-            sectionEditingIndex !== null ||
-            formSettingsOpen
-          "
-          class="w-1/4 bg-gray-100 border-r border-gray-300 p-4 overflow-auto"
-        >
-          <!-- ===== PropertiesPanel ===== -->
-          <PropertiesPanel
-            v-if="activeFieldKey !== null"
-            :field="activeField"
-            :formValues="formValues"
-            :formErrors="formErrors"
-            :allFields="allFields"
-            @updateField="onUpdateField"
-            @renameField="onRenameField"
-            @deleteField="onDeleteField"
-            @closePanel="activeFieldKey = null"
-          />
-
-          <!-- ===== SectionSettingsPanel ===== -->
-          <SectionSettingsPanel
-            v-else-if="sectionEditingIndex !== null"
-            :section="config.sections[sectionEditingIndex]"
-            :submitButton="config.submitButton"
-            @updateSection="onUpdateSection"
-            @deleteSection="onDeleteSection"
-            @updateSubmitButton="onUpdateSubmitButton"
-            @closePanel="closeAllPanels"
-          />
-
-          <!-- ===== FormSettingsPanel ===== -->
-          <FormSettingsPanel
-            v-else-if="formSettingsOpen"
-            :formProps="config.formProps"
-            @updateFormProps="onUpdateFormProps"
-            @closePanel="closeAllPanels"
-          />
-        </aside>
-      </transition>
-
-      <!-- ========== ستون وسط: CANVAS / Draggable Sections & Fields ========== -->
-      <main class="flex-1 bg-white p-4 overflow-auto relative">
-        <!-- اگر پیش‌نمایش فعال باشد -->
-        <div v-if="showPreview" class="h-full">
-          <FormBuilder
-            :config="config"
-            @submitForm="onSubmitForm"
-            @validationError="onValidationError"
-          />
-          <button
-            class="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            @click="togglePreview"
-          >
-            ✕ بستن پیش‌نمایش
-          </button>
-          <div class="absolute bottom-4 left-4 text-sm text-gray-500">
-            <p class="mb-1">
-              برای تعامل با فرم پیش‌نمایش، می‌توانید روی فیلدها کلیک کنید.
-            </p>
+            <!-- دکمهٔ بارگذاری از کد -->
+            <button
+              class="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+              @click="importConfigFromCode"
+              :disabled="showPreview"
+            >
+              🔄 بارگذاری از کد
+            </button>
           </div>
-          <div class="absolute inset-0 bg-white bg-opacity-90"></div>
-        </div>
+        </header>
 
-        <!-- اگر پیش‌نمایش فعال نیست: نمایش Canvas طراحی ===== -->
-        <div v-else class="flex flex-col h-full">
-          <div class="mb-4 text-gray-600">
-            <p>برای انتخاب سکشن، روی کارت آن کلیک کنید (رینگ سبز می‌شود).</p>
-            <p>
-              بعد از انتخاب سکشن، روی یکی از انواع فیلد در Palette کلیک کنید تا
-              اضافه شود.
-            </p>
-            <p>
-              برای جابه‌جایی سکشن‌ها یا فیلدها، روی آیکون «≡» کلیک و درگ کنید.
-            </p>
-          </div>
+        <div class="flex flex-1 overflow-hidden">
+          <!-- ========== ستون چپ: PropertiesPanel یا SectionSettingsPanel یا FormSettingsPanel ========== -->
+          <transition name="slide-fade">
+            <aside
+              v-if="
+                activeFieldKey !== null ||
+                sectionEditingIndex !== null ||
+                formSettingsOpen
+              "
+              class="w-1/4 bg-gray-100 border-r border-gray-300 p-4 overflow-auto"
+            >
+              <!-- ===== PropertiesPanel ===== -->
+              <PropertiesPanel
+                v-if="activeFieldKey !== null"
+                :field="activeField"
+                :formValues="formValues"
+                :formErrors="formErrors"
+                :allFields="allFields"
+                @updateField="onUpdateField"
+                @renameField="onRenameField"
+                @deleteField="onDeleteField"
+                @closePanel="activeFieldKey = null"
+              />
 
-          <!-- Draggable سکشن‌ها -->
-          <draggable
-            v-model="config.sections"
-            handle=".section-handle"
-            item-key="title"
-            class="space-y-4 relative z-10"
-          >
-            <template #item="{ element: section, index: sidx }">
-              <div
-                class="border border-gray-300 rounded bg-gray-50"
-                :class="{
-                  'ring-2 ring-green-500': selectedSectionIndex === sidx,
-                }"
-                @click.stop="selectSection(sidx)"
+              <!-- ===== SectionSettingsPanel ===== -->
+              <SectionSettingsPanel
+                v-else-if="sectionEditingIndex !== null"
+                :section="config.sections[sectionEditingIndex]"
+                :submitButton="config.submitButton"
+                @updateSection="onUpdateSection"
+                @deleteSection="onDeleteSection"
+                @updateSubmitButton="onUpdateSubmitButton"
+                @closePanel="closeAllPanels"
+              />
+
+              <!-- ===== FormSettingsPanel ===== -->
+              <FormSettingsPanel
+                v-else-if="formSettingsOpen"
+                :formProps="config.formProps"
+                @updateFormProps="onUpdateFormProps"
+                @closePanel="closeAllPanels"
+              />
+            </aside>
+          </transition>
+
+          <!-- ========== ستون وسط: CANVAS / Draggable Sections & Fields ========== -->
+          <main class="flex-1 bg-white p-4 overflow-auto relative">
+            <!-- اگر پیش‌نمایش فعال باشد -->
+            <div v-if="showPreview" class="h-full">
+              <FormBuilder
+                :config="config"
+                @submitForm="onSubmitForm"
+                @validationError="onValidationError"
+              />
+              <button
+                class="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                @click="togglePreview"
               >
-                <!-- هدر سکشن با قابلیت درگ و کلیک برای تنظیمات -->
-                <div
-                  class="section-handle flex justify-between items-center bg-gray-200 px-3 py-2 cursor-move"
-                >
-                  <div class="flex items-center space-x-2 group">
-                    <span class="text-gray-500 group-hover:text-gray-700"
-                      >≡</span
-                    >
-                    <h3 class="font-semibold text-gray-800">
-                      {{ section.title }}
-                    </h3>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <button
-                      v-if="section.collapsible"
-                      @click.stop="toggleSection(sidx)"
-                      class="text-gray-600 hover:text-gray-800"
-                    >
-                      <Icon
-                        :name="`fa6-solid:${
-                          section._open ? 'chevron-down' : 'chevron-left'
-                        }`"
-                      />
-                    </button>
-                    <button
-                      @click.stop="onDeleteSection(sidx)"
-                      class="text-red-600 hover:text-red-800"
-                      title="حذف سکشن"
-                    >
-                      <Icon name="fa6-solid:trash-can" />
-                    </button>
-                  </div>
-                </div>
+                ✕ بستن پیش‌نمایش
+              </button>
+              <div class="absolute bottom-4 left-4 text-sm text-gray-500">
+                <p class="mb-1">
+                  برای تعامل با فرم پیش‌نمایش، می‌توانید روی فیلدها کلیک کنید.
+                </p>
+              </div>
+              <div class="absolute inset-0 bg-white bg-opacity-90"></div>
+            </div>
 
-                <!-- محتویات سکشن (Draggable فیلدها) -->
-                <Vue3SlideUpDown v-model="section._open">
+            <!-- اگر پیش‌نمایش فعال نیست: نمایش Canvas طراحی ===== -->
+            <div v-else class="flex flex-col h-full">
+              <div class="mb-4 text-gray-600">
+                <p>
+                  برای انتخاب سکشن، روی کارت آن کلیک کنید (رینگ سبز می‌شود).
+                </p>
+                <p>
+                  بعد از انتخاب سکشن، روی یکی از انواع فیلد در Palette کلیک کنید
+                  تا اضافه شود.
+                </p>
+                <p>
+                  برای جابه‌جایی سکشن‌ها یا فیلدها، روی آیکون «≡» کلیک و درگ
+                  کنید.
+                </p>
+              </div>
+
+              <!-- Draggable سکشن‌ها -->
+              <draggable
+                v-model="config.sections"
+                handle=".section-handle"
+                item-key="title"
+                class="space-y-4 relative z-10"
+              >
+                <template #item="{ element: section, index: sidx }">
                   <div
-                    v-show="!section.collapsible || section._open"
-                    class="p-3 space-y-3"
+                    class="border border-gray-300 rounded bg-gray-50"
+                    :class="{
+                      'ring-2 ring-green-500': selectedSectionIndex === sidx,
+                    }"
+                    @click.stop="selectSection(sidx)"
                   >
-                    <!-- اگر سکشن خالی باشد -->
+                    <!-- هدر سکشن با قابلیت درگ و کلیک برای تنظیمات -->
                     <div
-                      v-if="!section.fields.length"
-                      class="text-gray-400 text-center py-8"
+                      class="section-handle flex justify-between items-center bg-gray-200 px-3 py-2 cursor-move"
                     >
-                      <p>این سکشن خالی است.</p>
-                      <p>
-                        بعد از انتخاب این سکشن، روی یک نوع فیلد در Palette کلیک
-                        کنید.
-                      </p>
+                      <div class="flex items-center space-x-2 group">
+                        <span class="text-gray-500 group-hover:text-gray-700"
+                          >≡</span
+                        >
+                        <h3 class="font-semibold text-gray-800">
+                          {{ section.title }}
+                        </h3>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <button
+                          v-if="section.collapsible"
+                          @click.stop="toggleSection(sidx)"
+                          class="text-gray-600 hover:text-gray-800"
+                        >
+                          <Icon
+                            :name="`fa6-solid:${
+                              section._open ? 'chevron-down' : 'chevron-left'
+                            }`"
+                          />
+                        </button>
+                        <button
+                          @click.stop="onDeleteSection(sidx)"
+                          class="text-red-600 hover:text-red-800"
+                          title="حذف سکشن"
+                        >
+                          <Icon name="fa6-solid:trash-can" />
+                        </button>
+                      </div>
                     </div>
 
-                    <!-- Draggable فیلدها -->
-                    <draggable
-                      v-else
-                      v-model="section.fields"
-                      handle=".field-handle"
-                      item-key="key"
-                      class="space-y-2"
-                    >
-                      <template #item="{ element: field, index: fidx }">
+                    <!-- محتویات سکشن (Draggable فیلدها) -->
+                    <Vue3SlideUpDown v-model="section._open">
+                      <div
+                        v-show="!section.collapsible || section._open"
+                        class="p-3 space-y-3"
+                      >
+                        <!-- اگر سکشن خالی باشد -->
                         <div
-                          v-if="!field.showIf || field.showIf(formValues)"
-                          :class="[
-                            'flex items-center justify-between bg-white border rounded px-3 py-2 cursor-move',
-                            field.key === activeFieldKey
-                              ? 'ring-2 ring-blue-400'
-                              : '',
-                          ]"
-                          @click.stop="selectField(field.key)"
+                          v-if="!section.fields.length"
+                          class="text-gray-400 text-center py-8"
                         >
-                          <div class="flex items-center space-x-2">
-                            <span
-                              class="field-handle text-gray-400 group-hover:text-gray-600"
-                              >≡</span
-                            >
-                            <span class="text-gray-800">{{
-                              field.label || field.type
-                            }}</span>
-                          </div>
-                          <button
-                            @click.stop="onDeleteField(field.key)"
-                            class="text-red-600 hover:text-red-800"
-                            title="حذف فیلد"
-                          >
-                            <Icon name="fa6-solid:trash-can" />
-                          </button>
+                          <p>این سکشن خالی است.</p>
+                          <p>
+                            بعد از انتخاب این سکشن، روی یک نوع فیلد در Palette
+                            کلیک کنید.
+                          </p>
                         </div>
-                      </template>
-                    </draggable>
+
+                        <!-- Draggable فیلدها -->
+                        <draggable
+                          v-else
+                          v-model="section.fields"
+                          handle=".field-handle"
+                          item-key="key"
+                          class="space-y-2"
+                        >
+                          <template #item="{ element: field, index: fidx }">
+                            <div
+                              v-if="!field.showIf || field.showIf(formValues)"
+                              :class="[
+                                'flex items-center justify-between bg-white border rounded px-3 py-2 cursor-move',
+                                field.key === activeFieldKey
+                                  ? 'ring-2 ring-blue-400'
+                                  : '',
+                              ]"
+                              @click.stop="selectField(field.key)"
+                            >
+                              <div class="flex items-center space-x-2">
+                                <span
+                                  class="field-handle text-gray-400 group-hover:text-gray-600"
+                                  >≡</span
+                                >
+                                <span class="text-gray-800">{{
+                                  field.label || field.type
+                                }}</span>
+                              </div>
+                              <button
+                                @click.stop="onDeleteField(field.key)"
+                                class="text-red-600 hover:text-red-800"
+                                title="حذف فیلد"
+                              >
+                                <Icon name="fa6-solid:trash-can" />
+                              </button>
+                            </div>
+                          </template>
+                        </draggable>
+                      </div>
+                    </Vue3SlideUpDown>
                   </div>
-                </Vue3SlideUpDown>
+                </template>
+              </draggable>
+
+              <!-- اگر هیچ سکشنی وجود ندارد -->
+              <div
+                v-if="!config.sections.length"
+                class="flex-1 flex items-center justify-center text-gray-400"
+              >
+                هیچ سکشنی وجود ندارد. لطفاً ابتدا یک سکشن جدید اضافه کنید.
               </div>
-            </template>
-          </draggable>
+            </div>
+          </main>
 
-          <!-- اگر هیچ سکشنی وجود ندارد -->
+          <!-- ========== ستون راست: FieldPalette و افزودن سکشن ====== -->
+          <aside
+            class="w-1/4 bg-gray-50 border-l border-gray-300 p-4 overflow-auto"
+          >
+            <FieldPalette @selectFieldType="onSelectFieldType" />
+
+            <div class="mt-6">
+              <button
+                class="w-full px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                @click="addNewSection"
+                :disabled="showPreview"
+              >
+                + افزودن بخش جدید
+              </button>
+            </div>
+          </aside>
+        </div>
+
+        <!-- ========== MODAL برای نمایش JSON کانفیگ ====== -->
+        <transition name="fade">
           <div
-            v-if="!config.sections.length"
-            class="flex-1 flex items-center justify-center text-gray-400"
+            v-if="showGenerateModal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           >
-            هیچ سکشنی وجود ندارد. لطفاً ابتدا یک سکشن جدید اضافه کنید.
+            <div class="bg-white rounded-lg w-3/4 max-w-2xl p-4 space-y-4">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold">کد JSON کانفیگ فرم</h3>
+                <button
+                  @click="showGenerateModal = false"
+                  class="text-gray-600 hover:text-gray-800"
+                >
+                  ✕
+                </button>
+              </div>
+              <textarea
+                v-model="generatedJson"
+                class="w-full h-64 px-2 py-1 border rounded font-mono text-sm"
+                readonly
+              ></textarea>
+              <div class="flex justify-end">
+                <button
+                  @click="copyOutput"
+                  class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  📋 کپی به کلیپ‌بورد
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </main>
-
-      <!-- ========== ستون راست: FieldPalette و افزودن سکشن ====== -->
-      <aside
-        class="w-1/4 bg-gray-50 border-l border-gray-300 p-4 overflow-auto"
-      >
-        <FieldPalette @selectFieldType="onSelectFieldType" />
-
-        <div class="mt-6">
-          <button
-            class="w-full px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            @click="addNewSection"
-            :disabled="showPreview"
-          >
-            + افزودن بخش جدید
-          </button>
-        </div>
-      </aside>
-    </div>
-
-    <!-- ========== MODAL برای نمایش JSON کانفیگ ====== -->
-    <transition name="fade">
-      <div
-        v-if="showGenerateModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      >
-        <div class="bg-white rounded-lg w-3/4 max-w-2xl p-4 space-y-4">
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold">کد JSON کانفیگ فرم</h3>
-            <button
-              @click="showGenerateModal = false"
-              class="text-gray-600 hover:text-gray-800"
-            >
-              ✕
-            </button>
-          </div>
-          <textarea
-            v-model="generatedJson"
-            class="w-full h-64 px-2 py-1 border rounded font-mono text-sm"
-            readonly
-          ></textarea>
-          <div class="flex justify-end">
-            <button
-              @click="copyFullPage"
-              class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              📋 کپی به کلیپ‌بورد
-            </button>
-          </div>
-        </div>
+        </transition>
       </div>
-    </transition>
-  </div>
+    </template>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -311,10 +318,9 @@ import { ref, reactive, computed, watch, nextTick } from "vue";
 import Draggable from "vuedraggable"; // vue-draggable@next
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 import PreviewP from "../components/PreviewP.vue";
-import { Raw } from "vue";
-import { definePageMeta } from '#imports'
+import { definePageMeta } from "#imports";
 
-definePageMeta({ auth: false })
+definePageMeta({ auth: false });
 
 // -----------------------------
 //  ۱. TYPE DEFINITIONS
@@ -776,14 +782,39 @@ async function onSubmitForm(values: Record<string, any>) {
   }
 }
 /** کپی JSON به کلیپ‌بورد */
-async function copyToClipboard() {
-  try {
-    await navigator.clipboard.writeText(generatedJson.value);
-    alert("کپی شد!");
-  } catch {
-    alert("کپی به کلیپ‌بورد ممکن نشد.");
+// داخل <script setup>
+const copyOutput = async () => {
+  const text = String(codeOutput.value || "");
+
+  // اگر Clipboard API در دسترس و کانتکست امن بود
+  if (import.meta.client && window.isSecureContext && navigator?.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      notify("کد کپی شد.", "success");
+      return;
+    } catch (e) {
+      // میریم سراغ fallback
+    }
   }
-}
+
+  // Fallback برای مرورگر/کانتکست‌هایی که Clipboard API ندارند
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    notify(ok ? "کد کپی شد." : "کپی ناموفق بود.", ok ? "success" : "warning");
+  } catch (e) {
+    notify("مرورگر اجازه کپی نداد.", "danger");
+  }
+};
+
 
 /** بارگذاری کانفیگ از JSON یا آبجکت JS */
 /** بارگذاری کانفیگ از JS/TS با استخراج دقیق بلوک آبجکت */
@@ -841,7 +872,7 @@ function importConfigFromCode() {
   }
 }
 function onUpdateSubmitButton(updated: Partial<typeof config.submitButton>) {
-  config.submitButton = { ...config.submitButton, ...updated }
+  config.submitButton = { ...config.submitButton, ...updated };
 }
 </script>
 

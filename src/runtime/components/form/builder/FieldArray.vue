@@ -94,13 +94,13 @@
 
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits } from 'vue'
-import InputField from './InputField.vue'
-import DropDown from './DropDown.vue'
-import CheckBoxGroup from './CheckBoxGroup.vue'
-import RadioGroup from './RadioGroup.vue'
-import ToggleSwitch from './ToggleSwitch.vue'
-import FileUploader from './FileUploader.vue'
-import RichTextEditor from './Editor.vue'
+import InputField from '../InputField.vue'
+import DropDown from '../DropDown.vue'
+import CheckBoxGroup from '../CheckBoxGroup.vue'
+import RadioGroup from '../RadioGroup.vue'
+import ToggleSwitch from '../ToggleSwitch.vue'
+import FileUploader from '../FileUploader.vue'
+import RichTextEditor from '../Editor.vue'
 
 interface ValidatorConfig {
   type: string

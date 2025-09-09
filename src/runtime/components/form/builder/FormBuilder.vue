@@ -197,15 +197,15 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from "vue";
 
-import InputField from "./InputField.vue";
-import DropDown from "./DropDown.vue";
-import CheckBoxGroup from "./CheckBoxGroup.vue";
-import RadioGroup from "./RadioGroup.vue";
-import ToggleSwitch from "./ToggleSwitch.vue";
-import FileUploader from "./FileUploader.vue";
-import RichTextEditor from "./Editor.vue";
-import Button from "./Button.vue";
-import Spinner from "./Spinner.vue";
+import InputField from "../InputField.vue";
+import DropDown from "../DropDown.vue";
+import CheckBoxGroup from "../CheckBoxGroup.vue";
+import RadioGroup from "../RadioGroup.vue";
+import ToggleSwitch from "../ToggleSwitch.vue";
+import FileUploader from "../FileUploader.vue";
+import RichTextEditor from "../Editor.vue";
+import Button from "../../Button.vue";
+import Spinner from "../../Spinner.vue";
 import FieldArray from "./FieldArray.vue";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 

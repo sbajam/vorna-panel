@@ -392,13 +392,16 @@ function onDateChange(val: any) {
   }
 }
 .input-div label {
-  @apply text-primary-100 text-lg text-right whitespace-nowrap font-semibold w-4/12;
+  @apply text-primary-100 lg:text-lg text-right whitespace-nowrap font-semibold w-4/12;
 }
 .input-div > div {
   @apply w-full;
 }
 .input {
-  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full;
+  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full ;
+  &::placeholder{
+    @apply text-xs lg:text-sm;
+  }
   &[type="color"] {
     @apply py-1;
   }

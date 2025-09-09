@@ -169,7 +169,7 @@ export default defineNuxtModule<ModuleOptions>({
         darkMode: 'class',
       },
     })
-   
+
     nuxt.options.build!.transpile.push('@alireza-ab/vue3-persian-datepicker')
     nuxt.options.build.transpile ||= []
     nuxt.options.build.transpile.push('vue3-grid-layout')
@@ -243,6 +243,7 @@ export default defineNuxtModule<ModuleOptions>({
     // 1. Layouts
     const layouts = [
       { name: 'admin', file: 'admin.vue' },
+      { name: 'builder', file: 'builder.vue' },
       { name: 'modal', file: 'modal.vue' }
     ]
 
@@ -257,37 +258,38 @@ export default defineNuxtModule<ModuleOptions>({
 
     // 2.1 Layout Components (اجزای اصلی رابط کاربری)
     const layoutComponents = [
-      { name: 'Sidebar', file: 'Sidebar.vue' },
-      { name: 'Header', file: 'Header.vue' },
-      { name: 'Box', file: 'Box.vue' },
-      { name: 'Breadcrumb', file: 'Breadcrumb.vue' }
+      { name: 'Sidebar', file: 'ui/Sidebar.vue' },
+      { name: 'Header', file: 'ui/Header.vue' },
+      { name: 'Box', file: 'ui/Box.vue' },
+      { name: 'Breadcrumb', file: 'ui/Breadcrumb.vue' },
+      { name: 'Tabs', file: 'ui/Tabs.vue' },
     ]
 
     // 2.2 Form Components (اجزای فرم)
     const formComponents = [
-      { name: 'InputField', file: 'InputField.vue' },
-      { name: 'RadioGroup', file: 'RadioGroup.vue' },
-      { name: 'CheckBoxGroup', file: 'CheckBoxGroup.vue' },
-      { name: 'ToggleSwitch', file: 'ToggleSwitch.vue' },
-      { name: 'DropDown', file: 'DropDown.vue' },
-      { name: 'Editor', file: 'Editor.vue' }
+      { name: 'InputField', file: 'form/InputField.vue' },
+      { name: 'RadioGroup', file: 'form/RadioGroup.vue' },
+      { name: 'CheckBoxGroup', file: 'form/CheckBoxGroup.vue' },
+      { name: 'ToggleSwitch', file: 'form/ToggleSwitch.vue' },
+      { name: 'DropDown', file: 'form/DropDown.vue' },
+      { name: 'Editor', file: 'form/Editor.vue' }
     ]
 
     // 2.3 Form Builder Components (اجزای فرم‌ساز)
     const formBuilderComponents = [
-      { name: 'FormBuilder', file: 'FormBuilder.vue' },
-      { name: 'FieldArray', file: 'FieldArray.vue' },
-      { name: 'PropertiesPanel', file: 'PropertiesPanel.vue' },
-      { name: 'FieldPalette', file: 'FieldPalette.vue' },
-      { name: 'FormSettingsPanel', file: 'FormSettingsPanel.vue' },
-      { name: 'SectionSettingsPanel', file: 'SectionSettingsPanel.vue' }
+      { name: 'FormBuilder', file: 'form/builder/FormBuilder.vue' },
+      { name: 'FieldArray', file: 'form/builder/FieldArray.vue' },
+      { name: 'PropertiesPanel', file: 'form/builder/PropertiesPanel.vue' },
+      { name: 'FieldPalette', file: 'form/builder/FieldPalette.vue' },
+      { name: 'FormSettingsPanel', file: 'form/builder/FormSettingsPanel.vue' },
+      { name: 'SectionSettingsPanel', file: 'form/builder/SectionSettingsPanel.vue' }
     ]
 
     // 2.4 Media Components (اجزای مدیریت رسانه)
     const mediaComponents = [
-      { name: 'ImageUploader', file: 'ImageUploader.vue' },
-      { name: 'FileUploader', file: 'FileUploader.vue' },
-      { name: 'ImageP', file: 'ImageP.vue' }
+      { name: 'ImageUploader', file: 'form/ImageUploader.vue' },
+      { name: 'FileUploader', file: 'form/FileUploader.vue' },
+      { name: 'ImageP', file: 'form/ImageP.vue' }
     ]
 
     // 2.5 UI Utilities (اجزای کمکی رابط کاربری)
@@ -310,6 +312,11 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'WidgetHeader', file: 'widgets/WidgetHeader.vue' },
 
     ]
+    const tableBuilderComponents = [
+      // { name: 'DashboardGrid', file: 'tableBuilder/DashboardGrid.vue' },
+
+
+    ]
 
     // Register all components
     const allComponents = [
@@ -318,7 +325,8 @@ export default defineNuxtModule<ModuleOptions>({
       ...formBuilderComponents,
       ...mediaComponents,
       ...utilComponents,
-      ...dashboardComponents
+      ...dashboardComponents,
+      ...tableBuilderComponents
     ]
 
     allComponents.forEach(component => {
@@ -333,6 +341,12 @@ export default defineNuxtModule<ModuleOptions>({
         name: 'formBuilder',
         path: '/formBuilder',
         file: resolve('./runtime/pages/formBuilder.vue'),
+      })
+
+      pages.push({
+        name: 'tableBuilder',
+        path: '/tableBuilder',
+        file: resolve('./runtime/pages/tableBuilder.vue'),
       })
 
       pages.push({
@@ -359,7 +373,7 @@ export default defineNuxtModule<ModuleOptions>({
       src: resolve(__dirname, 'runtime/plugins/vue-apexcharts.client'),
       mode: 'client',
     })
-
+    addPlugin(resolve('./runtime/plugins/badge'))
     // addPlugin(resolve('./runtime/plugins/pinia.js'))
 
     /**

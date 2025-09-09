@@ -5,13 +5,13 @@
     - Label support (top or right), placeholder, disabled, error display
     - Clearable selection
   -->
-  <div :class="['input-div', labelPosition === 'top' ? 'flex-col items-start' : '']">
+  <div :class="['input-div', labelPosition === 'top' ? 'flex-col !items-start' : '']">
     <!-- Label -->
     <label
       v-if="label"
       class="text-primary-100 text-lg font-semibold w-4/12 text-right whitespace-nowrap"
     >
-      {{ label }} - {{ internal }}
+      {{ label }} 
     </label>
     <div class="w-full relative">
       <Menu as="div" class="relative inline-block text-left w-full">
@@ -62,7 +62,7 @@
         </MenuButton>
 
         <!-- Dropdown Items -->
-        <MenuItems class="absolute mt-1 w-full bg-white shadow-lg max-h-60 overflow-auto rounded-lg z-10">
+        <MenuItems class="absolute mt-1 min-w-fit  w-full bg-white shadow-lg max-h-60 overflow-auto rounded-lg z-[10000]">
           <!-- Search field -->
           <div v-if="searchable" class="p-2">
             <input

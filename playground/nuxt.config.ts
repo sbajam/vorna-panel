@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     resolve(__dirname, '../src/module.ts'),
   ],
+  plugins: [
+    { src: '~/plugins/vorna-badges.ts', mode: 'client' }
+  ],
   css: ['./assets/css/main.css'],
   nitro: {
     // هر چیزی داخل public/uploads رو با URL زیر /uploads سرو کن
@@ -16,9 +19,9 @@ export default defineNuxtConfig({
         maxAge: 60 * 60 * 24 * 365
       }
     ],
-    compatibility: {
-      date: '2025-07-26'
-    }
+    // compatibility: {
+    //   date: '2025-07-26'
+    // }
   },
   vornaPanel: {
     name: 'پنل فروشگاه وندو',
@@ -81,8 +84,8 @@ export default defineNuxtConfig({
       {
         title: 'تعامل با کاربر',
         items: [
-          { path: '/cart', label: 'سبد‌های خرید', icon: 'fa-solid:cart-shopping' },
-          { path: '/question', label: 'پاسخگویی مشتریان', icon: 'fa-solid:question' },
+          { path: '/cart', label: 'سبد‌های خرید', icon: 'fa-solid:cart-shopping', badge: { key: 'cart:unchecked' } },
+          { path: '/question', label: 'پاسخگویی مشتریان', icon: 'fa-solid:question', badge: { key: 'questions:pending' } },
         ],
       },
       {
@@ -121,9 +124,9 @@ export default defineNuxtConfig({
 
   },
   vite: {
-  define: {
-    'process.env': {},
-  },
-}
+    define: {
+      'process.env': {},
+    },
+  }
 
 })
