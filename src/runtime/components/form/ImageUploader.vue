@@ -27,12 +27,17 @@
       <!-- دکمهٔ آپلود / نمای پیش‌رو تک‌انتخاب -->
       <label
         :for="inputId"
-        class="group relative flex-shrink-0 w-[200px] h-[200px] bg-gray-50 rounded-xl shadow flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200"
+        :style="`aspect-ratio: ${aspectRatio};`"
+        :class="`group relative flex-shrink-0 ${sizeClass}  bg-gray-50 rounded-xl shadow flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200
+        ${
+          isDragging
+            ? 'border-2 border-dashed border-secondary-100 scale-105'
+            : ''
+        }`"
         @dragenter.prevent="dragEnter"
         @dragleave.prevent="dragLeave"
         @dragover.prevent
         @drop.prevent="handleDrop"
-        :class="{ 'border-2 border-dashed border-secondary-100 scale-105': isDragging }"
       >
         <template v-if="!multiple && previews.length">
           <img
@@ -91,7 +96,7 @@
 
 <script setup>
 import { useRuntimeConfig } from "nuxt/app";
-import { ref } from 'vue';
+import { ref } from "vue";
 
 /**
  * Props:
@@ -125,7 +130,7 @@ import { ref } from 'vue';
  * Emits:
  * - update:images : (File|File[])
  *   مقدار نهایی فایل‌ها برای v-model.
- *
+ *sizeClass: string (default: 'w-[200px]')
  * Slots:
  * - info (optional)
  *   اگر بخواهید بخش قوانین/محدودیت‌ها را با یک المان یا متن سفارشی پر کنید.
@@ -144,6 +149,7 @@ const props = defineProps({
   },
   maxFiles: { type: Number, default: 10 },
   initialImages: { type: [Array, String], default: () => [] },
+  sizeClass: { type: String, default: "w-[200px]" },
   watermarkImage: { type: String, default: "" },
   watermarkText: { type: String, default: "" },
   watermark: { type: Boolean, default: true },
@@ -174,7 +180,7 @@ const watermark = async (file) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = URL.createObjectURL(file);
-    
+
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
@@ -186,7 +192,7 @@ const watermark = async (file) => {
       // اولویت با تصویر واترمارک است
       if (props.watermarkImage) {
         addImage(props.watermarkImage);
-      } 
+      }
       // سپس متن واترمارک
       else if (props.watermarkText) {
         drawText(props.watermarkText);
@@ -216,7 +222,14 @@ const watermark = async (file) => {
 
           ctx.save();
           ctx.beginPath();
-          ctx.arc(x + logoSize/2, y + logoSize/2, logoSize/2, 0, Math.PI * 2, true);
+          ctx.arc(
+            x + logoSize / 2,
+            y + logoSize / 2,
+            logoSize / 2,
+            0,
+            Math.PI * 2,
+            true
+          );
           ctx.closePath();
           ctx.clip();
 
@@ -311,18 +324,23 @@ const handleDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
   isDragging.value = false;
-  
+
   const droppedFiles = event.dataTransfer.files;
-  
+
   if (droppedFiles && droppedFiles.length > 0) {
     // فیلتر کردن فایل‌های تصویری
-    const imageFiles = Array.from(droppedFiles).filter(file => 
-      file.type.startsWith('image/') && 
-      ['image/webp', 'image/jpeg', 'image/png', 'image/gif'].includes(file.type)
+    const imageFiles = Array.from(droppedFiles).filter(
+      (file) =>
+        file.type.startsWith("image/") &&
+        ["image/webp", "image/jpeg", "image/png", "image/gif"].includes(
+          file.type
+        )
     );
 
     if (imageFiles.length === 0) {
-      console.error('⛔ فقط فایل‌های تصویری با فرمت WEBP، JPEG، PNG یا GIF مجاز هستند');
+      console.error(
+        "⛔ فقط فایل‌های تصویری با فرمت WEBP، JPEG، PNG یا GIF مجاز هستند"
+      );
       return;
     }
 
@@ -334,9 +352,11 @@ const handleDrop = (event) => {
     } else {
       // در حالت چند انتخابی، همه فایل‌ها تا سقف مجاز
       const fileList = new DataTransfer();
-      imageFiles.slice(0, props.maxFiles - files.value.length).forEach(file => {
-        fileList.items.add(file);
-      });
+      imageFiles
+        .slice(0, props.maxFiles - files.value.length)
+        .forEach((file) => {
+          fileList.items.add(file);
+        });
       onFileChange({ target: { files: fileList.files } });
     }
   }

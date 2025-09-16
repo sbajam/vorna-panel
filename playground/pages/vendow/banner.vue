@@ -8,6 +8,7 @@ const { request, data, pending } = useApi();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //get
 async function fetchData() {
+  banners.value=[]
   await request("slider");
   if (data.value.status) banners.value = data.value.body;
   else useNuxtApp().$notifyDanger(data.value.message);

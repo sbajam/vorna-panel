@@ -101,6 +101,7 @@ onMounted(fetchImages);
           :multiple="false"
           v-model:images="image"
           class="w-fit rtl justify-start"
+          sizeClass="w-1/2"
         />
         <Button
           :pending="pending"
@@ -109,6 +110,7 @@ onMounted(fetchImages);
           variant="solid"
           :fullWidth="true"
           size="lg"
+          
         >
           اضافه کردن
         </Button>
@@ -125,7 +127,7 @@ onMounted(fetchImages);
         <!-- TODO :check work -->
           <img
             :src="`${img.url}`"
-            class="w-full h-32 object-cover rounded-lg border hover:border-primary-100 transition"
+            class="w-full h-32 object-cover min-w-32 rounded-lg border hover:border-primary-100 transition"
             @click="choose(img.url)"
           />
           <button

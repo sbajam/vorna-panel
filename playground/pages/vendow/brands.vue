@@ -7,6 +7,7 @@ const { request, data, pending } = useApi();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //get
 async function fetchdata() {
+  brands.value=[]
   await request("brands");
   if (data.value.status) brands.value = data.value.body;
   else useNuxtApp().$notifyInfo(data.value.message);
@@ -73,7 +74,7 @@ onBeforeMount(fetchdata)
           >
             برندی برای نمایش موجود نیست.
           </div>
-          <div v-else v-for="i in dbrandsata" class="">
+          <div v-else v-for="i in brands" class="">
             <div
               class="h-[120px] xl:h-[160px] overflow-hidden w-auto aspect-[1/1] shadow rounded-full"
             >

@@ -318,7 +318,7 @@ onBeforeUnmount(() => {
 .editor {
   @apply flex flex-wrap gap-1 border border-solid border-gray-100  bg-gray-100;
   .editor-btn {
-    @apply border border-solid border-gray-100 py-1 px-3 cursor-pointer duration-300 rounded-lg  text-xl text-secondary-100;
+    @apply border border-solid !w-fit border-gray-100 py-1 px-3 cursor-pointer duration-300 rounded-lg  text-xl text-secondary-100;
     &:hover {
       @apply bg-white translate-y-0 shadow-none;
     }

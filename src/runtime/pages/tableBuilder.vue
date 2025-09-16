@@ -17,6 +17,7 @@ import InputField from "../components/form/InputField.vue";
 import DropDown from "../components/form/DropDown.vue";
 import { useApi } from "../composables/useApi";
 import { title } from "node:process";
+import { makeSearchString, normalizeAll } from "../composables/useNormalizer";
 
 // services
 const { request } = useApi();
@@ -57,6 +58,48 @@ interface ApiConfig {
   headers: Record<string, string>;
   body?: any;
 }
+/* =========================
+   Normalization (Builder Options)
+========================= */
+const normalizationUI = reactive({
+  enabled: true,
+  scope: "all" as "all" | "include" | "exclude",
+  fieldsCsv: "",
+  fields: [] as string[],
+  options: {
+    digits: true,
+    letters: true,
+    removeTatweel: true,
+    removeDiacritics: true,
+    removeZWNJ: true,
+    collapseSpaces: true,
+    trim: true,
+  },
+});
+
+// خروجی نهایی برای normalizeAll (بر اساس UI)
+const normalizationOptions = computed(() => {
+  const fields = (normalizationUI.fieldsCsv || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  normalizationUI.fields = fields;
+
+  return {
+    includePaths: normalizationUI.scope === "include" ? fields : null,
+    excludePaths: normalizationUI.scope === "exclude" ? fields : [],
+    textOptions: {
+      digits: normalizationUI.options.digits ? "fa-to-en" : "none",
+      letters: normalizationUI.options.letters ? "ar-to-fa" : "none",
+      removeTatweel: normalizationUI.options.removeTatweel,
+      removeDiacritics: normalizationUI.options.removeDiacritics,
+      removeZWNJ: normalizationUI.options.removeZWNJ,
+      collapseSpaces: normalizationUI.options.collapseSpaces,
+      trim: normalizationUI.options.trim,
+    },
+  } as const;
+});
 
 const apis = ref<ApiConfig[]>([]);
 const selectedApiId = ref<string | null>(null);
@@ -411,9 +454,11 @@ const previewData = computed(() => {
   // search‌ها
   for (const f of filtersConfig.value) {
     if (f.type !== "search") continue;
-    const q = String(filtersState[f.key] || "")
-      .toLowerCase()
-      .trim();
+    const q = makeSearchString(
+      filtersState[f.key],
+      normalizationOptions.value.textOptions
+    );
+
     if (!q) continue;
 
     const fields = Array.isArray((f as any).fields) ? (f as any).fields : [];
@@ -428,6 +473,10 @@ const previewData = computed(() => {
     } else {
       arr = arr.filter((row) => JSON.stringify(row).toLowerCase().includes(q));
     }
+  }
+  // normalize (preview)
+  if (normalizationUI.enabled) {
+    arr = arr.map((row) => normalizeAll(row, normalizationOptions.value));
   }
 
   // dropdown‌ها (v-model = label → map به value)
@@ -593,7 +642,7 @@ function generatePageCode() {
   // ---- اسکریپت: فیلتر کردن بر اساس search ها
   const searchFilterBlock = searchMain
     ? `{
-    const q = String(searchTerm.value || '').toLowerCase().trim();
+    const q = makeSearchString(searchTerm.value, NORMALIZATION.textOptions);
     if (q) {
       const fields = ${JSON.stringify(
         Array.isArray((searchMain as any).fields)
@@ -614,7 +663,9 @@ function generatePageCode() {
   const otherSearchFilters = otherSearches
     .map(
       (s) => `{
-    const q = String(q_${s.key}.value || '').toLowerCase().trim();
+    
+    const q = makeSearchString(q_${s.key}.value, NORMALIZATION.textOptions);\
+
     if (q) {
       const fields = ${JSON.stringify(
         Array.isArray((s as any).fields) ? (s as any).fields : []
@@ -671,6 +722,12 @@ function generatePageCode() {
 
   // ---- transform
   const transformBody = (transformTemplate.value || "return item;").trim();
+  const normForCode = {
+    enabled: normalizationUI.enabled,
+    includePaths: normalizationOptions.value.includePaths,
+    excludePaths: normalizationOptions.value.excludePaths,
+    textOptions: normalizationOptions.value.textOptions,
+  };
 
   // ---- اسکریپت نهایی صفحه خروجی
   const scriptStr =
@@ -678,6 +735,8 @@ function generatePageCode() {
 
 const { request } = useApi();
 const { $notifyDanger } = useNuxtApp();
+
+const NORMALIZATION = ${JSON.stringify(normForCode, null, 2)};
 
 // Data
 const rawData = ref<any[]>([]);
@@ -704,6 +763,11 @@ const transformData = (item:any) => {
 // Filtering
 const filterData = () => {
   let list = rawData.value.slice();
+// normalization (display)
+if (NORMALIZATION.enabled) {
+  list = list.map((row:any) => normalizeAll(row, NORMALIZATION));
+}
+
 
   // search(es)
   ${searchFilterBlock}
@@ -1123,8 +1187,8 @@ async function copyToClipboard() {
 
               <!-- Dropdown (آرایهٔ رشته‌ای) -->
               <div v-else-if="c.type === 'dropdown'" class="tb-block">
-                <div class="tb-row tb-row-left mb-2 ">
-                  <button class="tb-btn " @click="(c.options ||= []).push('')">
+                <div class="tb-row tb-row-left mb-2">
+                  <button class="tb-btn" @click="(c.options ||= []).push('')">
                     + Add Option
                   </button>
                 </div>
@@ -1525,6 +1589,93 @@ async function copyToClipboard() {
               >
                 حذف
               </button>
+            </div>
+          </div>
+        </div>
+        <div class="tb-card">
+          <div class="tb-card-header">Normalization</div>
+
+          <div class="tb-grid tb-grid-4">
+            <label class="tb-check">
+              <input type="checkbox" v-model="normalizationUI.enabled" />
+              enabled
+            </label>
+          </div>
+
+          <div class="tb-grid tb-grid-4">
+            <DropDown
+              class="tb-field"
+              :items="['all', 'include', 'exclude']"
+              v-model="normalizationUI.scope"
+              label="scope"
+            />
+          </div>
+
+          <div class="tb-field">
+            <label class="tb-label">columns (CSV)</label>
+            <InputField
+              class="w-full"
+              v-model="normalizationUI.fieldsCsv"
+              placeholder="مثلاً: name,phone_number,postal_code"
+            />
+            <small class="tb-hint"
+              >اگر scope=all باشد خالی بگذار. نام‌ها برابر با key ستون‌ها
+              باشند.</small
+            >
+          </div>
+
+          <div class="tb-block">
+            <div class="tb-mini mb-2 font-semibold">rules</div>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.digits"
+                />
+                digits: fa→en</label
+              >
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.letters"
+                />
+                letters: ar→fa</label
+              >
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.removeTatweel"
+                />
+                remove tatweel</label
+              >
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.removeDiacritics"
+                />
+                remove diacritics</label
+              >
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.removeZWNJ"
+                />
+                remove ZWNJ</label
+              >
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.collapseSpaces"
+                />
+                collapse spaces</label
+              >
+              <label class="tb-check !whitespace-nowrap"
+                ><input
+                  type="checkbox"
+                  v-model="normalizationUI.options.trim"
+                />
+                trim</label
+              >
             </div>
           </div>
         </div>
