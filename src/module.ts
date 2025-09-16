@@ -373,7 +373,7 @@ export default defineNuxtModule<ModuleOptions>({
       src: resolve(__dirname, 'runtime/plugins/vue-apexcharts.client'),
       mode: 'client',
     })
-    addPlugin(resolve('./runtime/plugins/badge'))
+    addPlugin(resolve('./runtime/plugins/badge-registry'))
     // addPlugin(resolve('./runtime/plugins/pinia.js'))
 
     /**

@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     name: 'پنل فروشگاه وندو',
     logo: 'https://vendow.ir/img/logo.png',
     font: 'Vazir',
-    baseUrl: 'https://api.vendow.ir/admins',
+    baseUrl: 'https://api.vendow.ir/mystore',
     notifications: 'sweetalert',
     menuItems: [
       {

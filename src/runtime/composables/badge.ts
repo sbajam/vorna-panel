@@ -1,41 +1,40 @@
-import { inject, provide, ref, computed, type Ref, type ComputedRef } from 'vue'
+// src/runtime/composables/badge.ts
+import { ref, inject, type Ref, type ComputedRef } from 'vue'
+import { useNuxtApp } from '#app'
 
-type BadgeValue = string | number | null | undefined
-type BadgeSource =
+export type BadgeValue = string | number | null | undefined
+export type BadgeSource =
   | Ref<BadgeValue>
   | ComputedRef<BadgeValue>
   | (() => BadgeValue | Promise<BadgeValue>)
 
-const BadgeRegistryKey = Symbol('vorna:badge-registry')
+export const BadgeRegistryKey = Symbol('vorna:badge-registry')
 
-type Registry = {
+export type Registry = {
   map: Map<string, BadgeSource>
   register: (key: string, source: BadgeSource) => void
-  resolve: (key: string) => Ref<BadgeValue> // همیشه یک ref واکنشی
+  resolve: (key: string) => Ref<BadgeValue>
 }
 
-function makeRegistry(): Registry {
+export function makeRegistry(): Registry {
   const map = new Map<string, BadgeSource>()
 
-  const register = (key: string, source: BadgeSource) => {
+  function register(key: string, source: BadgeSource) {
     map.set(key, source)
   }
 
-  const resolve = (key: string): Ref<BadgeValue> => {
+  function resolve(key: string): Ref<BadgeValue> {
     const src = map.get(key)
     if (!src) return ref<BadgeValue>(null)
-
     if (typeof src === 'object' && src !== null && 'value' in src) {
       return src as Ref<BadgeValue>
     }
-
-    // فانکشن (sync/async)
     const out = ref<BadgeValue>(null)
     ;(async () => {
       try {
         const v = await (src as Function)()
         out.value = v as BadgeValue
-      } catch { /* noop */ }
+      } catch {}
     })()
     return out
   }
@@ -43,19 +42,20 @@ function makeRegistry(): Registry {
   return { map, register, resolve }
 }
 
-export function provideBadgeRegistry() {
-  const reg = makeRegistry()
-  provide(BadgeRegistryKey, reg)
-  return reg
-}
-
 export function useBadgeRegistry(): Registry {
-  const reg = inject<Registry>(BadgeRegistryKey as any)
-  return reg ?? makeRegistry() // fallback امن
+  const nuxt = useNuxtApp()
+  const fromNuxt = nuxt.$badgeRegistry as Registry | undefined
+  if (fromNuxt) return fromNuxt
+
+  const fromInject = inject<Registry>(BadgeRegistryKey as any)
+  if (fromInject) return fromInject
+
+  throw new Error('[badges] Badge registry is not installed. Load the registry plugin first.')
 }
 
-// کمک برای پروژهٔ میزبان
 export function defineVornaBadge(key: string, source: BadgeSource) {
-  const reg = useBadgeRegistry()
+  const nuxt = useNuxtApp()
+  const reg = nuxt.$badgeRegistry as Registry | undefined
+  if (!reg) throw new Error('[badges] Badge registry is not available. Load the registry plugin first.')
   reg.register(key, source)
 }

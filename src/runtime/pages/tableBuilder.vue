@@ -16,6 +16,7 @@ import SmartTable from "../components/SmartTable.vue";
 import InputField from "../components/form/InputField.vue";
 import DropDown from "../components/form/DropDown.vue";
 import { useApi } from "../composables/useApi";
+import { title } from "node:process";
 
 // services
 const { request } = useApi();
@@ -279,6 +280,7 @@ const columns = ref<Column[]>([]);
 const actions = ref<RowAction[]>([]);
 
 const tableOptions = reactive({
+  title: "",
   sortable: true,
   multiSort: false,
   excel: true,
@@ -372,6 +374,13 @@ function autoColumnsFromSample() {
   if (typeof first !== "object" || !first) return;
 
   const next: Column[] = [];
+  const indexCol: Column = {
+    key: "index",
+    label: "#",
+    type: "number",
+    sortable: false,
+  };
+  next.push(indexCol);
   Object.keys(first).forEach((k) => {
     const v = first[k];
     let t: Column["type"] = "text";
@@ -761,9 +770,9 @@ onBeforeMount(fetchData);
               class="w-full !p-0"
            
               />
-              <button class="absolute left-1 lg:left-9 top-1/2 -translate-y-1/2 text-xs lg:text-xl px-2 text-center flex items-center justify-center bg-primary-100 text-white rounded-full aspect-square hover:bg-primary-dark transition-colors">
-              <Icon name="fa6-solid:magnifying-glass" />
-            </button>
+             <div  class="absolute left-1 cursor-pointer  top-1 bottom-1 text-xs lg:text-xl px-2 text-center flex items-center justify-center bg-primary-100 text-white rounded-xl aspect-square hover:bg-primary-dark transition-colors" >
+                <Icon name="fa6-solid:magnifying-glass" />
+            </div>
           </div>`;
       })
       .join("\n          ") || "";
@@ -773,7 +782,7 @@ onBeforeMount(fetchData);
     dropDefs
       .map(
         (d) =>
-          `<DropDown :items="${d.key}Options" v-model="${d.key}" class="!p-0" />`
+          `<DropDown label="${d.label}" :items="${d.key}Options" v-model="${d.key}" class="!p-0" />`
       )
       .join("\n            ") || "";
   let e = "";
@@ -785,8 +794,8 @@ onBeforeMount(fetchData);
   <SmartTable
   class="smart-scroll"
   emptyText=${JSON.stringify(tableOptions.emptyText)}
-  edit=${JSON.stringify(builtins.edit || null)}
-  delete=${JSON.stringify(builtins.delete || null)}
+  edit=${JSON.stringify(builtins.edit || "")}
+  delete=${JSON.stringify(builtins.delete || "")}
     :data="filteredData"
     :columns="columns"
     :actions="actions"
@@ -812,7 +821,7 @@ onBeforeMount(fetchData);
   <NuxtLayout name="admin">
     <template #main>
       <Box class="">
-      <Header>جدول</Header>
+      <Header>${tableOptions.title}</Header>
         <!-- Toolbar: Filters/Search + Actions -->
         <div class="flex flex-wrap items-center gap-2">
           ${searchBlocks}
@@ -1066,10 +1075,10 @@ async function copyToClipboard() {
               <label class="tb-col tb-check"
                 ><input type="checkbox" v-model="c.sortable" /> sortable</label
               >
-              <label class="tb-col tb-check"
+              <!-- <label class="tb-col tb-check"
                 ><input type="checkbox" v-model="c.filterable" />
                 filterable</label
-              >
+              > -->
             </div>
             <div class="">
               <!-- Link -->
@@ -1114,15 +1123,15 @@ async function copyToClipboard() {
 
               <!-- Dropdown (آرایهٔ رشته‌ای) -->
               <div v-else-if="c.type === 'dropdown'" class="tb-block">
-                <div class="tb-row tb-row-left mb-2">
-                  <button class="tb-btn" @click="(c.options ||= []).push('')">
+                <div class="tb-row tb-row-left mb-2 ">
+                  <button class="tb-btn " @click="(c.options ||= []).push('')">
                     + Add Option
                   </button>
                 </div>
                 <div
                   v-for="(opt, i) in c.options || []"
                   :key="i"
-                  class="flex gap-2"
+                  class="flex gap-2 mb-1"
                 >
                   <InputField
                     class="tb-field"
@@ -1260,11 +1269,15 @@ async function copyToClipboard() {
               class="tb-col"
               v-model="a.icon"
               placeholder="icon (e.g., fa6-solid:info)"
+              label-position="top"
+              label="icon"
             />
             <InputField
               class="tb-col"
               v-model="a.tooltip"
               placeholder="tooltip"
+              label-position="top"
+              label="tooltip text"
             />
             <InputField
               class="tb-col"
@@ -1328,6 +1341,11 @@ async function copyToClipboard() {
             >
           </div>
           <div class="tb-col">
+            <InputField
+              class="tb-field"
+              v-model="tableOptions.title"
+              label="title of page"
+            />
             <InputField
               class="tb-field"
               v-model="tableOptions.emptyText"
@@ -1484,9 +1502,9 @@ async function copyToClipboard() {
                   </button>
                 </div>
               </div>
-              <div class="tb-row">
+              <div class="tb-row !items-stretch">
                 <button
-                  class="tb-btn"
+                  class="tb-btn !whitespace-nowrap"
                   @click="(f as any).options.push({ label: '', value: '' })"
                 >
                   + add option
@@ -1598,10 +1616,7 @@ async function copyToClipboard() {
         >
           <div class="font-bold">خروجی صفحه (Vue)</div>
           <div class="flex items-center gap-2">
-            <button
-              class="tb-btn tb-btn-primary"
-              @click="copyToClipboard"
-            >
+            <button class="tb-btn tb-btn-primary" @click="copyToClipboard">
               کپی
             </button>
             <button class="tb-btn tb-btn-danger" @click="showCodeModal = false">
@@ -1707,7 +1722,7 @@ async function copyToClipboard() {
 
 /* کارت‌ها: سفید + هدر مشکی فقط بالا */
 .tb-card {
-  @apply bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm;
+  @apply bg-white border border-gray-200 rounded-lg  shadow-sm;
 
   .tb-card-header {
     @apply bg-black text-white font-bold px-4 py-3;
@@ -1784,7 +1799,7 @@ async function copyToClipboard() {
   }
 
   &.tb-btn-danger {
-    @apply bg-transparent text-red-500 border-red-500;
+    @apply bg-transparent text-red-500 border-red-500 flex items-center justify-center rounded-lg;
     &:hover {
       @apply bg-red-500 text-white;
     }

@@ -421,8 +421,8 @@ async function copyFullPage() {
 <template>
   <NuxtLayout name="admin">
     <template #main>
-      <Box class="max-w-4xl mx-auto py-8">
-        <Header class="text-3xl font-bold mb-6">
+      <Box class="">
+        <Header class="">
           نمونه صفحه فرم با تمام قابلیت‌ها
         </Header>
 

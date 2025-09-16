@@ -274,7 +274,7 @@ function exportToExcel() {
 
 /* ===================== Header Sort Click ===================== */
 function onHeaderClick(index, evt) {
-  if (!props.sortable) return;
+  if (!props.sortable && props.columns[index].sortable) return;
 
   const isMultiKey = evt && (evt.ctrlKey || evt.metaKey);
   if (props.multiSort && isMultiKey) {
@@ -379,7 +379,7 @@ function onHeaderClick(index, evt) {
               {{ col.label }}
               <Icon
                 v-if="
-                  props.sortable &&
+                  props.sortable && col.sortable &&
                   (sortIndex === index ||
                     sortState.some((s) => s.index === index))
                 "
@@ -419,8 +419,12 @@ function onHeaderClick(index, evt) {
           :class="computeRowHighlight(row)"
           @click="handleClick(row)"
         >
-          <div class="flex text-lg lg:hidden items-center gap-2 !justify-between">
-              <div class=" text-lg font-bold text-primary-100">{{ now * size + rIndex + 1 }}#</div>
+          <div
+            class="flex text-lg lg:hidden items-center gap-2 !justify-between"
+          >
+            <div class="text-lg font-bold text-primary-100">
+              {{ now * size + rIndex + 1 }}#
+            </div>
             <div
               class=""
               v-if="props.edit"
@@ -454,14 +458,18 @@ function onHeaderClick(index, evt) {
               />
             </div>
           </div>
-          <!-- row index (hidden on small screens) -->
-          <td class=" !hidden !lg:flex md:table-cell">
-            <p>{{ now * size + rIndex + 1 }}</p>
-          </td>
 
           <!-- data cells -->
           <template v-for="(col, cIndex) in props.columns" :key="col.key">
+            <!-- row index (hidden on small screens) -->
             <td
+              v-if="col.key.includes('index')"
+              class="!hidden lg:!flex md:table-cell"
+            >
+              <p>{{ now * size + rIndex + 1 }}</p>
+            </td>
+            <td
+              v-else
               :class="{ 'td--auto-shrink': col.shrink }"
               v-if="
                 !(col.key === 'id' && !props.idShow) &&
@@ -491,9 +499,10 @@ function onHeaderClick(index, evt) {
               </template>
 
               <!-- Link (safe or raw HTML) -->
-              <template v-else-if="col.type === 'link'" >
+              <template v-else-if="col.type === 'link'">
                 <!-- RAW HTML mode: set col.safe === false to enable v-html -->
-                <span class="text-primary-100 underline"
+                <span
+                  class="text-primary-100 underline"
                   v-if="col.safe === false"
                   v-html="
                     `<a href='${col.basePath || ''}${_.get(row, col.key)}'>${
@@ -727,7 +736,7 @@ function onHeaderClick(index, evt) {
           overflow: hidden;
           max-width: 100%;
         }
-        span{
+        span {
           @apply text-xs;
         }
       }

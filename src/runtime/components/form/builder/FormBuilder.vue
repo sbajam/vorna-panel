@@ -6,7 +6,8 @@
         {{ config.formProps.title }}
       </h2>
       <!-- آیکون کلیپبورد برای ذخیره دستی -->
-      <div v-if="props.config.formProps.autoSaveKey"
+      <div
+        v-if="props.config.formProps.autoSaveKey"
         class="flex items-center ml-4 px-4 py-2 rounded-lg border border-gray-50 shadow-md gap-x-4"
       >
         <Icon
@@ -45,7 +46,9 @@
       <div :class="gridClass">
         <!-- اگر sections داریم -->
         <template
-          v-for="section in config.sections || [{ title: '', fields: config.fields }]"
+          v-for="section in config.sections || [
+            { title: '', fields: config.fields },
+          ]"
           :key="section.title || 'default'"
         >
           <template v-for="field in section.fields" :key="field.key">
@@ -55,7 +58,9 @@
                 1
               )}`"
             >
-              <div class="animate-pulse bg-gray-200 h-10 w-full rounded mb-2"></div>
+              <div
+                class="animate-pulse bg-gray-200 h-10 w-full rounded mb-2"
+              ></div>
               <div class="animate-pulse bg-gray-200 h-4 w-1/2 rounded"></div>
             </div>
           </template>
@@ -67,9 +72,9 @@
     </div>
 
     <!-- فرم اصلی وقتی loading=false -->
-    <div v-else>
+    <div v-else-if="config.formProps.loading === false">
       <div
-        class="min-h-[200px] h-fit  rounded p-4 relative"
+        class=" h-fit rounded p-4 relative"
         @dragover.prevent
         @drop.prevent="handleDrop"
       >
@@ -89,7 +94,9 @@
                 class="flex items-center justify-center w-6 h-6 rounded-full aspect-square text-white bg-primary-100"
               >
                 <Icon
-                  :name="`fa6-solid:${section._open ? 'chevron-down' : 'chevron-left'}`"
+                  :name="`fa6-solid:${
+                    section._open ? 'chevron-down' : 'chevron-left'
+                  }`"
                 />
               </div>
             </div>
@@ -108,7 +115,9 @@
                           field.layout?.colSpan,
                           1
                         )}`,
-                        { 'ring-2 ring-blue-400': field.key === activeFieldKey }
+                        {
+                          'ring-2 ring-blue-400': field.key === activeFieldKey,
+                        },
                       ]"
                       @click.stop="selectField(field.key)"
                     >
@@ -147,7 +156,7 @@
                     field.layout?.colSpan,
                     1
                   )}`,
-                  { 'ring-2 ring-blue-400': field.key === activeFieldKey }
+                  { 'ring-2 ring-blue-400': field.key === activeFieldKey },
                 ]"
                 @click.stop="selectField(field.key)"
               >
@@ -185,6 +194,8 @@
           :variant="config.submitButton.variant || 'solid'"
           :color="config.submitButton.color || 'primary-100'"
           :size="config.submitButton.size || 'lg'"
+          :fullWidth="config.submitButton.fullWidth || false"
+          :rounded="config.submitButton.rounded || lg"
           type="submit"
         >
           {{ config.submitButton.text }}
@@ -355,7 +366,10 @@ interface FormConfig {
     text: string;
     variant?: string;
     color?: string;
+    size?:string;
     pending?: boolean;
+    fullWidth?: boolean;
+    rounded?: string;
   };
 }
 
@@ -809,6 +823,7 @@ function buildFieldProps(field: FieldConfig) {
         valueField: field.valueField || "value",
         displayField: field.displayField || "",
         placeholder: field.placeholder || "",
+        labelPosition: resolveResponsive(field.labelPosition, "right"),
       };
     case "checkboxGroup":
       return {
@@ -839,7 +854,7 @@ function buildFieldProps(field: FieldConfig) {
         onColor: field.onColor || "blue-500",
         offColor: field.offColor || "gray-300",
         labelPosition: resolveResponsive(field.labelPosition, "right"),
-      };  
+      };
 
     case "file":
       return {

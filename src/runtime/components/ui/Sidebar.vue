@@ -5,7 +5,7 @@ import { useBreadcrumbStore } from "~vorna-stores/breadcrumb";
 import { useUserStore } from "~vorna-stores/user";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 import { useOnline, useMediaQuery } from "@vueuse/core";
-import { useBadgeRegistry } from '../../composables/badge'
+import { useBadgeRegistry } from '../../composables/badge'  // ← درست
 
 // خواندن menuItems از config اگر از props نفرستاده باشند
 const config = useRuntimeConfig().public.vornaPanel;
