@@ -3,7 +3,11 @@
     <template #main>
       <Box>
         <Header>دسته‌بندی‌ها</Header>
-        <FormBuilder :config="formConfig" @submitForm="onSubmitForm" />
+        <FormBuilder
+          ref="formRef"
+          :config="formConfig"
+          @submitForm="onSubmitForm"
+        />
       </Box>
       <Box class="">
         <!-- Toolbar: Filters/Search + Actions -->
@@ -26,7 +30,7 @@
         </div>
         <!-- Table -->
         <div
-          class="grid grid-cols-1 md:grid-cols-2 items-center  justify-end !text-base !gap-4 mt-4"
+          class="grid grid-cols-1 md:grid-cols-2 items-center justify-end !text-base !gap-4 mt-4"
         >
           <Button
             size="lg"
@@ -87,6 +91,8 @@ const { $notifyDanger } = useNuxtApp();
 const rawData = ref([]);
 const filteredData = ref([]);
 const isLoading = ref(true);
+const formRef = ref(null);
+
 let parentItems = computed(() => [
   { name: "بدون دسته بندی پدر", id: null },
   ...rawData.value.map((c) => ({ name: c.name, id: c.id })),
@@ -205,7 +211,7 @@ const formConfig = reactive({
     variant: "outline",
     color: "primary-100",
     size: "lg",
-    fullWidth:true,
+    fullWidth: true,
     pending: false,
   },
 });
@@ -216,7 +222,9 @@ async function onSubmitForm(values) {
   });
   if (data.value.status) {
     useNuxtApp().$notifySuccess(data.value.message);
+    initialValues.value = { name: "", parent: null };
     fetchData();
+    if (formRef.value?.resetForm) formRef.value.resetForm();
   } else {
     useNuxtApp().$notifyDanger(data.value.message);
   }

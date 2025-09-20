@@ -88,7 +88,7 @@
     - Displays a label either on top or on the right
     - Shows error messages and supports disabled state
     - Includes optional icon with tooltip or password visibility toggle
-    - For date/time types uses vue3-persian-datepicker with full options
+    - For date/time types uses vue3-persian-datetime-picker with full options
   -->
   <div
     :class="['input-div', { 'flex-col !items-start': labelPosition === 'top' }]"
@@ -106,26 +106,22 @@
     <!-- Field wrapper -->
     <div class="w-full relative">
       <!-- Date/Time Picker -->
+      <!-- {{ displayFormat }}- {{ inputFormat }}- {{ innerValue }}- {{ calendarType }} -->
+
       <DatePicker
         v-if="isDateType"
-        ref="picker"
         v-model="innerValue"
         :type="type"
-        :input-format="inputFormat"
+        :format="inputFormat"
         :display-format="displayFormat"
+        :locale="locale"
         :placeholder="placeholder"
         :clearable="clearable"
-        :calendar-type="calendarType"
         :disabled="disabled"
-        :mode="single ? 'single' : 'multiple'"
-        :column="1"
-        @submit="onDateChange"
+        :range="!single || range"
         class="w-full"
-        :style="{
-          '--primary-color': primary,
-          '--secondary-color': secondary,
-        }"
       />
+
       <div
         v-else-if="type !== 'textarea'"
         class="w-full relative flex items-stretch input focus:border-secondary-100 bg-white !p-0 overflow-hidden"
@@ -160,7 +156,7 @@
           >{{ suffix }}</span
         >
       </div>
-         <textarea
+      <textarea
         v-else
         :id="id"
         :placeholder="placeholder"
@@ -209,7 +205,6 @@
       <p v-if="errorMessage" class="text-xs text-red-600 mt-1">
         {{ errorMessage }}
       </p>
-
     </div>
   </div>
 </template>
@@ -217,7 +212,7 @@
 <script setup lang="ts">
 /**
  * Component Logic for InputField
- * 
+ *
  * Features implemented:
  * 1. Unique ID generation for input elements
  * 2. Password strength calculation and toggle visibility
@@ -272,10 +267,16 @@ const props = defineProps({
   // password-specific props
   passwordOptions: { type: Boolean, default: true },
   // DatePicker-specific props
-  inputFormat: { type: String, default: "YYYY-MM-DD" },
-  displayFormat: { type: String, default: "YYYY-MM-DD" },
+  inputFormat: { type: String, default: "YYYY/MM/DD" }, // فرمت v-model
+  displayFormat: { type: String, default: "YYYY/MM/DD" }, // فرمتِ نمایش داخل input
+
   clearable: { type: Boolean, default: false },
-  single: { type: Boolean, default: true },
+
+  // single/range: در این پکیج range با یک بولین کنترل می‌شود
+  single: { type: Boolean, default: true }, // برای سازگاری با قبل
+  range: { type: Boolean, default: false }, // اگر true باشد v-model آرایه است
+
+  // تقویم: میلادی/شمسی از طریق locale کنترل می‌شود
   calendarType: {
     type: String as PropType<"persian" | "gregorian">,
     default: "persian",
@@ -286,6 +287,7 @@ const emit = defineEmits<{
 }>();
 
 const valueRef = ref<string | number>("");
+const locale = computed(() => (props.calendarType === "gregorian" ? "en" : "fa"));
 
 // پردازش ماسک
 const rawMask = toRef(props, "mask");
@@ -366,13 +368,13 @@ const isDateType = computed(() =>
   ["date", "time", "datetime"].includes(props.type)
 );
 // Manage internal date value for v-model compatibility
-const innerValue = ref<any>(props.modelValue);
-watch(toRef(props, "modelValue"), (v) => {
-  innerValue.value = v;
+const innerValue = computed({
+  get: () => props.modelValue,
+  set: (value) => {
+    emit("update:modelValue", value);
+  }
 });
-function onDateChange(val: any) {
-  emit("update:modelValue", val);
-}
+
 </script>
 
 <style lang="scss" scoped>
@@ -398,8 +400,8 @@ function onDateChange(val: any) {
   @apply w-full;
 }
 .input {
-  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full ;
-  &::placeholder{
+  @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full;
+  &::placeholder {
     @apply text-xs lg:text-sm;
   }
   &[type="color"] {

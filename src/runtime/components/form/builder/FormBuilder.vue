@@ -74,7 +74,7 @@
     <!-- فرم اصلی وقتی loading=false -->
     <div v-else-if="config.formProps.loading === false">
       <div
-        class=" h-fit rounded p-4 relative"
+        class="h-fit rounded p-4 relative"
         @dragover.prevent
         @drop.prevent="handleDrop"
       >
@@ -233,6 +233,62 @@ const emit = defineEmits<{
   (e: "selectField", key: string): void;
 }>();
 
+// Expose resetForm method
+defineExpose({
+  resetForm() {
+    // پیدا کردن فیلد براساس key
+    const getField = (key: string): FieldConfig | undefined => {
+      if (allSections.length) {
+        return allSections.flatMap((s) => s.fields).find((f) => f.key === key);
+      }
+      return allFields.find((f) => f.key === key);
+    };
+
+    // ریست کردن همه فیلدها به مقدار اولیه
+    Object.keys(formValues).forEach((key) => {
+      const field = getField(key);
+      if (!field) return;
+
+      switch (field.type) {
+        case "checkboxGroup":
+          formValues[key] = [];
+          break;
+        case "radioGroup":
+          formValues[key] = "";
+          break;
+        case "toggle":
+          formValues[key] = false;
+          break;
+        case "select":
+          formValues[key] = field.multiple ? [] : null;
+          break;
+        case "file":
+          formValues[key] = field.multipleFile ? [] : null;
+          break;
+        case "array":
+          formValues[key] = [];
+          break;
+        case "number":
+          formValues[key] = null;
+          break;
+        case "date":
+        case "time":
+        case "datetime":
+          formValues[key] = "";
+          break;
+        case "richtext":
+          formValues[key] = "";
+          break;
+        default: // برای text, email, password, textarea و غیره
+          formValues[key] = "";
+      }
+      formErrors[key] = ""; // پاک کردن خطاها
+    });
+
+    formLevelError.value = ""; // پاک کردن خطای کلی فرم
+  }
+});
+
 // IndexedDB helper (بی‌تغییر از قبل)
 
 function openDB(): Promise<IDBDatabase> {
@@ -288,6 +344,7 @@ interface ResponsiveProp<T> {
 }
 
 interface FieldConfig {
+  range: boolean;
   key: string;
   type: string;
   label?: string;
@@ -366,7 +423,7 @@ interface FormConfig {
     text: string;
     variant?: string;
     color?: string;
-    size?:string;
+    size?: string;
     pending?: boolean;
     fullWidth?: boolean;
     rounded?: string;
@@ -803,12 +860,13 @@ function buildFieldProps(field: FieldConfig) {
     case "datetime":
       return {
         ...shared,
-        type: field.type,
-        inputFormat: field.inputFormat || "",
-        displayFormat: field.displayFormat || "",
+        type: field.type, // date | time | datetime
+        inputFormat: field.inputFormat || "YYYY/MM/DD", // فرمت خروجی مدل
+        displayFormat: field.displayFormat || field.inputFormat || "YYYY/MM/DD",
         clearable: field.clearable || false,
-        single: field.single ?? true,
-        calendarType: field.calendarType || "gregorian",
+        single: field.single !== false, // default true
+        range: field.range === true, // اگر در کانفیگ بذاری
+        calendarType: field.calendarType || "gregorian", // gregorian | persian
         labelPosition: resolveResponsive(field.labelPosition, "right"),
       };
 

@@ -170,7 +170,9 @@ export default defineNuxtModule<ModuleOptions>({
       },
     })
 
-    nuxt.options.build!.transpile.push('@alireza-ab/vue3-persian-datepicker')
+    nuxt.options.build!.transpile.push('moment')
+    nuxt.options.build!.transpile.push('moment-jalaali')
+    nuxt.options.build!.transpile.push('vue3-persian-datetime-picker')
     nuxt.options.build.transpile ||= []
     nuxt.options.build.transpile.push('vue3-grid-layout')
 
