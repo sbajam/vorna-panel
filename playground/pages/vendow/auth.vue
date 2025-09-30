@@ -12,7 +12,7 @@
       >
         <template #panel:person>
           <Box class="">
-            <Header class=""> احراز هویت </Header>
+            <Header class="">   احراز هویت شخص حقیقی </Header>
 
             <FormBuilder
               :config="formConfig"
@@ -34,8 +34,8 @@ import { IR_cities, IR_provinces } from "~/cities";
 let initialValues = ref({});
 const cityItemsFor = (provinceId: number | string) =>
   IR_cities.filter((i) => i.province_id == provinceId).map((c) => ({
+    ...c,
     label: c.name,
-    value: c.id,
   }));
 // کانفیگِ نهاییِ فرم
 const formConfig = {
@@ -204,28 +204,21 @@ const formConfig = {
             base: "top",
           },
           searchable: true,
-          validators: [
-            // هر بار استان عوض شد، آیتم‌های شهر را آپدیت کن
-            {
-              type: "custom",
-              message: "", // پیام لازم نیست چون همیشه true برمی‌گردونیم
-              validator: (val: any /* provinceId */) => {
-                const cities = cityItemsFor(val);
-                const sec = formConfig.sections[0];
-                const cityField = sec.fields.find((f: any) => f.key === "city");
-                if (cityField) {
-                  cityField.items = cities;
-                }
-                return true;
-              },
-            },
-          ],
+          onChange: (val: any) => {
+            const cities = cityItemsFor(val);
+            const sec = formConfig.sections[0];
+            const cityField = sec.fields.find((f: any) => f.key === "city");
+            if (cityField) {
+              cityField.items = cities;
+            }
+          },
+          validators: [],
         },
         {
           key: "city",
           type: "select",
           label: "شهر",
-          placeholder: "",
+          placeholder: "شهر خود را انتخاب کنید",
           required: true,
           disabled: false,
           layout: {
@@ -234,12 +227,12 @@ const formConfig = {
               md: 1,
             },
           },
-          // labelField: "name",
-          emptyMessage: { type: String, default: "ابتدا شهر را انتخاب کنید" },
-
+          emptyMessage: "ابتدا استان خود را انتخاب کنید",
           tooltip: "",
           icon: "",
-          items: [],
+          items: [] as any[],
+          searchable: true,
+          displayKey: "label",
 
           direction: {
             base: "vertical",
@@ -410,7 +403,6 @@ async function fetchData() {
   }
 }
 async function onSubmitForm(values: Record<string, any>, type: Boolean) {
-  // TODO: منطق ارسال فرم
   await request("/store/verify", {
     method: "post",
     data: {

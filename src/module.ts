@@ -314,8 +314,8 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'WidgetHeader', file: 'widgets/WidgetHeader.vue' },
 
     ]
-    const tableBuilderComponents = [
-      // { name: 'DashboardGrid', file: 'tableBuilder/DashboardGrid.vue' },
+    const ticketsComponents = [
+      { name: 'QuestionDetails', file: 'tickets/QuestionDetails.vue' },
 
 
     ]
@@ -328,7 +328,7 @@ export default defineNuxtModule<ModuleOptions>({
       ...mediaComponents,
       ...utilComponents,
       ...dashboardComponents,
-      ...tableBuilderComponents
+      ...ticketsComponents
     ]
 
     allComponents.forEach(component => {

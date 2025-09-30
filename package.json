@@ -54,6 +54,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "moment-jalaali": "^0.10.4",
+    "multi-range-slider-vue": "^1.1.4",
     "nanoid": "^5.1.5",
     "nuxt-tailvue": "^1.0.95",
     "nuxt-tv-toast": "^1.0.5",

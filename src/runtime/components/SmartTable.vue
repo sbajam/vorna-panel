@@ -363,7 +363,7 @@ function onHeaderClick(index, evt) {
           <th
             v-for="(col, index) in props.columns"
             :key="index"
-            v-show="!(col.key === 'id' && !props.idShow)"
+            v-show="!(col.key === 'id'  && !props.idShow) && col.type!='checkbox'"
             @click="onHeaderClick(index, $event)"
             :aria-sort="
               sortIndex === index
@@ -478,8 +478,12 @@ function onHeaderClick(index, evt) {
               "
               :data-th="col.label"
             >
+              <!-- Custom column slot (named slot = column.key) -->
+              <template v-if="$slots && $slots[col.key]">
+                <slot :name="col.key" :item="row"></slot>
+              </template>
               <!-- Badge -->
-              <template v-if="col.type === 'badge'">
+              <template v-else-if="col.type === 'badge'">
                 <span
                   class="px-3 py-1 text-base rounded-full text-white"
                   :class="getBadgeColor(_.get(row, col.key))"

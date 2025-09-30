@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-import { Body } from "#components";
 
 const { request, data } = useApi();
 const { $notifyDanger } = useNuxtApp();
@@ -125,6 +124,7 @@ const fetchData = async () => {
 
     if (res?.status && res2?.status) {
       rawData.value = res?.body;
+      debugger;
       formConfig.sections[0].fields[0].defaultValue = res2?.body?.name;
       formConfig.sections[0].fields[1].defaultValue = rawData.value.find(c=>c.id==res2?.body?.parentId);
     } else {

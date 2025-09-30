@@ -188,3 +188,6 @@ button.button-white:hover {
 .pdp-picker.rtl {
   width: auto !important;
 }
+.box { @apply bg-white rounded-2xl p-4 shadow-sm border border-gray-100; }
+.rtl { direction: rtl; }
+.muted { @apply text-gray-500; }
