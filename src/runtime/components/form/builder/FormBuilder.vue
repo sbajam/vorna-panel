@@ -195,7 +195,7 @@
           :color="config.submitButton.color || 'primary-100'"
           :size="config.submitButton.size || 'lg'"
           :fullWidth="config.submitButton.fullWidth || false"
-          :rounded="config.submitButton.rounded || lg"
+          :rounded="config.submitButton.rounded || 'lg'"
           type="submit"
         >
           {{ config.submitButton.text }}
@@ -206,7 +206,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 
 import InputField from "../InputField.vue";
 import DropDown from "../DropDown.vue";
@@ -553,6 +553,13 @@ if (!allSections.length) {
     formErrors[field.key] = "";
   });
 }
+
+// Watcher for initialValues to update formValues when initialValues change
+watch(() => props.initialValues, (newVals) => {
+  if (newVals) {
+    Object.assign(formValues, newVals);
+  }
+}, { deep: true });
 
 // ۴. ذخیرهٔ دوره‌ای هر ۲ دقیقه
 let autoSaveInterval: number | null = null;

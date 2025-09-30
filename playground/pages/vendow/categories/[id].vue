@@ -3,7 +3,7 @@
     <template #main>
       <Box>
         <Header>ویرایش دسته‌بندی‌ها</Header>
-        <FormBuilder :config="formConfig" @submitForm="onSubmitForm" />
+        <FormBuilder :config="formConfig" :initialValues="initialValues" @submitForm="onSubmitForm" />
       </Box>
     </template>
   </NuxtLayout>
@@ -16,9 +16,11 @@ const { $notifyDanger } = useNuxtApp();
 // Data
 const rawData = ref([]);
 const isLoading = ref(true);
+const initialValues = ref({});
+const noParent = { name: "بدون دسته بندی پدر", id: null };
 let parentItems = computed(() => [
-  { name: "بدون دسته بندی پدر", id: null },
-  ...rawData.value.map((c) => ({ name: c.name, id: c.id })),
+  noParent,
+  ...rawData.value.filter(c => c.id != useRoute().params.id),
 ]);
 
 const formConfig = reactive({
@@ -124,9 +126,12 @@ const fetchData = async () => {
 
     if (res?.status && res2?.status) {
       rawData.value = res?.body;
-      debugger;
-      formConfig.sections[0].fields[0].defaultValue = res2?.body?.name;
-      formConfig.sections[0].fields[1].defaultValue = rawData.value.find(c=>c.id==res2?.body?.parentId);
+      const parentID = res2?.body?.parent.id;
+      const parent = res?.body?.find(c => c.id == parentID);
+      initialValues.value = {
+        name: res2?.body?.name,
+        parent: parent || noParent
+      };
     } else {
       $notifyDanger(res2?.message || res?.message || "خطا در دریافت اطلاعات");
       rawData.value = [];

@@ -166,6 +166,7 @@ const inputId = `img-upl-${Math.random().toString(36).substr(2, 8)}`;
 
 // مقداردهی اولیه
 onMounted(() => {
+  // debugger
   const init = props.initialImages;
   if (init) {
     const arr = Array.isArray(init) ? init : [init];
