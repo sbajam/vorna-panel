@@ -95,7 +95,8 @@
       :class="
         direction === 'horizontal' ? 'flex gap-2' : 'flex flex-col space-y-3'
       "
-    >{{ direction }}
+    >
+    
       <!-- Iterate over options array -->
       <label
         v-for="opt in options"

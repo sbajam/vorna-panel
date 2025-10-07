@@ -2,284 +2,200 @@
   <ImageP
     :show="imagePopup"
     @close_popup="imagePopup = false"
-    @choose="(src)=>{setImage(src);imagePopup=false}"
+    @choose="(src) => { setImage(src); imagePopup = false }"
   />
-  <!-- <VideoP :show="videoPopup" @close_popup="videoPopup = false"  @choose="(src)=>setVideo(src)" /> -->
-  <div
-    class="border border-solid border-gray-100 rounded-lg overflow-hidden textarea"
-  >
-    <div v-if="editor" class="editor">
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().undo().run()"
-        :disabled="!editor.can().chain().focus().undo().run()"
-      >
-        <Icon name="fa6-solid:rotate-left" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().redo().run()"
-        :disabled="!editor.can().chain().focus().redo().run()"
-      >
-        <Icon name="fa6-solid:rotate-right" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleBold().run()"
-        :disabled="!editor.can().chain().focus().toggleBold().run()"
-        :class="{ 'is-active': editor.isActive('bold') }"
-      >
-        <Icon name="fa6-solid:bold" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleItalic().run()"
-        :disabled="!editor.can().chain().focus().toggleItalic().run()"
-        :class="{ 'is-active': editor.isActive('italic') }"
-      >
-        <Icon name="fa6-solid:italic" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleStrike().run()"
-        :disabled="!editor.can().chain().focus().toggleStrike().run()"
-        :class="{ 'is-active': editor.isActive('strike') }"
-      >
-        <Icon name="fa6-solid:strikethrough" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleCode().run()"
-        :disabled="!editor.can().chain().focus().toggleCode().run()"
-        :class="{ 'is-active': editor.isActive('code') }"
-      >
-        <Icon name="fa6-solid:code" />
-      </div>
-      <!-- <div class="editor-btn" @click="editor.chain().focus().unsetAllMarks().run()">clear marks</div> -->
-      <!-- <div class="editor-btn" @click="editor.chain().focus().clearNodes().run()">clear nodes</div> -->
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().setParagraph().run()"
-        :class="{ 'is-active': editor.isActive('paragraph') }"
-      >
-        <Icon name="fa6-solid:paragraph" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-      >
-        <span class="text-secondary font-bold"> H1</span>
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
-      >
-        <span class="text-secondary font-bold"> H2</span>
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
-      >
-        <span class="text-secondary font-bold"> H3</span>
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }"
-      >
-        <span class="text-secondary font-bold"> H4</span>
-      </div>
-      <!-- <div class="editor-btn"
-        @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }"
-      >
-        h5
-      </div>
-      <div class="editor-btn"
-        @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-        :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }"
-      >
-        h6
-      </div> -->
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleBulletList().run()"
-        :class="{ 'is-active': editor.isActive('bulletList') }"
-      >
-        <Icon name="fa6-solid:list-ul" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleOrderedList().run()"
-        :class="{ 'is-active': editor.isActive('orderedList') }"
-      >
-        <Icon name="fa6-solid:list-ol" />
-      </div>
-      <!-- <div class="editor-btn"
-        @click="editor.chain().focus().toggleCodeBlock().run()"
-        :class="{ 'is-active': editor.isActive('codeBlock') }"
-      >
-        code block
-      </div> -->
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().toggleBlockquote().run()"
-        :class="{ 'is-active': editor.isActive('blockquote') }"
-      >
-        <Icon name="fa6-solid:quote-right" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().setHorizontalRule().run()"
-      >
-        <Icon name="fa6-solid:minus" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().setHardBreak().run()"
-      >
-        <Icon name="fa6-solid:turn-down" />
-      </div>
 
-      <div
-        class="editor-btn"
-        @click="setLink"
-        :class="{ 'is-active': editor.isActive('link') }"
-      >
+  <div class="border border-solid border-gray-100 rounded-lg overflow-hidden textarea">
+    <!-- Toolbar -->
+    <div v-if="editor" class="editor" :class="disabled ? 'opacity-60 pointer-events-none' : ''">
+      <button class="editor-btn" @click="cmd('undo')" :disabled="!can('undo')"><Icon name="fa6-solid:rotate-left" /></button>
+      <button class="editor-btn" @click="cmd('redo')" :disabled="!can('redo')"><Icon name="fa6-solid:rotate-right" /></button>
+
+      <button class="editor-btn" :class="{ 'is-active': isActive('bold') }" @click="toggle('toggleBold')" :disabled="!can('toggleBold')">
+        <Icon name="fa6-solid:bold" />
+      </button>
+      <button class="editor-btn" :class="{ 'is-active': isActive('italic') }" @click="toggle('toggleItalic')" :disabled="!can('toggleItalic')">
+        <Icon name="fa6-solid:italic" />
+      </button>
+      <button class="editor-btn" :class="{ 'is-active': isActive('strike') }" @click="toggle('toggleStrike')" :disabled="!can('toggleStrike')">
+        <Icon name="fa6-solid:strikethrough" />
+      </button>
+      <button class="editor-btn" :class="{ 'is-active': isActive('code') }" @click="toggle('toggleCode')" :disabled="!can('toggleCode')">
+        <Icon name="fa6-solid:code" />
+      </button>
+
+      <button class="editor-btn" :class="{ 'is-active': isActive('paragraph') }" @click="cmd('setParagraph')">
+        <Icon name="fa6-solid:paragraph" />
+      </button>
+      <button class="editor-btn" :class="{ 'is-active': isHeading(1) }" @click="cmd('toggleHeading', { level: 1 })"><span class="text-secondary font-bold">H1</span></button>
+      <button class="editor-btn" :class="{ 'is-active': isHeading(2) }" @click="cmd('toggleHeading', { level: 2 })"><span class="text-secondary font-bold">H2</span></button>
+      <button class="editor-btn" :class="{ 'is-active': isHeading(3) }" @click="cmd('toggleHeading', { level: 3 })"><span class="text-secondary font-bold">H3</span></button>
+      <button class="editor-btn" :class="{ 'is-active': isHeading(4) }" @click="cmd('toggleHeading', { level: 4 })"><span class="text-secondary font-bold">H4</span></button>
+
+      <button class="editor-btn" :class="{ 'is-active': isActive('bulletList') }" @click="cmd('toggleBulletList')">
+        <Icon name="fa6-solid:list-ul" />
+      </button>
+      <button class="editor-btn" :class="{ 'is-active': isActive('orderedList') }" @click="cmd('toggleOrderedList')">
+        <Icon name="fa6-solid:list-ol" />
+      </button>
+
+      <button class="editor-btn" :class="{ 'is-active': isActive('blockquote') }" @click="cmd('toggleBlockquote')">
+        <Icon name="fa6-solid:quote-right" />
+      </button>
+      <button class="editor-btn" @click="cmd('setHorizontalRule')">
+        <Icon name="fa6-solid:minus" />
+      </button>
+      <button class="editor-btn" @click="cmd('setHardBreak')">
+        <Icon name="fa6-solid:turn-down" />
+      </button>
+
+      <button class="editor-btn" :class="{ 'is-active': isActive('link') }" @click="setLink">
         <Icon name="fa6-solid:link" />
-      </div>
-      <div
-        class="editor-btn"
-        @click="editor.chain().focus().unsetLink().run()"
-        :disabled="!editor.isActive('link')"
-      >
+      </button>
+      <button class="editor-btn" @click="cmd('unsetLink')" :disabled="!editor?.isActive('link')">
         <Icon name="fa6-solid:link-slash" />
-      </div>
-      <div class="editor-btn" v-if="props.image" @click="imagePopup = true">
+      </button>
+
+      <button class="editor-btn" v-if="image" @click="imagePopup = true">
         <Icon name="fa6-solid:image" />
-      </div>
-      <!-- <div class="editor-btn" @click="videoPopup = true">
-        Video
-        <Icon name="fa6-solid:camera" />
-      </div> -->
+      </button>
     </div>
-    <editor-content :editor="editor" class="max-h-[60vh] overflow-auto" />
+
+    <editor-content
+      :editor="editor"
+      class="tiptap max-h-[60vh] overflow-auto"
+      :data-name="name"
+    />
   </div>
 </template>
 
 <script setup>
-import Code from "@tiptap/extension-code";
+import { ref, watch, onMounted, onBeforeUnmount, computed } from "vue";
+import { Editor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
 import Document from "@tiptap/extension-document";
-import Link from "@tiptap/extension-link";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
-import StarterKit from "@tiptap/starter-kit";
-import { Editor, EditorContent } from "@tiptap/vue-3";
+import Code from "@tiptap/extension-code";
+import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-// import Video from "../Video" from ; // اضافه کردن اکستنشن ویدیو
+import Placeholder from "@tiptap/extension-placeholder";
+// (اختیاری) شمارنده کاراکتر: import CharacterCount from '@tiptap/extension-character-count';
 
-// Props
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default: "",
-  },
-  image: {
-    type: Boolean,
-    default: true,
-  },
+  modelValue: { type: String, default: "" },
+  image: { type: Boolean, default: true },
+  placeholder: { type: String, default: "" },
+  disabled: { type: Boolean, default: false },
+  name: { type: String, default: "" },
+  maxChars: { type: Number, default: 0 }, // 0 یعنی بدون محدودیت
 });
 
-// Emits
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "focus", "blur"]);
 
-// Editor instance
 const editor = ref(null);
+const imagePopup = ref(false);
+
+const can = (action) => {
+  if (!editor.value) return false;
+  const chain = editor.value.can().chain().focus();
+  switch (action) {
+    case "undo": return chain.undo().run();
+    case "redo": return chain.redo().run();
+    case "toggleBold": return chain.toggleBold().run();
+    case "toggleItalic": return chain.toggleItalic().run();
+    case "toggleStrike": return chain.toggleStrike().run();
+    case "toggleCode": return chain.toggleCode().run();
+    default: return true;
+  }
+};
+const toggle = (cmdName) => editor.value?.chain().focus()[cmdName]().run();
+const cmd = (cmdName, arg) => editor.value?.chain().focus()[cmdName](arg).run();
+
+const isActive = (name, attrs) => editor.value?.isActive(name, attrs);
+const isHeading = (level) => editor.value?.isActive("heading", { level });
 
 watch(
   () => props.modelValue,
   (value) => {
-    if (editor.value) {
-      const isSame = editor.value.getHTML() === value;
-
-      if (!isSame) {
-        editor.value.commands.setContent(value, false);
-      }
+    if (!editor.value) return;
+    const current = editor.value.getHTML();
+    if (current !== value) {
+      editor.value.commands.setContent(value || "", false);
     }
   }
 );
 
+watch(
+  () => props.disabled,
+  (d) => {
+    if (editor.value) editor.value.setOptions({ editable: !d });
+  },
+  { immediate: true }
+);
+
 onMounted(() => {
   editor.value = new Editor({
+    editable: !props.disabled,
     extensions: [
       StarterKit,
       Document,
       Paragraph,
       Text,
       Code,
-      Link.configure({
-        openOnClick: false,
-      }),
+      Link.configure({ openOnClick: false }),
       Image,
-      // Video, // اضافه کردن اکستنشن ویدیو
-    ],
+      Placeholder.configure({
+        placeholder: props.placeholder || "",
+        emptyNodeClass:
+          "before:content-[attr(data-placeholder)] before:text-gray-400 before:pointer-events-none before:absolute before:rtl:pr-4 before:ltr:pl-4",
+      }),
+      // props.maxChars ? CharacterCount.configure({ limit: props.maxChars }) : null,
+    ].filter(Boolean),
     content: props.modelValue,
-    onUpdate: () => {
-      emit("update:modelValue", editor.value.getHTML());
+    onUpdate: ({ editor: ed }) => {
+      if (props.maxChars > 0) {
+        const plain = ed.getText();
+        if (plain.length > props.maxChars) {
+          // اگر خواستی سخت‌گیرانه باشه، برگردون به قبلی
+          // اینجا فقط اجازه نمی‌دیم از limit بیشتر شه
+          ed.commands.setTextSelection({ from: 0, to: ed.state.doc.content.size });
+        }
+      }
+      emit("update:modelValue", ed.getHTML());
     },
+    onFocus: () => emit("focus"),
+    onBlur: () => emit("blur"),
   });
 });
 
-let imagePopup = ref(false);
-let videoPopup = ref(false);
-
 function setLink() {
-  const previousUrl = editor.value.getAttributes("link").href;
-  const url = window.prompt("URL", previousUrl);
-
+  const prev = editor.value?.getAttributes("link").href || "";
+  const url = window.prompt("URL", prev);
   if (url === null) return;
   if (url === "") {
-    editor.value.chain().focus().extendMarkRange("link").unsetLink().run();
+    editor.value?.chain().focus().extendMarkRange("link").unsetLink().run();
     return;
   }
-
-  editor.value
-    .chain()
-    .focus()
-    .extendMarkRange("link")
-    .setLink({ href: url })
-    .run();
+  editor.value?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
 }
 
 function setImage(src) {
-  editor.value.chain().focus().setImage({ src }).run();
-}
-
-function setVideo(src) {
-  // editor.value.chain().focus().setVideo({ src }).run();
+  editor.value?.chain().focus().setImage({ src }).run();
 }
 
 onBeforeUnmount(() => {
-  if (editor.value) {
-    editor.value.destroy();
-  }
+  editor.value?.destroy();
 });
 </script>
 
 <style lang="scss">
-/* Basic editor styles */
 .tiptap {
-  @apply outline-none px-4 py-2 min-h-[4rem];
+  @apply relative outline-none px-4 py-2 min-h-[4rem];
 
-  > * + * {
-    margin-top: 0.75em;
-  }
-  a {
-    color: #68cef8;
-  }
+  > * + * { margin-top: 0.75em; }
+
+  a { color: #68cef8; }
 
   code {
     font-size: 0.9rem;
@@ -289,42 +205,25 @@ onBeforeUnmount(() => {
     color: #616161;
     box-decoration-break: clone;
   }
-  h1 {
-    @apply text-3xl;
-  }
-  h2 {
-    @apply text-2xl;
-  }
-  h3 {
-    @apply text-xl;
-  }
-  h4 {
-    @apply text-lg;
-  }
-  ul {
-    list-style: disc;
-    padding-right: 1rem;
-  }
-  ol {
-    list-style: decimal;
-    padding-right: 1rem;
-  }
-  img,
-  video {
-    @apply block max-h-[50vh] max-w-full object-contain mx-auto;
-  }
+
+  h1 { @apply text-3xl; }
+  h2 { @apply text-2xl; }
+  h3 { @apply text-xl; }
+  h4 { @apply text-lg; }
+
+  ul { list-style: disc; padding-right: 1rem; }
+  ol { list-style: decimal; padding-right: 1rem; }
+
+  img, video { @apply block max-h-[50vh] max-w-full object-contain mx-auto; }
 }
 
 .editor {
-  @apply flex flex-wrap gap-1 border border-solid border-gray-100  bg-gray-100;
+  @apply grid grid-cols-5 md:flex flex-wrap items-stretch gap-1 border border-solid border-gray-100 bg-gray-100 p-1;
+
   .editor-btn {
-    @apply border border-solid !w-fit border-gray-100 py-1 px-3 cursor-pointer duration-300 rounded-lg  text-xl text-secondary-100;
-    &:hover {
-      @apply bg-white translate-y-0 shadow-none;
-    }
-    &.is-active {
-      @apply bg-white;
-    }
+    @apply flex items-center  justify-center border border-solid border-gray-100 py-1 px-3 cursor-pointer duration-300 rounded-lg text-xl text-secondary-100 bg-white;
+    &:disabled { @apply opacity-50 cursor-not-allowed; }
+    &.is-active { @apply bg-white ring-1 ring-secondary-30; }
   }
 }
 </style>

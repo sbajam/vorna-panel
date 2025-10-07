@@ -74,7 +74,7 @@
     <!-- فرم اصلی وقتی loading=false -->
     <div v-else-if="config.formProps.loading === false">
       <div
-        class="h-fit rounded p-4 relative"
+        class="h-fit rounded md:p-4 relative"
         @dragover.prevent
         @drop.prevent="handleDrop"
       >
@@ -95,17 +95,14 @@
               >
                 <Icon
                   :name="`fa6-solid:${
-                    section._open ? 'chevron-down' : 'chevron-left'
+                    sectionOpenStates[sidx] ? 'chevron-down' : 'chevron-left'
                   }`"
                 />
               </div>
             </div>
             <!-- محتوای بخش -->
-            <Vue3SlideUpDown v-model="section._open">
-              <div
-                v-show="!section.collapsible || section._open"
-                class="mt-2 px-2"
-              >
+            <Vue3SlideUpDown v-model="sectionOpenStates[sidx]">
+              <div class="mt-2 px-2">
                 <div :class="gridClass">
                   <template v-for="field in section.fields" :key="field.key">
                     <div
@@ -213,12 +210,13 @@ import DropDown from "../DropDown.vue";
 import CheckBoxGroup from "../CheckBoxGroup.vue";
 import RadioGroup from "../RadioGroup.vue";
 import ToggleSwitch from "../ToggleSwitch.vue";
-import FileUploader from "../FileUploader.vue";
-import RichTextEditor from "../Editor.vue";
 import Button from "../../Button.vue";
 import Spinner from "../../Spinner.vue";
 import FieldArray from "./FieldArray.vue";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
+import TagsField from "../TagsField.vue";
+import FileField from "../FileField.vue";
+import RichTextField from "../RichTextField.vue";
 
 const props = defineProps<{
   config: FormConfig;
@@ -232,6 +230,10 @@ const emit = defineEmits<{
   (e: "addField", type: string): void;
   (e: "selectField", key: string): void;
 }>();
+function onFieldUpdate(key: string) {
+  // v-model خودش formValues[key] را ست کرده؛ فقط ولیدیت کن.
+  queueMicrotask(() => runValidation(key)); // یا nextTick(...)
+}
 
 // Expose resetForm method
 defineExpose({
@@ -286,7 +288,7 @@ defineExpose({
     });
 
     formLevelError.value = ""; // پاک کردن خطای کلی فرم
-  }
+  },
 });
 
 // IndexedDB helper (بی‌تغییر از قبل)
@@ -387,6 +389,11 @@ interface FieldConfig {
   isImageUploader?: boolean;
   watermark?: boolean;
   watermarkImage?: string;
+  watermarkText?: string;
+  aspectRatio?: string;
+  showInfo?: boolean;
+  infoText?: string;
+  sizeClass?: string;
   uploadUrl?: string;
 
   image?: boolean;
@@ -496,9 +503,12 @@ const formLevelError = ref("");
 const allSections: SectionConfig[] = props.config.sections || [];
 const allFields: FieldConfig[] = props.config.fields || [];
 
+// Local state for section open states to avoid mutating props
+const sectionOpenStates = reactive<Record<number, boolean>>({});
+
 // مقداردهی اولیه برای هر فیلد
-allSections.forEach((section) => {
-  section._open = true;
+allSections.forEach((section, index) => {
+  sectionOpenStates[index] = true;
   (section.fields || []).forEach((field) => {
     const init = props.initialValues?.[field.key];
     if (init != null) {
@@ -555,11 +565,15 @@ if (!allSections.length) {
 }
 
 // Watcher for initialValues to update formValues when initialValues change
-watch(() => props.initialValues, (newVals) => {
-  if (newVals) {
-    Object.assign(formValues, newVals);
-  }
-}, { deep: true });
+watch(
+  () => props.initialValues,
+  (newVals) => {
+    if (newVals) {
+      Object.assign(formValues, newVals);
+    }
+  },
+  { deep: true }
+);
 
 // ۴. ذخیرهٔ دوره‌ای هر ۲ دقیقه
 let autoSaveInterval: number | null = null;
@@ -916,23 +930,31 @@ function buildFieldProps(field: FieldConfig) {
       return {
         ...shared,
         size: field.size || "md",
-        onColor: field.onColor || "blue-500",
-        offColor: field.offColor || "gray-300",
+        onColor: field.onColor || "bg-primary-100",
+        offColor: field.offColor || "bg-gray-300",
         labelPosition: resolveResponsive(field.labelPosition, "right"),
       };
 
     case "file":
       return {
         ...shared,
-        files: formValues[field.key],
+        // کنترل انتخاب ImageUploader
+        isImageUploader: field.isImageUploader === true,
+
+        // مشترک
         accept: field.accept || "",
         multiple: field.multipleFile || false,
         maxFiles: field.maxFiles || 1,
         maxSize: field.maxSize || Infinity,
-        isImageUploader: field.isImageUploader !== false,
+
+        // مخصوص ImageUploader
+        aspectRatio: field.aspectRatio || "1/1",
         watermark: field.watermark || false,
         watermarkImage: field.watermarkImage || "",
-        uploadUrl: field.uploadUrl || null,
+        watermarkText: field.watermarkText || "",
+        showInfo: field.showInfo !== false,
+        infoText: field.infoText || "فرمت‌های مجاز: WebP, JPEG, PNG, GIF",
+        sizeClass: field.sizeClass || "w-[200px]",
       };
 
     case "richtext":
@@ -940,7 +962,12 @@ function buildFieldProps(field: FieldConfig) {
         ...shared,
         image: field.image ?? true,
       };
-
+    case "tags":
+      return {
+        ...shared,
+        maxItems: field.maxItems ?? 50,
+        minItems: field.minItems ?? 0,
+      };
     default:
       return shared;
   }
@@ -967,9 +994,11 @@ function getComponentByType(type: string) {
     case "toggle":
       return ToggleSwitch;
     case "file":
-      return FileUploader;
+      return FileField; // خارجی
     case "richtext":
-      return RichTextEditor;
+      return RichTextField; // خارجی
+    case "tags":
+      return TagsField; // خارجی
     default:
       return InputField;
   }
@@ -986,7 +1015,7 @@ const gridClass = computed(() => {
 // ۱۳. مدیریت باز/بسته کردن سکشن‌ها
 function toggleSection(index: number) {
   if (allSections[index]?.collapsible) {
-    allSections[index]._open = !allSections[index]._open;
+    sectionOpenStates[index] = !sectionOpenStates[index];
   }
 }
 

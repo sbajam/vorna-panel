@@ -309,11 +309,3 @@ const internalValueArray = computed(() =>
 );
 </script>
 
-<style lang="scss" scoped>
-.input-div {
-  @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
-}
-.input-div label {
-  @apply text-primary-100 text-lg text-right whitespace-nowrap font-semibold w-4/12;
-}
-</style>

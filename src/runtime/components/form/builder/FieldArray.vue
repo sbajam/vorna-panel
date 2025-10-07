@@ -1,9 +1,9 @@
 <template>
-  <div class="field-array space-y-4">
+  <div class="field-array space-y-2 my-4">
     <!-- عنوان آرایه (اختیاری) -->
     <label v-if="label" class="block text-lg font-semibold mb-2">
       {{ label }}  <!-- اگر فقط یک آیتم باشد و کمتر از حداقل، می‌توان پیغام داد یا دکمه را غیرفعال کرد -->
-      <div :class="{'text-red-600':localItems.length<minItems}" v-if="localItems.length <= minItems" class="text-sm text-gray-500 mb-2">
+      <div :class="{'text-red-600':localItems.length<minItems}" v-if="localItems.length <= minItems && minItems!=0" class="text-sm text-gray-500 mb-2">
         حداقل {{ minItems }} مورد لازم است
       </div>
     </label>
@@ -100,7 +100,7 @@ import CheckBoxGroup from '../CheckBoxGroup.vue'
 import RadioGroup from '../RadioGroup.vue'
 import ToggleSwitch from '../ToggleSwitch.vue'
 import FileUploader from '../FileUploader.vue'
-import RichTextEditor from '../Editor.vue'
+import RichTextEditor from '../RichTextField.vue'
 
 interface ValidatorConfig {
   type: string
@@ -236,12 +236,9 @@ function addItem() {
 
 // حذف یک آیتم
 function removeItem(index: number) {
-//   if (localItems.value.length > minItems) {
+  if (localItems.value.length > minItems) {
     localItems.value.splice(index, 1)
-//   }
-//   else{
-    // errorMessages.value = `حداقل ${minItems} مورد لازم است`
-//   }
+  }
 }
 
 // اعتبارسنجی درون آرایه (در صورت نیاز)

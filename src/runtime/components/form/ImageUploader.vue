@@ -153,6 +153,7 @@ const props = defineProps({
   watermarkImage: { type: String, default: "" },
   watermarkText: { type: String, default: "" },
   watermark: { type: Boolean, default: true },
+  images: { type: [Array, File, Object, null], default: null },
 });
 const emit = defineEmits(["update:images"]);
 
@@ -163,18 +164,51 @@ const addWatermark = ref(false);
 const isDragging = ref(false);
 // شناسه تصادفی برای input[type="file"]
 const inputId = `img-upl-${Math.random().toString(36).substr(2, 8)}`;
+function syncFromValue(val) {
+  // پاکسازی قبلی
+  previews.value.forEach((u) => { try { URL.revokeObjectURL(u); } catch {} });
+  previews.value = [];
+  files.value = [];
 
-// مقداردهی اولیه
+  if (!val) return;
+
+  if (Array.isArray(val)) {
+    for (const f of val) {
+      files.value.push(f);
+      if (f instanceof File) {
+        previews.value.push(URL.createObjectURL(f));
+      } else if (typeof f === "string") {
+        previews.value.push(f);
+      }
+    }
+  } else {
+    files.value.push(val);
+    if (val instanceof File) previews.value.push(URL.createObjectURL(val));
+    else if (typeof val === "string") previews.value.push(val);
+  }
+}
+
 onMounted(() => {
-  // debugger
-  const init = props.initialImages;
-  if (init) {
-    const arr = Array.isArray(init) ? init : [init];
+  // اولویت با props.images، در غیر اینصورت از initialImages
+  if (props.images != null && (props.images) !== undefined) {
+    syncFromValue(props.images);
+  } else if (props.initialImages && props.initialImages.length) {
+    const arr = Array.isArray(props.initialImages) ? props.initialImages : [props.initialImages];
     previews.value = arr;
     files.value = arr.map(() => null);
   }
   isInitializing.value = false;
 });
+
+/* 👇👇 اگر از بیرون images تغییر کرد، اینجا همگام شو */
+watch(() => props.images, (v) => {
+  if (isInitializing.value) return;
+  syncFromValue(v);
+}, { deep: true });
+
+function emitCurrent() {
+  emit("update:images", props.multiple ? files.value : files.value[0] || null);
+}
 
 // تابع واترمارک‌گذاری (اولویت تصویر، سپس متن، سپس لوگو، سپس اسم فروشگاه)
 const watermark = async (file) => {
@@ -303,10 +337,6 @@ function removeFile(i) {
   emitCurrent();
 }
 
-// انتشار مقدار نهایی برای v-model
-function emitCurrent() {
-  emit("update:images", props.multiple ? files.value : files.value[0] || null);
-}
 
 // Event handlers for drag and drop
 const dragEnter = (event) => {

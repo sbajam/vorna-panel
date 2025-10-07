@@ -7,6 +7,8 @@ import {
   useRoute,
   navigateTo,
 } from "#imports";
+import Button from "../components/Button.vue";
+import InputField from "../components/form/InputField.vue";
 import { useUserStore } from "../stores/user";
 const config = useRuntimeConfig().public.vornaPanel;
 
@@ -44,7 +46,7 @@ const login = async () => {
       //   headers: { "Cache-Control": "no-cache" },
       //   baseUrl:' '
       // });
-      userStore.setUser(res.token, res.roles || "superAdmin" ); //defautl Role
+      userStore.setUser(res.token, res.roles || "superAdmin"); //defautl Role
       userStore.setUsername(username.value.trim());
 
       // فقط اگر روی صفحه login هستی، redirect کن
@@ -74,46 +76,21 @@ const login = async () => {
         پنل مدیریتی {{ config.name }}
       </h1>
 
-      <div class="input-div">
-        <label>نام کاربری :</label>
-        <input v-model="username" type="text" />
-      </div>
-
-      <div class="input-div">
-        <label>رمز عبور :</label>
-        <input v-model="password" :type="passwordShow ? 'text' : 'password'" />
-        <Icon
-          @click="passwordShow = !passwordShow"
-          class="absolute left-8 text-gray-300 cursor-pointer"
-          :name="passwordShow ? 'mdi:eye-off' : 'mdi:eye'"
-        />
-      </div>
-
-      <div class="text-left">
-        <Spinner v-if="pending" height="8vh" class="!h-[8vh]" size="2rem" />
-        <button
-          v-else
-          @click="login()"
-          class="bg-primary-100 rounded-lg text-lg px-8 py-2 ml-10 mt-10 text-white"
-        >
-          ورود
-        </button>
-      </div>
+      <InputField
+        v-model="username"
+        type="text"
+        label="نام کاربری"
+        label-position="right"
+        class="mb-4"
+      />
+      <InputField
+        v-model="password"
+        type="password"
+        label="رمز عبور"
+        label-position="right"
+        :passwordOptions="false"
+      />
+<Button color="secondary-100" rounded="xl" size="md" class="my-10" :pending="pending" @click="login()" :full-width="true" >ورود</Button>
     </section>
   </main>
 </template>
-
-<style scoped lang="scss">
-.input-div {
-  @apply relative flex items-center gap-3 w-full mb-6;
-
-  label {
-    @apply text-primary-100 text-lg text-right whitespace-nowrap font-semibold w-4/12;
-  }
-
-  input,
-  .ProseMirror {
-    @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full focus:border-secondary-100;
-  }
-}
-</style>

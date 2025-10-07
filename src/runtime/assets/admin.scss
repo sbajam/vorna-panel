@@ -117,7 +117,7 @@ button.button-white:hover {
   transition: all 0.5s;
 }
 .input-div {
-  @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full px-4;
+  @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:px-4;
 
   label {
     @apply text-primary-100 text-lg text-right whitespace-nowrap font-semibold w-4/12;
@@ -141,7 +141,7 @@ button.button-white:hover {
   input,
   textarea,
   .input {
-    @apply outline-0 px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full focus:border-secondary-100;
+    @apply outline-0 md:px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full focus:border-secondary-100;
 
     &:read-only,
     &.read-only {
@@ -191,3 +191,39 @@ button.button-white:hover {
 .box { @apply bg-white rounded-2xl p-4 shadow-sm border border-gray-100; }
 .rtl { direction: rtl; }
 .muted { @apply text-gray-500; }
+/**
+ * Styling for InputField component
+ * - Responsive layout with flexbox
+ * - Custom styling for different input types
+ * - RTL/LTR support
+ * - Read-only state styling
+ */
+.input-div {
+  @apply relative flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:px-4;
+
+  &.number input {
+    direction: ltr;
+    text-align: left;
+  }
+}
+.input-div label {
+  @apply text-primary-100 lg:text-lg text-right whitespace-nowrap font-semibold w-4/12;
+}
+.input-div > div {
+  @apply w-full;
+}
+.input {
+  @apply outline-0 md:px-4 py-2 border-2 border-solid border-gray-100 rounded-lg w-full;
+  &::placeholder {
+    @apply text-xs lg:text-sm;
+  }
+  &[type="color"] {
+    @apply py-1;
+  }
+}
+.input:read-only,
+textarea.input:read-only,
+.input.read-only,
+textarea.input.read-only {
+  @apply bg-gray-100 border-primary-10;
+}

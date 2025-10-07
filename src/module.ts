@@ -274,7 +274,10 @@ export default defineNuxtModule<ModuleOptions>({
       { name: 'CheckBoxGroup', file: 'form/CheckBoxGroup.vue' },
       { name: 'ToggleSwitch', file: 'form/ToggleSwitch.vue' },
       { name: 'DropDown', file: 'form/DropDown.vue' },
-      { name: 'Editor', file: 'form/Editor.vue' }
+      { name: 'Editor', file: 'form/Editor.vue' },
+      { name: 'TagsField', file: 'form/TagsField.vue' },
+      { name: 'FileField', file: 'form/FileField.vue' },
+      { name: 'RichTextField', file: 'form/RichTextField.vue' },
     ]
 
     // 2.3 Form Builder Components (اجزای فرم‌ساز)
