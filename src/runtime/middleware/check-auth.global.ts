@@ -50,18 +50,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
       // throw new Error('دسترسی‌ها دریافت نشد.')
     }
   } catch (error) {
-    console.log('❌ خطا در دریافت دسترسی‌ها:', error)
     $notifyDanger('خطا در دریافت دسترسی‌ها')
   }
 
   try {
     const hasAccess = userStore.hasRoutePermission(to.path)
-
-    if (process.client) {
-      console.log('👉 مسیر در حال بررسی:', to.path)
-      console.log('🟢 دسترسی‌ها:', userStore.permissions)
-      console.log('✅ مجوز دارد؟', hasAccess)
-    }
 
     if (!hasAccess) {
 
@@ -69,6 +62,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
     else { return true }
   } catch (e) {
-    console.log('❌ خطا در چک کردن دسترسی مسیر:', e)
   }
 })

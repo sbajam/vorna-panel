@@ -284,7 +284,7 @@ function onClick(to) {
         @apply absolute left-[-15px] rounded-md;
         width: 5px;
         height: 90%;
-        background: theme("colors.primary.DEFAULT", #cecece);
+        background: theme("colors.primary.10", #cecece);
       }
     }
   }

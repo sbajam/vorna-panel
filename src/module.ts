@@ -41,9 +41,8 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@VornaCo/vorna-panel',
     configKey: 'vornaPanel',
-    compatibility: { nuxt: '^3.0.0' },
+    compatibility: { nuxt: '^4.0.0' },
   },
-
   /**
    * Default module options
    */
@@ -92,9 +91,6 @@ export default defineNuxtModule<ModuleOptions>({
         )
       })
     }
-
-
-
 
     // ———————————————
     // الف) (اختیاری) اجرای خودکار Prisma Migrate برای ساخت جدول UserLog
@@ -175,12 +171,33 @@ export default defineNuxtModule<ModuleOptions>({
         darkMode: 'class',
       },
     })
-
     nuxt.options.build!.transpile.push('moment')
     nuxt.options.build!.transpile.push('moment-jalaali')
     nuxt.options.build!.transpile.push('vue3-persian-datetime-picker')
     nuxt.options.build.transpile ||= []
     nuxt.options.build.transpile.push('vue3-grid-layout')
+    // تنظیمات Vite برای جلوگیری از باندل شدن برخی پکیج‌ها
+    nuxt.options.vite.optimizeDeps ||= {}
+    nuxt.options.vite.optimizeDeps.include ||= []
+    nuxt.options.vite.optimizeDeps.exclude ||= [
+      'execa',
+      '@prisma/client',
+      'cross-spawn',
+      'strip-final-newline',
+      'npm-run-path',
+      'onetime',
+      'signal-exit',
+      'human-signals',
+      'is-stream',
+      'get-stream',
+      'merge-stream',
+      'mimic-fn',
+      'path-key',
+      'shebang-command',
+      'which',
+      'isexe',
+      'shebang-regex'
+    ]
 
     nuxt.options.vite.optimizeDeps ||= {}
     nuxt.options.vite.optimizeDeps.include ||= []
@@ -380,10 +397,10 @@ export default defineNuxtModule<ModuleOptions>({
     await installModule('@nuxt/icon')
     addPlugin(resolve('./runtime/plugins/notifications.js'))
     addPlugin(resolve('./runtime/plugins/auto-animate.client.ts'))
-    addPlugin({
-      src: resolve('./runtime/plugins/pinia.js'),
-      mode: 'client',
-    })
+    // addPlugin({
+    //   src: resolve('./runtime/plugins/pinia.js'),
+    //   mode: 'client',
+    // })
     addPlugin({
       src: resolve(__dirname, 'runtime/plugins/vue-apexcharts.client'),
       mode: 'client',
@@ -512,7 +529,7 @@ export default defineNuxtModule<ModuleOptions>({
           handler: resolve(`./runtime/server/api/${h.handler}`),
         })
       }
-        for (const h of errorLogHandlers) {
+      for (const h of errorLogHandlers) {
         addServerHandler({
           method: h.method,
           route: h.route,

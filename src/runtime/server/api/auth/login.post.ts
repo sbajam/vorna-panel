@@ -21,7 +21,6 @@ export default defineEventHandler(async (event) => {
     // ساخت سشن و ذخیره رفرش فقط در سرور
     const sid = nanoid(32)
     sessions.set(sid, { refreshToken: auth.refreshToken })
-    console.log(auth)
     // ست کردن sid در کوکی HttpOnly
     setCookie(event, 'sid', sid, {
         httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30,

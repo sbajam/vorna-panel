@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   ],
   plugins: [
   ],
-  css: ['./assets/css/main.css'],
+  // css: ['./assets/css/main.css'],
   nitro: {
     // هر چیزی داخل public/uploads رو با URL زیر /uploads سرو کن
     publicAssets: [
@@ -18,9 +18,6 @@ export default defineNuxtConfig({
         maxAge: 60 * 60 * 24 * 365
       }
     ],
-    // compatibility: {
-    //   date: '2025-07-26'
-    // }
   },
   vornaPanel: {
     name: 'پنل فروشگاه وندو',
@@ -209,6 +206,26 @@ export default defineNuxtConfig({
     define: {
       'process.env': {},
     },
-  }
+  },
+  build: {
+    transpile: [
+      'execa',
+      '@prisma/client',
+      'cross-spawn',
+      'signal-exit',
+      'human-signals',
+      'is-stream',
+      'get-stream',
+      'merge-stream',
+      'path-key',
+      'npm-run-path',
+      'onetime',
+      'mimic-fn',
+      'shebang-command',
+      'isexe',
+      'shebang-regex'
+    ],
+  },
+  compatibilityDate: '2025-10-11',
 
 })

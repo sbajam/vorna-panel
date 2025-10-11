@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import {
   definePageMeta,
   ref,
@@ -21,7 +21,7 @@ const adminCookie = useCookie("token");
 const route = useRoute();
 const userStore = useUserStore();
 
-const redirectTo = (route.query.redirect as string) || "/";
+const redirectTo = (route.query.redirect) || "/";
 const passwordShow = ref(false);
 
 const login = async () => {

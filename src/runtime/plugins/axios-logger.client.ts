@@ -3,10 +3,9 @@ import { defineNuxtPlugin } from "#imports";
 import axios from "axios";             // instance پیش‌فرض axios
 import { UAParser } from "ua-parser-js";
 import html2canvas from "html2canvas";
-import { useUserStore } from "../stores/user"; // مسیر را تنظیم کنید
+import { useUserStore } from "~vorna-stores/user"; 
 
 export default defineNuxtPlugin((nuxtApp) => {
-  console.log("[AxiosLogger] initializing interceptor on default axios…");
   const parser = new UAParser();
   const userStore = useUserStore();
 

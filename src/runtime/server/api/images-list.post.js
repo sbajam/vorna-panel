@@ -25,20 +25,6 @@ export default eventHandler(async (event) => {
     });
   }
 
-  // Debug logging
-  console.log("Received form data:", JSON.stringify(formData, null, 2));
-  console.log("Number of parts:", formData?.length);
-
-  // More detailed logging of each part
-  formData?.forEach((part, index) => {
-    console.log(`Part ${index}:`, {
-      name: part.name,
-      filename: part.filename,
-      type: part.type,
-      hasData: !!part.data,
-    });
-  });
-
   // Extract file and fields - updated check
   const file = formData?.find(
     (part) => part.name === "image" && part.data?.length > 0
@@ -47,10 +33,6 @@ export default eventHandler(async (event) => {
     formData?.find((part) => part.name === "title")?.data?.toString() || "";
 
   if (!file || !file.data) {
-    console.log(
-      "File not found in request. Available parts:",
-      formData?.map((p) => p.name)
-    );
     throw createError({
       statusCode: 400,
       message: "فایل تصویر یافت نشد یا فرمت آن صحیح نیست",
@@ -69,7 +51,6 @@ export default eventHandler(async (event) => {
   const config = useRuntimeConfig();
   const rootDir = config.vornaPanel?.rootDir ?? process.cwd();
   const uploadDir = path.join(rootDir, "public", "uploads");
-  console.log(uploadDir);
   await fs.mkdir(uploadDir, { recursive: true });
 
   // 4. تولید نام یکتا و تبدیل به webp

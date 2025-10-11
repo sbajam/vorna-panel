@@ -10,6 +10,6 @@
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@vueuse/core": "^13.2.0",
-    "nuxt": "^3.17.3"
+    "nuxt": "^4.1.3"
   }
 }

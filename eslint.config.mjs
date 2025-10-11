@@ -1,20 +1,13 @@
-// @ts-check
-import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
-
-// Run `npx @eslint/config-inspector` to inspect the resolved config interactively
-export default createConfigForNuxt({
-  features: {
-    // Rules for module authors
-    tooling: true,
-    // Rules for formatting
-    stylistic: true,
+module.exports = {
+  parser: 'vue-eslint-parser', // استفاده از vue-eslint-parser
+  parserOptions: {
+    parser: '@babel/eslint-parser',
   },
-  dirs: {
-    src: [
-      './playground',
-    ],
+  extends: [
+    'eslint:recommended',
+    'plugin:vue/vue3-essential',
+  ],
+  rules: {
+    // قوانین خاص برای Vue
   },
-})
-  .append(
-    // your custom flat config here...
-  )
+};

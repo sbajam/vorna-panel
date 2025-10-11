@@ -5,7 +5,6 @@ import html2canvas from "html2canvas";
 import { useUserStore } from "../stores/user"; // مسیر به استورِ شما
 
 export default defineNuxtPlugin((nuxtApp) => {
-  console.log("[RouterVueLogger] initializing…");
   const router = nuxtApp.$router;
   const parser = new UAParser();
   const userStore = useUserStore();

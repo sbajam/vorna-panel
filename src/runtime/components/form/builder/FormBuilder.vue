@@ -387,7 +387,7 @@ interface FieldConfig {
   options?: Array<{ label: string; value: any }>;
   direction?: ResponsiveProp<"vertical" | "horizontal">;
   groupLabel?: string;
-  emptyMessage:String;
+  emptyMessage: string;
 
   size?: "sm" | "md" | "lg";
   onColor?: string;
@@ -885,17 +885,11 @@ function focusFirstError() {
 
 // ۸. onSubmit (پاک‌کردن Auto-Save و ارسال نهایی)
 async function onSubmit() {
-  console.log(
-    "Form submitted with values:",
-    JSON.parse(JSON.stringify(formValues))
-  );
   formLevelError.value = "";
   if (!validateAll()) {
     focusFirstError();
-    console.log("Form validation failed, focusing first error...");
     return;
   }
-  console.log("Form is valid, proceeding with submission...");
   emit("submitForm", JSON.parse(JSON.stringify(formValues)));
 }
 

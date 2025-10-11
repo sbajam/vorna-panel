@@ -34,7 +34,6 @@ const DEFAULT_ROLES = [
 ]
 
 async function main() {
-  console.log('🌱 Starting seeding...')
 
   // Create permissions
   for (const permission of DEFAULT_PERMISSIONS) {
@@ -44,7 +43,6 @@ async function main() {
       create: permission
     })
   }
-  console.log('✅ Created default permissions')
 
   // Create roles
   for (const role of DEFAULT_ROLES) {
@@ -63,9 +61,7 @@ async function main() {
       }
     })
   }
-  console.log('✅ Created default roles')
 
-  console.log('✅ Seeding finished')
 }
 
 main()

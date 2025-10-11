@@ -13,7 +13,7 @@
 // ──────────────────────────────────────────────────────────────────────────────
 
 import { ref, computed, watch, nextTick, onMounted } from "vue";
-import { useRoute, useRouter } from "#imports";
+import { useRoute, useRouter } from "nuxt/app";
 
 export interface TabItem {
   label: string;
@@ -182,13 +182,6 @@ const vEqualize = {
 // eslint-disable-next-line vue/no-setup-props-destructure
 // @ts-ignore - Vue local directives in SFC
 defineExpose({});
-</script>
-
-<script lang="ts">
-// رجیستر دایرکتیو به شکل محلی داخل همین فایل
-export default {
-  directives: { equalize: {} as any },
-};
 </script>
 
 <template>
