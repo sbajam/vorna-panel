@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // ۲. بررسی وضعیت لاگین
   let res: any
   try {
-    res = await request('/is_login', {
+    res = await request(`/${config.isLoginRoute}`, {
       method: 'get',
       headers: { 'Cache-Control': 'no-cache' }
     })

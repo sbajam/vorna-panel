@@ -91,7 +91,7 @@
     - For date/time types uses vue3-persian-datetime-picker with full options
   -->
   <div
-    :class="['input-div', { 'flex-col !items-start': labelPosition === 'top' }]"
+    :class="['input-div', { 'flex-col !items-start label-top ': labelPosition === 'top' }]"
   >
     <!-- Label -->
     <label
@@ -196,7 +196,7 @@
       <!-- Tooltip Icon -->
       <span
         v-else-if="tooltip"
-        class="absolute top-1/2 transform flex items-center justify-center px-1.5 aspect-square bg-secondary-100 text-white rounded-full -translate-y-1/2 left-4 cursor-pointer"
+        class="absolute top-[20px] transform flex items-center justify-center px-1.5 aspect-square bg-secondary-100 text-white rounded-full -translate-y-1/2 left-4 cursor-pointer"
         :title="tooltip"
       >
         <Icon name="fa6-solid:question" />

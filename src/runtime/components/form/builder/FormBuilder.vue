@@ -2,9 +2,10 @@
   <div class="form-builder w-full">
     <!-- عنوان فرم و آیکون ذخیره دستی -->
     <div class="flex items-center justify-between mb-4">
-      <h2 v-if="config.formProps.title" class="text-2xl font-bold">
+      <Header v-if="config.formProps.title?.trim().length">
         {{ config.formProps.title }}
-      </h2>
+      </Header>
+      <div v-else></div>
       <!-- آیکون کلیپبورد برای ذخیره دستی -->
       <div
         v-if="props.config.formProps.autoSaveKey"
@@ -123,7 +124,7 @@
                         :is="getComponentByType(field.type)"
                         v-model="formValues[field.key]"
                         v-bind="buildFieldProps(field)"
-                        @update:modelValue="() => runValidation(field.key)"
+                        @update:modelValue="onFieldUpdate(field.key)"
                       />
                       <FieldArray
                         v-else
@@ -162,7 +163,7 @@
                   :is="getComponentByType(field.type)"
                   v-model="formValues[field.key]"
                   v-bind="buildFieldProps(field)"
-                  @update:modelValue="() => runValidation(field.key)"
+                  @update:modelValue="onFieldUpdate(field.key)"
                 />
                 <FieldArray
                   v-else
@@ -203,7 +204,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  watch,
+} from "vue";
 
 import InputField from "../InputField.vue";
 import DropDown from "../DropDown.vue";
@@ -227,14 +236,14 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "submitForm", values: Record<string, any>): void;
   (e: "validationError", payload: { field: string; message: string }): void;
+  (e: "fieldChanged", payload: { key: string; value: any }): void;
   (e: "addField", type: string): void;
   (e: "selectField", key: string): void;
 }>();
 function onFieldUpdate(key: string) {
-  // v-model خودش formValues[key] را ست کرده؛ فقط ولیدیت کن.
-  queueMicrotask(() => runValidation(key)); // یا nextTick(...)
+  // v-model خودش formValues[key] را ست کرده؛ فقط ولیدیت کن
+  queueMicrotask(() => runValidation(key)); // امن؛ لاپله‌ی بعد از رندر
 }
-
 // Expose resetForm method
 defineExpose({
   resetForm() {
@@ -326,7 +335,8 @@ async function idbGet(key: string): Promise<any> {
     req.onerror = () => reject(req.error);
   });
 }
-
+// کش URLهای اولیه‌ی فیلدهای فایل
+const initialFileUrls = reactive<Record<string, string[]>>({});
 // TypeScript Interfaces (بی‌تغییر از قبل)
 interface ValidatorConfig {
   type: string;
@@ -377,6 +387,7 @@ interface FieldConfig {
   options?: Array<{ label: string; value: any }>;
   direction?: ResponsiveProp<"vertical" | "horizontal">;
   groupLabel?: string;
+  emptyMessage:String;
 
   size?: "sm" | "md" | "lg";
   onColor?: string;
@@ -511,6 +522,22 @@ allSections.forEach((section, index) => {
   sectionOpenStates[index] = true;
   (section.fields || []).forEach((field) => {
     const init = props.initialValues?.[field.key];
+
+    // اگر فیلد فایلِ ImageUploader است و init از جنس URL/آرایه URL بود، در کش ذخیره کن
+    if (field.type === "file" && field.isImageUploader === true) {
+      const urls = Array.isArray(init)
+        ? init
+        : typeof init === "string"
+        ? [init]
+        : [];
+      if (urls.length) {
+        initialFileUrls[field.key] = urls;
+        // مدل فایل را خالی نگه می‌داریم؛ نمایش با initialImages انجام می‌شود
+        formValues[field.key] = field.multipleFile ? [] : null;
+        formErrors[field.key] = "";
+        return; // ادامه‌ی switch لازم نیست
+      }
+    }
     if (init != null) {
       formValues[field.key] = init;
     } else {
@@ -568,9 +595,29 @@ if (!allSections.length) {
 watch(
   () => props.initialValues,
   (newVals) => {
-    if (newVals) {
-      Object.assign(formValues, newVals);
-    }
+    if (!newVals) return;
+    // به‌روزرسانی مدل
+    Object.assign(formValues, newVals);
+
+    // استخراج URLهای اولیه برای فیلدهای فایل
+    const sourceFields = allSections.length
+      ? allSections.flatMap((s) => s.fields || [])
+      : allFields;
+    sourceFields.forEach((field) => {
+      if (field.type === "file" && field.isImageUploader === true) {
+        const init = newVals[field.key];
+        const urls = Array.isArray(init)
+          ? init
+          : typeof init === "string"
+          ? [init]
+          : [];
+        if (urls.length) {
+          initialFileUrls[field.key] = urls;
+          // مدل فایل را خالی بگذار که کاربر اگر خواست، فایل جدید بده
+          formValues[field.key] = field.multipleFile ? [] : null;
+        }
+      }
+    });
   },
   { deep: true }
 );
@@ -594,6 +641,16 @@ onMounted(async () => {
     }
   }
 });
+// ایجاد watch برای formValues که تغییرات هر فیلد رو رهگیری کنه
+watch(
+  () => formValues, // watch کردن formValues
+  (newValues, oldValues) => {
+    emit("fieldChanged", JSON.parse(JSON.stringify(newValues)));
+
+    // }
+  },
+  { deep: true }
+);
 
 onUnmounted(() => {
   if (autoSaveInterval) {
@@ -690,14 +747,21 @@ function runValidation(key: string): boolean {
   for (const v of field.validators!) {
     let valid = true;
     switch (v.type) {
-      case "required":
-        if (
+      case "required": {
+        let empty =
           value === null ||
           value === "" ||
-          (Array.isArray(value) && value.length === 0)
-        )
-          valid = false;
+          (Array.isArray(value) && value.length === 0);
+
+        // اگر فیلد فایلِ ImageUploader است و URL اولیه دارد، خالی محسوب نکن
+        if (empty && field.type === "file" && field.isImageUploader === true) {
+          const urls = initialFileUrls[field.key] || [];
+          if (urls.length > 0) empty = false;
+        }
+
+        if (empty) valid = false;
         break;
+      }
       case "minLength":
         if (typeof value === "string" && value.length < (v.value as number))
           valid = false;
@@ -902,6 +966,7 @@ function buildFieldProps(field: FieldConfig) {
         valueField: field.valueField || "value",
         displayField: field.displayField || "",
         placeholder: field.placeholder || "",
+        emptyMessage: field.emptyMessage || "گزینه‌ای موجود نیست ",
         labelPosition: resolveResponsive(field.labelPosition, "right"),
       };
     case "checkboxGroup":
@@ -938,7 +1003,6 @@ function buildFieldProps(field: FieldConfig) {
     case "file":
       return {
         ...shared,
-        // کنترل انتخاب ImageUploader
         isImageUploader: field.isImageUploader === true,
 
         // مشترک
@@ -955,12 +1019,16 @@ function buildFieldProps(field: FieldConfig) {
         showInfo: field.showInfo !== false,
         infoText: field.infoText || "فرمت‌های مجاز: WebP, JPEG, PNG, GIF",
         sizeClass: field.sizeClass || "w-[200px]",
+
+        // ✅ تصاویر اولیه برای حالت ویرایش
+        initialImages: initialFileUrls[field.key] || [],
       };
 
     case "richtext":
       return {
         ...shared,
         image: field.image ?? true,
+        labelPosition: resolveResponsive(field.labelPosition, "right"),
       };
     case "tags":
       return {

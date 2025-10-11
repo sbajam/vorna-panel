@@ -5,36 +5,13 @@ import { useBreadcrumbStore } from "~vorna-stores/breadcrumb";
 import { useUserStore } from "~vorna-stores/user";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 import { useOnline, useMediaQuery } from "@vueuse/core";
-import { useBadgeRegistry } from '../../composables/badge'  // ← درست
-
+import { useBadges } from "~vorna-stores/badges"; // ← اضافه کردن این خط برای استفاده از badges store
 // خواندن menuItems از config اگر از props نفرستاده باشند
 const config = useRuntimeConfig().public.vornaPanel;
 const user = useUserStore();
+const badgesStore = useBadges();
 
 const emit = defineEmits(["logout", "toggle"]);
-const { resolve: resolveBadgeKey } = useBadgeRegistry();
-
-function createBadgeRef(raw) {
-  const out = ref(null);
-  if (raw === 0 || raw) {
-    if (typeof raw === "number" || typeof raw === "string") {
-      out.value = raw;
-    } else if (typeof raw === "function") {
-      try {
-        const r = raw();
-        if (r && typeof r.then === "function")
-          r.then((v) => (out.value = v ?? null));
-        else out.value = r;
-      } catch {
-        /* noop */
-      }
-    } else if (typeof raw === "object" && raw.key) {
-      const src = resolveBadgeKey(raw.key); // Ref از رجیستری
-      return raw.formatter ? computed(() => raw.formatter(src.value)) : src; // ← دیگه && نذار
-    }
-  }
-  return out;
-}
 
 const filteredSections = ref(
   (config.menuItems || [])
@@ -51,7 +28,6 @@ const filteredSections = ref(
         })
         .map((item) => ({
           ...item,
-          _badgeRef: createBadgeRef(item.badge), // ← فقط یک بار ساخته می‌شود
         }));
 
       return {
@@ -182,11 +158,11 @@ function onClick(to) {
               </div>
               <span class="item-label">{{ item.label }}</span>
               <!-- نمایش badge -->
-              <span 
-                v-if="item._badgeRef?.value !== null && item._badgeRef?.value !== undefined" 
+              <span
+                v-if=" item.badge && badgesStore.getBadges(item.badge) !== null && badgesStore.getBadges(item.badge)!=0"
                 class="item-badge"
               >
-                {{ item._badgeRef.value }}
+                {{ badgesStore.getBadges(item.badge) }}
               </span>
             </NuxtLink>
           </div>
@@ -197,9 +173,9 @@ function onClick(to) {
     <!-- Footer Actions -->
     <div class="sidebar-footer">
       <slot name="footer">
-        <button class="logout-button" @click="handleLogout">
-          <font-awesome-icon :icon="['fas', 'sign-out-alt']" />
-          <span>خروج</span>
+        <button class="logout-button menu-item" @click="handleLogout">
+          <Icon class="item-icon" name="si:sign-out-alt-fill" />
+          <span class="itme-label">خروج</span>
         </button>
       </slot>
     </div>
@@ -296,7 +272,7 @@ function onClick(to) {
         }
 
         .item-badge {
-          @apply absolute right-2 min-w-[20px] h-5 rounded-full bg-secondary-100 text-white text-xs flex items-center justify-center;
+          @apply absolute right-2 top-[-2px] min-w-[20px] h-5 rounded-full bg-secondary-100 text-white text-xs flex items-center justify-center;
         }
       }
     }
@@ -318,10 +294,10 @@ function onClick(to) {
     @apply px-4 mt-auto pt-4 border-t border-gray-100;
 
     .logout-button {
-      @apply w-full flex items-center gap-2 border border-red-500 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors;
+      @apply w-full flex items-center gap-2 border bg-red-800 bg-opacity-80 text-white border-red-800 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors;
 
       &:hover {
-        @apply text-red-500;
+        @apply bg-opacity-100 bg-red-800;
       }
     }
   }
@@ -395,9 +371,16 @@ function onClick(to) {
         @apply bg-primary-100;
       }
     }
+    &.admin-sidebar-collapsed .logout-button {
+      .item-label {
+        @apply hidden; /* متن خروج مخفی شود */
+      }
+      .item-icon {
+        @apply flex justify-center items-center; /* آیکون خروج به صورت وسط‌چین نمایش داده شود */
+      }
+    }
   }
 }
-
 /* Optional helper to support existing .admin-sidebar-mobile class if used in template.
    On mobile, it behaves the same as "open" (overlay drawer). */
 @media (max-width: 767px) {

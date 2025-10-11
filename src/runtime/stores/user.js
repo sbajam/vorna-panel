@@ -30,6 +30,9 @@ export const useUserStore = defineStore("user", {
     setPermissions(permissions) {
       this.permissions = permissions;
     },
+    setToken(token) {
+      this.token = token;
+    },
     // چک کردن اینکه آیا کاربر permission خاصی را دارد
     hasPermission(permissionKey) {
       return this.permissions.includes(permissionKey);

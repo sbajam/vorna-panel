@@ -7,7 +7,6 @@ export default defineNuxtConfig({
     resolve(__dirname, '../src/module.ts'),
   ],
   plugins: [
-    { src: '~/plugins/vorna-badges.ts', mode: 'client' }
   ],
   css: ['./assets/css/main.css'],
   nitro: {
@@ -56,7 +55,7 @@ export default defineNuxtConfig({
         collapsed: false,
         items: [
           { path: '/contact-form-builder', label: 'ساختن فرم ارتباط با ما', icon: 'fa-solid:envelope' },
-          { path: '/answers', label: 'مشاهده پاسخ های ارتباط با ما', icon: 'fa-solid:comments' },
+          { path: '/answers', label: 'مشاهده پاسخ های ارتباط با ما', icon: 'fa-solid:comments', badge: 'answers' },
           { path: '/customers', label: 'ارتباط با مشتریان(خبرنامه)', icon: 'fa-solid:address-book' },
         ],
       },
@@ -112,8 +111,7 @@ export default defineNuxtConfig({
 
     ],
 
-    // menuItems: 
-    // [
+    //  menuItems: [
     //   {
     //     title: 'مدیریت سیستم',
     //     collapsed: false, // یا true اگر بخوای بسته باشه
@@ -136,7 +134,6 @@ export default defineNuxtConfig({
     //       { path: '/button', label: 'دکمه‌ها', icon: 'fa-solid:toggle-on', guest: true },
     //       { path: '/fcomponents', label: 'کامپوننت‌ها', icon: 'fa-solid:boxes', guest: true },
     //       { path: '/useapi', label: 'API تست', icon: 'fa-solid:plug', guest: true },
-    //       { path: '/intro/contact-form-builder', label: 'contact-form-builder', icon: 'fa-solid:plug', guest: true },
     //     ],
     //   },
 

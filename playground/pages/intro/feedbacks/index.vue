@@ -1,9 +1,8 @@
-Np
 <template>
   <NuxtLayout name="admin">
     <template #main>
       <Box class="">
-        <Header>نظرات محصول</Header>
+        <Header>نظرات مقالات</Header>
         <!-- Toolbar: Filters/Search + Actions -->
         <div class="flex flex-wrap items-center gap-2">
           <div
@@ -27,7 +26,12 @@ Np
             v-model="status"
             class="!p-0"
           />
-          <DropDown  label="نوع نظر" :items="f_g58t188Optiodifj" v-model="filter" class="!p-0" />
+          <DropDown
+            label="نوع نظر"
+            :items="f_g58t188Optiodifj"
+            v-model="filter"
+            class="!p-0"
+          />
         </div>
         <!-- Table -->
         <SmartTable
@@ -86,7 +90,7 @@ const status = ref("همه");
 const filter = ref("همه");
 const f_g58t188Options = ref(["همه", "منتظر تایید", "تایید شده"]);
 const f_g58t188Optiodifj = ref(["همه", "نظر", "پاسخ نظر"]);
-const productNameMap = ref({});
+const blogNameMap = ref({});
 
 // Columns/Actions (SmartTable-ready)
 const columns = ref([
@@ -100,13 +104,13 @@ const columns = ref([
     },
   },
   {
-    key: "product.id", // مقدارِ href از این گرفته می‌شود
-    label: "محصول",
+    key: "blog.id", // مقدارِ href از این گرفته می‌شود
+    label: "مقاله",
     type: "link",
     sortable: true,
-    basePath: "../products/", // نتیجه: ../products/123
+    basePath: "../blogs/", // نتیجه: ../blogs/123
     safe: false, // در حالت v-html target="_blank" هم ندارد
-    map: productNameMap.value, // متن لینک → نام محصول
+    map: blogNameMap.value, // متن لینک → نام مقاله
   },
   {
     key: "email",
@@ -249,7 +253,7 @@ const filterData = () => {
 
 // Fetch
 const API_CONFIG = {
-  path: "productcomments",
+  path: "blogcomments",
   pathToList: "data",
 };
 const fetchData = async () => {
@@ -271,7 +275,7 @@ const fetchData = async () => {
       for (let p of rawData.value) {
         let tmp = p.comments.map((c) => ({
           ...c,
-          product: { id: p.id, name: p.name },
+          blog: { id: p.id, name: p.name },
         }));
         c = c.concat(tmp);
       }
@@ -286,19 +290,19 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
-const rebuildProductMap = () => {
+const rebuildblogMap = () => {
   const m = {};
   for (const r of filteredData.value) {
-    if (r?.product?.id != null) m[r.product.id] = r.product.name || r.product.id;
+    if (r?.blog?.id != null) m[r.blog.id] = r.blog.name || r.blog.id;
   }
-  productNameMap.value = m;
+  blogNameMap.value = m;
 
   // sync به ستون (چون columns یک ref است)
-  const col = columns.value.find(c => c.key === "product.id");
+  const col = columns.value.find((c) => c.key === "blog.id");
   if (col) col.map = m;
 };
 
-watch(filteredData, rebuildProductMap, { deep: true, immediate: true });
+watch(filteredData, rebuildblogMap, { deep: true, immediate: true });
 
 // Watch filters
 watch([searchTerm, status, filter], filterData, { deep: true });

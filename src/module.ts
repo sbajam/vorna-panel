@@ -33,6 +33,8 @@ export interface ModuleOptions {
   logErrors?: boolean  // آیا لاگ‌گیری خطا (ErrorLog) فعال باشد؟
   superAdmins?: string[]
   guestRoutes?: string[] // مسیرهایی که کاربر مهمان می‌تواند به آنها دسترسی داشته باشد
+  isLoginRoute?: string
+  authType: string //version1,version2,custom
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -61,6 +63,8 @@ export default defineNuxtModule<ModuleOptions>({
     // Access control
     superAdmins: ['admin'],  // Usernames/emails with full access
     guestRoutes: ['/login', '/403', '/404'],  // Public routes
+    isLoginRoute: 'is-login',  // Login route
+    authType: 'version1'
   },
   async setup(options, nuxt) {
     // A) پیکربندی اولیه
@@ -156,6 +160,8 @@ export default defineNuxtModule<ModuleOptions>({
         logBehavior: options.logBehavior,
         logErrors: options.logErrors,
         superAdmins: options.superAdmins,
+        isLoginRoute: options.isLoginRoute,
+        authType: options.authType,
       },
     )
     // نصب و پیکربندی Tailwind
@@ -319,8 +325,10 @@ export default defineNuxtModule<ModuleOptions>({
     ]
     const ticketsComponents = [
       { name: 'QuestionDetails', file: 'tickets/QuestionDetails.vue' },
-
-
+    ]
+    const loginComponents = [
+      { name: 'LoginV1', file: 'login/LoginV1.vue' },
+      { name: 'LoginV2', file: 'login/LoginV2.vue' },
     ]
 
     // Register all components
@@ -331,7 +339,8 @@ export default defineNuxtModule<ModuleOptions>({
       ...mediaComponents,
       ...utilComponents,
       ...dashboardComponents,
-      ...ticketsComponents
+      ...ticketsComponents,
+      ...loginComponents
     ]
 
     allComponents.forEach(component => {
@@ -370,6 +379,7 @@ export default defineNuxtModule<ModuleOptions>({
     await installModule('@tailvue/nuxt')
     await installModule('@nuxt/icon')
     addPlugin(resolve('./runtime/plugins/notifications.js'))
+    addPlugin(resolve('./runtime/plugins/auto-animate.client.ts'))
     addPlugin({
       src: resolve('./runtime/plugins/pinia.js'),
       mode: 'client',
@@ -378,7 +388,7 @@ export default defineNuxtModule<ModuleOptions>({
       src: resolve(__dirname, 'runtime/plugins/vue-apexcharts.client'),
       mode: 'client',
     })
-    addPlugin(resolve('./runtime/plugins/badge-registry'))
+    // addPlugin(resolve('./runtime/plugins/badge-registry'))
     // addPlugin(resolve('./runtime/plugins/pinia.js'))
 
     /**
@@ -496,6 +506,25 @@ export default defineNuxtModule<ModuleOptions>({
       ]
 
       for (const h of errorLogHandlers) {
+        addServerHandler({
+          method: h.method,
+          route: h.route,
+          handler: resolve(`./runtime/server/api/${h.handler}`),
+        })
+      }
+        for (const h of errorLogHandlers) {
+        addServerHandler({
+          method: h.method,
+          route: h.route,
+          handler: resolve(`./runtime/server/api/${h.handler}`),
+        })
+      }
+      const authenticationHandler = [
+        { method: 'post' as const, route: '/api/auth/login', handler: 'auth/login.post.ts' },
+        { method: 'post' as const, route: '/api/auth/refresh', handler: 'auth/refresh.post.ts' }
+      ]
+
+      for (const h of authenticationHandler) {
         addServerHandler({
           method: h.method,
           route: h.route,

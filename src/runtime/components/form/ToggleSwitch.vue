@@ -2,7 +2,7 @@
 <template>
   <div
     class="flex items-center gap-4"
-    :class="{ 'flex-col !items-start': labelPosition === 'top' }"
+    :class="{ 'flex-col !items-start label-top ': labelPosition === 'top' }"
   >
     <label
       v-if="label"

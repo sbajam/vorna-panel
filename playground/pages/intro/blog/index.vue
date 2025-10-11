@@ -1,9 +1,8 @@
-Np
 <template>
   <NuxtLayout name="admin">
     <template #main>
       <Box class="">
-        <Header>نظرات محصول</Header>
+        <Header>مقاله ها </Header>
         <!-- Toolbar: Filters/Search + Actions -->
         <div class="flex flex-wrap items-center gap-2">
           <div
@@ -21,20 +20,14 @@ Np
               <Icon name="fa6-solid:magnifying-glass" />
             </div>
           </div>
-          <DropDown
-            label="وضعیت"
-            :items="f_g58t188Options"
-            v-model="status"
-            class="!p-0"
-          />
-          <DropDown  label="نوع نظر" :items="f_g58t188Optiodifj" v-model="filter" class="!p-0" />
         </div>
+
         <!-- Table -->
         <SmartTable
           class="smart-scroll"
           emptyText="موردی برای نمایش وجود ندارد."
-          edit="feedbacks"
-          delete=""
+          edit="blog"
+          delete="articles"
           :data="filteredData"
           :columns="columns"
           :actions="actions"
@@ -82,11 +75,7 @@ const isLoading = ref(true);
 // Filters
 const searchTerm = ref("");
 
-const status = ref("همه");
-const filter = ref("همه");
-const f_g58t188Options = ref(["همه", "منتظر تایید", "تایید شده"]);
-const f_g58t188Optiodifj = ref(["همه", "نظر", "پاسخ نظر"]);
-const productNameMap = ref({});
+// no dropdowns
 
 // Columns/Actions (SmartTable-ready)
 const columns = ref([
@@ -100,52 +89,10 @@ const columns = ref([
     },
   },
   {
-    key: "product.id", // مقدارِ href از این گرفته می‌شود
-    label: "محصول",
-    type: "link",
-    sortable: true,
-    basePath: "../products/", // نتیجه: ../products/123
-    safe: false, // در حالت v-html target="_blank" هم ندارد
-    map: productNameMap.value, // متن لینک → نام محصول
-  },
-  {
-    key: "email",
-    label: "ایمیل",
+    key: "title",
+    label: "title",
     type: "text",
     sortable: true,
-    shrink: true,
-  },
-
-  {
-    key: "fullName",
-    label: "نام و نام خانوادگی",
-    type: "text",
-    sortable: true,
-    shrink: false,
-  },
-  {
-    key: "date",
-    label: "تاریخ",
-    type: "text",
-    sortable: true,
-    shrink: true,
-  },
-  {
-    key: "adminApproval",
-    label: "وضعیت",
-    type: "badge",
-    sortable: true,
-    map: {
-      true: "تایید شده",
-      false: "منتظر تایید",
-    },
-  },
-  {
-    key: "text",
-    label: "متن",
-    type: "text",
-    sortable: true,
-    shrink: true,
   },
 ]);
 const actions = ref([]);
@@ -190,67 +137,18 @@ const filterData = () => {
   // no extra searches
 
   // dropdowns
-  // وضعیت (تایید/منتظر تایید)
-  {
-    const opts = [
-      { label: "همه", value: "all" },
-      { label: "منتظر تایید", value: false },
-      { label: "تایید شده", value: true },
-    ];
-    const found = opts.find(
-      (o) => o.label === status.value || o.value === status.value
-    );
-    const val = found ? found.value : status.value;
-
-    if (
-      !(
-        val === undefined ||
-        val === null ||
-        val === "" ||
-        val === "all" ||
-        val === "همه"
-      )
-    ) {
-      list = list.filter((row) => row.adminApproval === val);
-    }
-  }
-
-  // نوع (نظر/پاسخ نظر)
-  {
-    const opts = [
-      { label: "همه", value: "all" },
-      { label: "نظر", value: "null" }, // replyTo == null
-      { label: "پاسخ نظر", value: "not-null" }, // replyTo != null
-    ];
-    const found = opts.find(
-      (o) => o.label === filter.value || o.value === filter.value
-    );
-    const val = found ? found.value : filter.value;
-
-    if (
-      !(
-        val === undefined ||
-        val === null ||
-        val === "" ||
-        val === "all" ||
-        val === "همه"
-      )
-    ) {
-      if (val === "null") {
-        list = list.filter((row) => row.replyTo == null);
-      } else if (val === "not-null") {
-        list = list.filter((row) => row.replyTo != null);
-      }
-    }
-  }
+  // no dropdowns
 
   filteredData.value = list.map(transformData);
 };
 
 // Fetch
 const API_CONFIG = {
-  path: "productcomments",
+  baseUrl: "https://api.vendow.ir",
+  path: "mystore/articles",
   pathToList: "data",
+  method: "GET",
+  headers: {},
 };
 const fetchData = async () => {
   isLoading.value = true;
@@ -260,22 +158,18 @@ const fetchData = async () => {
       filterData();
       return;
     }
-    const res = await request(API_CONFIG.path, {});
+    const res = await request(API_CONFIG.path, {
+      baseUrl: API_CONFIG.baseUrl,
+      method: API_CONFIG.method,
+      headers: { "Cache-Control": "no-cache", ...API_CONFIG.headers },
+      body: API_CONFIG.method !== "GET" ? API_CONFIG.body : undefined,
+    });
     if (!res?.status) {
       $notifyDanger(res?.message || "خطا در دریافت اطلاعات");
       rawData.value = [];
     } else {
       const list = getByPath(res, API_CONFIG.pathToList) ?? res?.body ?? [];
       rawData.value = Array.isArray(list) ? list : [];
-      let c = [];
-      for (let p of rawData.value) {
-        let tmp = p.comments.map((c) => ({
-          ...c,
-          product: { id: p.id, name: p.name },
-        }));
-        c = c.concat(tmp);
-      }
-      rawData.value = c;
     }
     filterData();
   } catch (e) {
@@ -286,22 +180,9 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
-const rebuildProductMap = () => {
-  const m = {};
-  for (const r of filteredData.value) {
-    if (r?.product?.id != null) m[r.product.id] = r.product.name || r.product.id;
-  }
-  productNameMap.value = m;
-
-  // sync به ستون (چون columns یک ref است)
-  const col = columns.value.find(c => c.key === "product.id");
-  if (col) col.map = m;
-};
-
-watch(filteredData, rebuildProductMap, { deep: true, immediate: true });
 
 // Watch filters
-watch([searchTerm, status, filter], filterData, { deep: true });
+watch([searchTerm], filterData, { deep: true });
 
 onBeforeMount(fetchData);
 </script>

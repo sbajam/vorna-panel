@@ -221,7 +221,7 @@ export default {
         @focus="focusedIndex = i"
       >
         <slot name="tab" :item="t" :index="i">
-          <span class="truncate leading-6">{{ t.label }}</span>
+          <span class="whitespace-nowrap text-sm w-fit leading-6">{{ t.label }}</span>
         </slot>
       </button>
     </div>
@@ -251,7 +251,29 @@ export default {
 </template>
 
 <style scoped>
-/* Header container: mobile = horizontal scroll with snap; md+ = grid wrap */
+/* تغییرات برای نوار اسکرول */
+::-webkit-scrollbar {
+  width: 2px; /* نوار اسکرول نازک */
+  border-radius: 9999px; /* گوشه‌های گرد */
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc; /* رنگ پس‌زمینه خاکستری روشن */
+  border-radius: 9999px; /* گوشه‌های گرد */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb; /* رنگ خاکستری برای نوار اسکرول */
+  border-radius: 9999px; /* گوشه‌های گرد */
+  transition: background-color 0.3s ease; /* افکت تغییر رنگ */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af; /* تغییر رنگ در حالت hover */
+}
+
+
+/* Header container: برای اسکرول افقی با ظاهر جدید */
 .tabs-header {
   display: flex;
   gap: 1rem;
@@ -260,7 +282,12 @@ export default {
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
   padding: 0.25rem;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #b0b0b0 transparent; /* Firefox */
 }
+
+/* در سایزهای بزرگتر نمایش به شکل گرید */
 @media (min-width: 768px) {
   .tabs-header {
     display: grid;
@@ -270,16 +297,17 @@ export default {
   }
 }
 
+/* دکمه‌های تب */
 .tab-btn {
+  @apply text-primary-100;
   scroll-snap-align: center;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   font-weight: 700;
   line-height: 1.5rem;
   background: white;
-  color: var(--c-primary, #0f172a);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  min-width: 8rem;
+  min-width: fit-content;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -288,10 +316,12 @@ export default {
   word-break: break-word;
   border: 2px solid transparent;
 }
+
 .tab-btn.is-active {
-  background: var(--c-primary, #0f172a);
+  @apply bg-primary-100;
   color: #fff;
 }
+
 .tab-btn.is-disabled {
   opacity: 0.5;
   cursor: not-allowed;

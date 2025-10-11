@@ -1,12 +1,13 @@
 <template>
   <div class="flex flex-col gap-2">
-    <label v-if="label" class="text-primary text-lg font-semibold">{{ label }}</label>
-
+    <label v-if="label" class="text-primary text-lg font-semibold">{{
+      label
+    }}</label>
     <!-- ✅ برای ImageUploader -->
     <ImageUploader
       v-if="isImageUploader"
-      :images="local"                         
-      @update:images="update"                
+      :images="local"
+      @update:images="update"
       :multiple="multiple"
       :max-files="maxFiles"
       :aspect-ratio="aspectRatio"
@@ -16,6 +17,7 @@
       :showInfo="showInfo"
       :infoText="infoText"
       :sizeClass="sizeClass"
+      :initial-images="initialImages"
     />
 
     <!-- FileUploader ساده -->
@@ -28,6 +30,7 @@
       :maxSize="maxSize"
       :disabled="disabled"
       @update:modelValue="update"
+      :initial-images="initialImages"
     />
 
     <p v-if="errorMessage" class="text-xs text-red-600">{{ errorMessage }}</p>
@@ -35,7 +38,6 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
   modelValue: { type: [File, Array, String, Object, null], default: null },
   label: { type: String, default: "" },
@@ -49,7 +51,7 @@ const props = defineProps({
   multiple: { type: Boolean, default: false },
   maxFiles: { type: Number, default: 1 },
   maxSize: { type: Number, default: Infinity },
-
+  initialImages: { type: [Array, String], default: () => [] },
   aspectRatio: { type: String, default: "1/1" },
   watermark: { type: Boolean, default: false },
   watermarkImage: { type: String, default: "" },
@@ -61,11 +63,15 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 const local = ref(props.modelValue);
-watch(() => props.modelValue, (v) => (local.value = v), { deep: true });
+watch(
+  () => props.modelValue,
+  (v) => (local.value = v),
+  { deep: true }
+);
 watch(local, (v) => emit("update:modelValue", v), { deep: true });
 
 function update(val) {
-  local.value = val;              // ← هم state داخلی آپدیت می‌شود
+  local.value = val; // ← هم state داخلی آپدیت می‌شود
   emit("update:modelValue", val); // ← و به پدر هم برمی‌گردد
 }
 </script>
