@@ -2,7 +2,7 @@
 import { defineNuxtPlugin } from "#imports";
 import { UAParser } from "ua-parser-js";
 import html2canvas from "html2canvas";
-import { useUserStore } from "../stores/user"; // مسیر به استورِ شما
+import { useUserStore } from "#vorna-stores/user"; // مسیر به استورِ شما
 
 export default defineNuxtPlugin((nuxtApp) => {
   const router = nuxtApp.$router;

@@ -1,6 +1,7 @@
 <!-- components/Breadcrumbs.vue -->
 <script setup>
-import { useBreadcrumbStore } from '~vorna-stores/breadcrumb'
+import { useBreadcrumbStore } from '#vorna-stores/breadcrumb'
+import { computed,ref,onBeforeMount,watch,defineProps, } from 'vue';
 
 const bc = useBreadcrumbStore()
 const items = computed(() => bc.trail)

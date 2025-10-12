@@ -22,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from "nuxt/app";
+
 const goBack = () => {
   if (window.history.length > 1) {
     window.history.back()

@@ -1,9 +1,24 @@
 <script setup>
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 import WidgetHeader from "../widgets/WidgetHeader.vue";
 import StatCard from "../widgets/StatCard.vue";
 import RecordList from "../widgets/RecordList.vue";
 import ChartWidget from "../widgets/ChartWidget.client.vue";
-import { computed } from "vue";
+// import { computed } from "vue";
 
 const props = defineProps({
   config: Object,

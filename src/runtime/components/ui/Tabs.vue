@@ -12,8 +12,8 @@
 //  - ناوبری کیبورد: Arrow/Home/End/Enter
 // ──────────────────────────────────────────────────────────────────────────────
 
-import { ref, computed, watch, nextTick, onMounted } from "vue";
 import { useRoute, useRouter } from "nuxt/app";
+import { computed,ref,onBeforeMount,watch,defineProps, nextTick, onMounted } from 'vue';
 
 export interface TabItem {
   label: string;

@@ -186,7 +186,7 @@
 
       <!-- دکمه Submit -->
       <div class="mt-6 flex justify-center">
-        <Button
+        <CustomeButton
           @click="onSubmit"
           :pending="config.submitButton.pending"
           :variant="config.submitButton.variant || 'solid'"
@@ -197,7 +197,7 @@
           type="submit"
         >
           {{ config.submitButton.text }}
-        </Button>
+        </CustomeButton>
       </div>
     </div>
   </div>
@@ -219,7 +219,7 @@ import DropDown from "../DropDown.vue";
 import CheckBoxGroup from "../CheckBoxGroup.vue";
 import RadioGroup from "../RadioGroup.vue";
 import ToggleSwitch from "../ToggleSwitch.vue";
-import Button from "../../Button.vue";
+import CustomeButton from "../../CustomeButton.vue";
 import Spinner from "../../Spinner.vue";
 import FieldArray from "./FieldArray.vue";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";

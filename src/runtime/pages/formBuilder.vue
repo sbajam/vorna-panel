@@ -6,6 +6,7 @@ import Draggable from "vuedraggable"; // vue-draggable@next
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 import PreviewP from "../components/PreviewP.vue";
 import { definePageMeta } from "#imports";
+import Icon from "@nuxt/icon"; // اضافه کردن Icon برای استفاده از آیکون‌ها
 
 definePageMeta({ auth: false });
 

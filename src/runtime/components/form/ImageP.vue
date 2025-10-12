@@ -1,5 +1,20 @@
 <!-- src/runtime/components/ImageP.vue -->
 <script setup>
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 const showModal = ref(true);
 const emit = defineEmits(["choose"]);
 
@@ -103,7 +118,7 @@ onMounted(fetchImages);
           class="w-fit rtl justify-start"
           sizeClass="w-1/2"
         />
-        <Button
+        <CustomeButton
           :pending="pending"
           @click="submit"
           color="primary-100"
@@ -113,7 +128,7 @@ onMounted(fetchImages);
           
         >
           اضافه کردن
-        </Button>
+        </CustomeButton>
       </div>
 
       <Spinner v-if="listPending" />

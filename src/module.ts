@@ -80,9 +80,13 @@ export default defineNuxtModule<ModuleOptions>({
 
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
+    const runtimeDir = resolve('./runtime')            // ✅ مرجع ثابت
 
+    nuxt.options.alias ||= {}
+    nuxt.options.alias['#vorna-stores'] = resolve(runtimeDir, 'stores') // ✅ امن برای SSR
+    nuxt.options.alias['~vorna-stores'] = resolve(runtimeDir, 'stores') // اختیاری برای سازگاری
     // Database & Prisma Setup
-    const moduleSchema = resolve('./runtime/prisma/schema.prisma')
+    const moduleSchema = resolve(runtimeDir, 'prisma/schema.prisma')
     if (process.env.PRISMA_AUTO_GENERATE === 'true') {
       nuxt.hook('build:before', () => {
         execaSync('npx', ['prisma', 'generate', `--schema=${moduleSchema}`], {
@@ -96,6 +100,8 @@ export default defineNuxtModule<ModuleOptions>({
       })
     }
 
+    nuxt.options.build.transpile ||= []
+    nuxt.options.build.transpile.push(runtimeDir)
     // Nitro & Runtime Configuration
     nuxt.hook('nitro:config', (config) => {
       config.routeRules = {
@@ -144,7 +150,7 @@ export default defineNuxtModule<ModuleOptions>({
       exposeConfig: true,
       config: {
         content: [
-          resolve('./runtime/**/*.{vue,js,ts,jsx,tsx}'),
+          resolve(runtimeDir, '**/*.{vue,js,ts,jsx,tsx}'),
           resolve('./components/**/*.{vue,js,ts,jsx,tsx}'),
         ],
         darkMode: 'class',
@@ -183,32 +189,29 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.vite.optimizeDeps.include.push('vue3-grid-layout')
 
     // Plugins
-    addPlugin(resolve('./runtime/plugins/datepicker.client.js'))
-    addPlugin(resolve('./runtime/plugins/notifications.js'))
-    addPlugin(resolve('./runtime/plugins/auto-animate.client.js'))
+    addPlugin(resolve(runtimeDir, 'plugins/datepicker.client.js'))
+    addPlugin(resolve(runtimeDir, 'plugins/notifications.js'))
+    addPlugin(resolve(runtimeDir, 'plugins/auto-animate.client.js'))
+    addPlugin(resolve(runtimeDir, 'plugins/expose-composables.js'))
     addPlugin({
-      src: resolve('./runtime/plugins/vue-apexcharts.client.js'),
+      src: resolve(runtimeDir, 'plugins/vue-apexcharts.client.js'),
       mode: 'client',
     })
 
     // CSS
-    nuxt.options.css.unshift(resolve('./runtime/assets/admin.scss'))
-    nuxt.options.css.unshift(resolve('./runtime/assets/font.scss'))
+    nuxt.options.css.unshift(resolve(runtimeDir, 'assets/admin.css'))
+    nuxt.options.css.unshift(resolve(runtimeDir, 'assets/font.css'))
 
-    // Aliases
-    nuxt.options.alias['~vorna-stores'] = resolve('./runtime/stores')
 
     // Auto imports
-    addImportsDir(resolve('./runtime/composables'))
-    addImportsDir(resolve('./runtime/middleware'))
-    addImportsDir(resolve('./runtime/stores'))
+    addImportsDir(resolve(runtimeDir, 'composables'))
+    addImportsDir(resolve(runtimeDir, 'middleware'))
+    addImportsDir(resolve(runtimeDir, 'stores'))
 
     // Router middleware
-    nuxt.options.router.middleware ||= []
-    nuxt.options.router.middleware.push('check-auth.global')
     addRouteMiddleware({
       name: 'check-auth',
-      path: resolve('./runtime/middleware/check-auth.global.ts'),
+      path: resolve(runtimeDir, 'middleware/check-auth.global'),
       global: true
     })
 
@@ -217,37 +220,37 @@ export default defineNuxtModule<ModuleOptions>({
       pages.push({
         name: 'login',
         path: '/login',
-        file: resolve('./runtime/pages/login.vue')
+        file: resolve(runtimeDir, 'pages/login.vue')
       })
       pages.push({
         name: '403',
         path: '/403',
-        file: resolve('./runtime/pages/403.vue')
+        file: resolve(runtimeDir, 'pages/403.vue')
       })
       pages.push({
         name: 'access',
         path: '/access',
-        file: resolve('./runtime/pages/access.vue')
+        file: resolve(runtimeDir, 'pages/access.vue')
       })
       pages.push({
         name: 'formBuilder',
         path: '/formBuilder',
-        file: resolve('./runtime/pages/formBuilder.vue'),
+        file: resolve(runtimeDir, 'pages/formBuilder.vue'),
       })
       pages.push({
         name: 'tableBuilder',
         path: '/tableBuilder',
-        file: resolve('./runtime/pages/tableBuilder.vue'),
+        file: resolve(runtimeDir, 'pages/tableBuilder.vue'),
       })
       pages.push({
         name: 'permissions',
         path: '/permissions',
-        file: resolve('./runtime/pages/permissions.vue'),
+        file: resolve(runtimeDir, 'pages/permissions.vue'),
       })
       pages.push({
         name: 'roles',
         path: '/roles',
-        file: resolve('./runtime/pages/roles.vue'),
+        file: resolve(runtimeDir, 'pages/roles.vue'),
       })
     })
 
@@ -303,7 +306,7 @@ export default defineNuxtModule<ModuleOptions>({
     const utilComponents = [
       { name: 'SmartTable', file: 'SmartTable.vue' },
       { name: 'Spinner', file: 'Spinner.vue' },
-      { name: 'Button', file: 'Button.vue' }
+      { name: 'CustomeButton', file: 'CustomeButton.vue' }
     ]
 
     const dashboardComponents = [
@@ -383,7 +386,7 @@ export default defineNuxtModule<ModuleOptions>({
     addServerHandler({
       route: '/api/images-list',
       middleware: true,
-      handler: resolve('./runtime/server/api/_inject-rootdir.js')
+      handler: resolve(runtimeDir, 'server/api/_inject-rootdir.js')
     })
 
     const fileHandlers = [
@@ -428,7 +431,7 @@ export default defineNuxtModule<ModuleOptions>({
         pages.push({
           name: 'logs',
           path: '/logs',
-          file: resolve('./runtime/pages/logs.vue'),
+          file: resolve(runtimeDir, 'pages/logs.vue'),
         })
       })
     }
@@ -480,7 +483,7 @@ export default defineNuxtModule<ModuleOptions>({
         pages.push({
           name: 'errorsLog',
           path: '/errorsLog',
-          file: resolve('./runtime/pages/errorsLog.vue'),
+          file: resolve(runtimeDir, 'pages/errorsLog.vue'),
         })
       })
     }

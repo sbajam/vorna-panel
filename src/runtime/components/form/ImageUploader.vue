@@ -95,8 +95,22 @@
 </template>
 
 <script setup>
-import { useRuntimeConfig } from "nuxt/app";
-import { ref } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
+// import { useRuntimeConfig } from "nuxt/app";
 
 /**
  * Props:

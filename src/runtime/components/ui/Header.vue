@@ -1,7 +1,10 @@
 <!-- components/PageTitle.vue -->
 <script setup>
-import { useBreadcrumbStore } from '~vorna-stores/breadcrumb'
+import { useBreadcrumbStore } from '#vorna-stores/breadcrumb'
 import Breadcrumb from './Breadcrumb.vue'
+import { useRoute, useRouter, useRuntimeConfig, navigateTo } from "nuxt/app";
+import { computed,ref,useSlots ,onBeforeMount,watch,defineProps, nextTick, onMounted } from 'vue';
+
 const props =  defineProps({breadcrumb: { type: Boolean, default: true } })
 const slots = useSlots()
 const route = useRoute()

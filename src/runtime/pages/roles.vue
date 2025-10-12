@@ -2,6 +2,9 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "#app";
+import { useApi } from '~/composables/useApi';
+import CustomeButton from '../components/CustomeButton.vue';
+import InputField from '../components/form/InputField.vue';
 
 const { request } = useApi();
 const router = useRouter();
@@ -166,12 +169,12 @@ onMounted(() => {
 
           <!-- سمت راست: عملیات نقش -->
           <div class="flex gap-3 items-end">
-            <Button color="primary-100" @click="createNewRole">
+            <CustomeButton color="primary-100" @click="createNewRole">
               <Icon name="fa6-solid:plus" class="ml-1" />
               نقش جدید
-            </Button>
+            </CustomeButton>
 
-            <Button
+            <CustomeButton
               color="secondary-100"
               variant="outline"
               :disabled="!selectedRoleId"
@@ -179,9 +182,9 @@ onMounted(() => {
             >
               <Icon name="fa6-solid:trash" class="ml-1" />
               حذف
-            </Button>
+            </CustomeButton>
 
-            <Button
+            <CustomeButton
               color="primary-100"
               variant="solid"
               @click="saveRole"
@@ -189,7 +192,7 @@ onMounted(() => {
             >
               <Icon name="fa6-solid:floppy-disk" class="ml-1" />
               ذخیره
-            </Button>
+            </CustomeButton>
           </div>
         </div>
 
@@ -222,18 +225,18 @@ onMounted(() => {
 
           <!-- دکمه‌های کنترل سریع -->
           <div class="flex flex-wrap gap-2 mb-6 text-sm">
-            <Button size="sm" color="primary-100" @click="selectAllViewPermissions">
+            <CustomeButton size="sm" color="primary-100" @click="selectAllViewPermissions">
               <Icon name="fa6-solid:eye" class="ml-1" />
               همه view
-            </Button>
-            <Button size="sm" color="primary-100" @click="selectAllPermissions">
+            </CustomeButton>
+            <CustomeButton size="sm" color="primary-100" @click="selectAllPermissions">
               <Icon name="fa6-solid:plus" class="ml-1" />
               همه
-            </Button>
-            <Button size="sm" color="secondary-100" variant="outline" @click="clearAllPermissions">
+            </CustomeButton>
+            <CustomeButton size="sm" color="secondary-100" variant="outline" @click="clearAllPermissions">
               <Icon name="fa6-solid:eraser" class="ml-1" />
               پاک‌سازی
-            </Button>
+            </CustomeButton>
           </div>
 
           <!-- پرمیشن‌ها به صورت ۲ ستونه -->

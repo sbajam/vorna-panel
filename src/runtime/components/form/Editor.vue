@@ -2,44 +2,119 @@
   <ImageP
     :show="imagePopup"
     @close_popup="imagePopup = false"
-    @choose="(src) => { setImage(src); imagePopup = false }"
+    @choose="
+      (src) => {
+        setImage(src);
+        imagePopup = false;
+      }
+    "
   />
 
-  <div class="border border-solid border-gray-100 rounded-lg overflow-hidden textarea">
+  <div
+    class="border border-solid border-gray-100 rounded-lg overflow-hidden textarea"
+  >
     <!-- Toolbar -->
-    <div v-if="editor" class="editor" :class="disabled ? 'opacity-60 pointer-events-none' : ''">
-      <button class="editor-btn" @click="cmd('undo')" :disabled="!can('undo')"><Icon name="fa6-solid:rotate-left" /></button>
-      <button class="editor-btn" @click="cmd('redo')" :disabled="!can('redo')"><Icon name="fa6-solid:rotate-right" /></button>
+    <div
+      v-if="editor"
+      class="editor"
+      :class="disabled ? 'opacity-60 pointer-events-none' : ''"
+    >
+      <button class="editor-btn" @click="cmd('undo')" :disabled="!can('undo')">
+        <Icon name="fa6-solid:rotate-left" />
+      </button>
+      <button class="editor-btn" @click="cmd('redo')" :disabled="!can('redo')">
+        <Icon name="fa6-solid:rotate-right" />
+      </button>
 
-      <button class="editor-btn" :class="{ 'is-active': isActive('bold') }" @click="toggle('toggleBold')" :disabled="!can('toggleBold')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('bold') }"
+        @click="toggle('toggleBold')"
+        :disabled="!can('toggleBold')"
+      >
         <Icon name="fa6-solid:bold" />
       </button>
-      <button class="editor-btn" :class="{ 'is-active': isActive('italic') }" @click="toggle('toggleItalic')" :disabled="!can('toggleItalic')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('italic') }"
+        @click="toggle('toggleItalic')"
+        :disabled="!can('toggleItalic')"
+      >
         <Icon name="fa6-solid:italic" />
       </button>
-      <button class="editor-btn" :class="{ 'is-active': isActive('strike') }" @click="toggle('toggleStrike')" :disabled="!can('toggleStrike')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('strike') }"
+        @click="toggle('toggleStrike')"
+        :disabled="!can('toggleStrike')"
+      >
         <Icon name="fa6-solid:strikethrough" />
       </button>
-      <button class="editor-btn" :class="{ 'is-active': isActive('code') }" @click="toggle('toggleCode')" :disabled="!can('toggleCode')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('code') }"
+        @click="toggle('toggleCode')"
+        :disabled="!can('toggleCode')"
+      >
         <Icon name="fa6-solid:code" />
       </button>
 
-      <button class="editor-btn" :class="{ 'is-active': isActive('paragraph') }" @click="cmd('setParagraph')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('paragraph') }"
+        @click="cmd('setParagraph')"
+      >
         <Icon name="fa6-solid:paragraph" />
       </button>
-      <button class="editor-btn" :class="{ 'is-active': isHeading(1) }" @click="cmd('toggleHeading', { level: 1 })"><span class="text-secondary font-bold">H1</span></button>
-      <button class="editor-btn" :class="{ 'is-active': isHeading(2) }" @click="cmd('toggleHeading', { level: 2 })"><span class="text-secondary font-bold">H2</span></button>
-      <button class="editor-btn" :class="{ 'is-active': isHeading(3) }" @click="cmd('toggleHeading', { level: 3 })"><span class="text-secondary font-bold">H3</span></button>
-      <button class="editor-btn" :class="{ 'is-active': isHeading(4) }" @click="cmd('toggleHeading', { level: 4 })"><span class="text-secondary font-bold">H4</span></button>
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isHeading(1) }"
+        @click="cmd('toggleHeading', { level: 1 })"
+      >
+        <span class="text-secondary font-bold">H1</span>
+      </button>
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isHeading(2) }"
+        @click="cmd('toggleHeading', { level: 2 })"
+      >
+        <span class="text-secondary font-bold">H2</span>
+      </button>
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isHeading(3) }"
+        @click="cmd('toggleHeading', { level: 3 })"
+      >
+        <span class="text-secondary font-bold">H3</span>
+      </button>
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isHeading(4) }"
+        @click="cmd('toggleHeading', { level: 4 })"
+      >
+        <span class="text-secondary font-bold">H4</span>
+      </button>
 
-      <button class="editor-btn" :class="{ 'is-active': isActive('bulletList') }" @click="cmd('toggleBulletList')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('bulletList') }"
+        @click="cmd('toggleBulletList')"
+      >
         <Icon name="fa6-solid:list-ul" />
       </button>
-      <button class="editor-btn" :class="{ 'is-active': isActive('orderedList') }" @click="cmd('toggleOrderedList')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('orderedList') }"
+        @click="cmd('toggleOrderedList')"
+      >
         <Icon name="fa6-solid:list-ol" />
       </button>
 
-      <button class="editor-btn" :class="{ 'is-active': isActive('blockquote') }" @click="cmd('toggleBlockquote')">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('blockquote') }"
+        @click="cmd('toggleBlockquote')"
+      >
         <Icon name="fa6-solid:quote-right" />
       </button>
       <button class="editor-btn" @click="cmd('setHorizontalRule')">
@@ -49,10 +124,18 @@
         <Icon name="fa6-solid:turn-down" />
       </button>
 
-      <button class="editor-btn" :class="{ 'is-active': isActive('link') }" @click="setLink">
+      <button
+        class="editor-btn"
+        :class="{ 'is-active': isActive('link') }"
+        @click="setLink"
+      >
         <Icon name="fa6-solid:link" />
       </button>
-      <button class="editor-btn" @click="cmd('unsetLink')" :disabled="!editor?.isActive('link')">
+      <button
+        class="editor-btn"
+        @click="cmd('unsetLink')"
+        :disabled="!editor?.isActive('link')"
+      >
         <Icon name="fa6-solid:link-slash" />
       </button>
 
@@ -70,7 +153,22 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount, computed } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted,
+} from "#imports";
+
+
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Document from "@tiptap/extension-document";
@@ -100,13 +198,20 @@ const can = (action) => {
   if (!editor.value) return false;
   const chain = editor.value.can().chain().focus();
   switch (action) {
-    case "undo": return chain.undo().run();
-    case "redo": return chain.redo().run();
-    case "toggleBold": return chain.toggleBold().run();
-    case "toggleItalic": return chain.toggleItalic().run();
-    case "toggleStrike": return chain.toggleStrike().run();
-    case "toggleCode": return chain.toggleCode().run();
-    default: return true;
+    case "undo":
+      return chain.undo().run();
+    case "redo":
+      return chain.redo().run();
+    case "toggleBold":
+      return chain.toggleBold().run();
+    case "toggleItalic":
+      return chain.toggleItalic().run();
+    case "toggleStrike":
+      return chain.toggleStrike().run();
+    case "toggleCode":
+      return chain.toggleCode().run();
+    default:
+      return true;
   }
 };
 const toggle = (cmdName) => editor.value?.chain().focus()[cmdName]().run();
@@ -159,7 +264,10 @@ onMounted(() => {
         if (plain.length > props.maxChars) {
           // اگر خواستی سخت‌گیرانه باشه، برگردون به قبلی
           // اینجا فقط اجازه نمی‌دیم از limit بیشتر شه
-          ed.commands.setTextSelection({ from: 0, to: ed.state.doc.content.size });
+          ed.commands.setTextSelection({
+            from: 0,
+            to: ed.state.doc.content.size,
+          });
         }
       }
       emit("update:modelValue", ed.getHTML());
@@ -177,7 +285,12 @@ function setLink() {
     editor.value?.chain().focus().extendMarkRange("link").unsetLink().run();
     return;
   }
-  editor.value?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  editor.value
+    ?.chain()
+    .focus()
+    .extendMarkRange("link")
+    .setLink({ href: url })
+    .run();
 }
 
 function setImage(src) {
@@ -193,9 +306,13 @@ onBeforeUnmount(() => {
 .tiptap {
   @apply relative outline-none px-4 py-2 min-h-[4rem];
 
-  > * + * { margin-top: 0.75em; }
+  > * + * {
+    margin-top: 0.75em;
+  }
 
-  a { color: #68cef8; }
+  a {
+    color: #68cef8;
+  }
 
   code {
     font-size: 0.9rem;
@@ -206,15 +323,32 @@ onBeforeUnmount(() => {
     box-decoration-break: clone;
   }
 
-  h1 { @apply text-3xl; }
-  h2 { @apply text-2xl; }
-  h3 { @apply text-xl; }
-  h4 { @apply text-lg; }
+  h1 {
+    @apply text-3xl;
+  }
+  h2 {
+    @apply text-2xl;
+  }
+  h3 {
+    @apply text-xl;
+  }
+  h4 {
+    @apply text-lg;
+  }
 
-  ul { list-style: disc; padding-right: 1rem; }
-  ol { list-style: decimal; padding-right: 1rem; }
+  ul {
+    list-style: disc;
+    padding-right: 1rem;
+  }
+  ol {
+    list-style: decimal;
+    padding-right: 1rem;
+  }
 
-  img, video { @apply block max-h-[50vh] max-w-full object-contain mx-auto; }
+  img,
+  video {
+    @apply block max-h-[50vh] max-w-full object-contain mx-auto;
+  }
 }
 
 .editor {
@@ -222,8 +356,12 @@ onBeforeUnmount(() => {
 
   .editor-btn {
     @apply flex items-center  justify-center border border-solid border-gray-100 py-1 px-3 cursor-pointer duration-300 rounded-lg text-xl text-secondary-100 bg-white;
-    &:disabled { @apply opacity-50 cursor-not-allowed; }
-    &.is-active { @apply bg-white ring-1 ring-secondary-30; }
+    &:disabled {
+      @apply opacity-50 cursor-not-allowed;
+    }
+    &.is-active {
+      @apply bg-white ring-1 ring-secondary-30;
+    }
   }
 }
 </style>

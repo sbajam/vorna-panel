@@ -177,10 +177,10 @@
             class="bg-green-800 h-full transition-width rounded-lg"
           ></div>
         </div>
-        <Button
+        <CustomeButton
           @click="generatePassword"
           class="text-xs bg-secondary-70 text-white"
-          >generate</Button
+          >generate</CustomeButton
         >
       </div>
 
@@ -220,7 +220,22 @@
  * 4. Input masking with IMask
  * 5. Value synchronization with v-model
  */
-import { ref, computed, toRef, watch } from "vue";
+import { toRef } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 import { nanoid } from "nanoid";
 import type { PropType } from "vue";
 import { IMask, IMaskDirective } from "vue-imask";

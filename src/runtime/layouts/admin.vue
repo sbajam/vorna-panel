@@ -22,5 +22,6 @@
   </div>
 </template>
 <script setup>
+import { ref } from 'vue';  // برای استفاده از ref
 const collapsed = ref(true);
 </script>

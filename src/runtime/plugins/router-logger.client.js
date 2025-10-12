@@ -1,7 +1,7 @@
 // src/runtime/plugins/router-logger.client.js
 import { defineNuxtPlugin, useNuxtApp } from "#imports";
 import {UAParser} from "ua-parser-js";
-import { useUserStore } from "../stores/user"; // مسیر را با ساختار پروژه‌ات هماهنگ کن
+import { useUserStore } from "#vorna-stores/user"; // مسیر را با ساختار پروژه‌ات هماهنگ کن
 
 export default defineNuxtPlugin((nuxtApp) => {
   const router = nuxtApp.$router;

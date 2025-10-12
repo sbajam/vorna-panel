@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed,ref,onBeforeMount,watch,defineProps, } from 'vue';
 
 const props = defineProps({
   type: { type: String, required: true },

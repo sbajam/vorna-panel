@@ -1,7 +1,6 @@
 import { defineNuxtRouteMiddleware, navigateTo, useNuxtApp, useRuntimeConfig } from '#imports'
-import { useUserStore } from '../stores/user'
+import { useUserStore } from '#vorna-stores/user'
 import { useApi } from '../composables/useApi'
-import { showError } from 'nuxt/app'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore()
@@ -17,7 +16,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (guestRoutes.some(route => to.path.startsWith(route))) return
 
   // ۲. بررسی وضعیت لاگین
-  let res: any
+  let res
   try {
     res = await request(`/${config.isLoginRoute}`, {
       method: 'get',

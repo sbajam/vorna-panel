@@ -19,17 +19,17 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onBeforeMount, watch, defineProps } from "vue";
 
 const props = defineProps({
   config: {
     type: Object,
-    required: true
+    required: true,
   },
   dataSources: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const filtered = computed(() => {
@@ -40,25 +40,27 @@ const filtered = computed(() => {
 });
 
 // محدود کردن تعداد نمایش
-const limitedItems = computed(() => filtered.value.slice(0, props.config.limit ?? 5));
+const limitedItems = computed(() =>
+  filtered.value.slice(0, props.config.limit ?? 5)
+);
 
 // تابع استخراج عنوان: پشتیبانی از renderItem داخلی
 function getTitle(item) {
-  if (typeof props.config.renderItem === 'function') {
+  if (typeof props.config.renderItem === "function") {
     const result = props.config.renderItem(item);
-    return result != null ? result : '---';
+    return result != null ? result : "---";
   }
-  const field = props.config.fields?.[0] ?? 'title';
-  return item?.[field] ?? '---';
+  const field = props.config.fields?.[0] ?? "title";
+  return item?.[field] ?? "---";
 }
 
 // تابع تولید لینک: پشتیبانی از getLink یا linkBase
 function getLink(item) {
-  if (typeof props.config.getLink === 'function') {
+  if (typeof props.config.getLink === "function") {
     return props.config.getLink(item);
   }
-  const base = props.config.linkBase ?? '#';
-  const id = item?.id != null ? item.id : '';
+  const base = props.config.linkBase ?? "#";
+  const id = item?.id != null ? item.id : "";
   return `${base}${id}`;
 }
 </script>

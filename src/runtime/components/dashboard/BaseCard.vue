@@ -33,6 +33,21 @@
 </template>
 
 <script setup>
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 defineProps({
   title: String,
   withPadding: {

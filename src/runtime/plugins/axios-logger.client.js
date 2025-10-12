@@ -2,7 +2,7 @@
 import { defineNuxtPlugin } from "#imports";
 import axios from "axios";
 import { UAParser } from "ua-parser-js";
-import { useUserStore } from "../stores/user";
+import { useUserStore } from "#vorna-stores/user";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const parser = new UAParser();

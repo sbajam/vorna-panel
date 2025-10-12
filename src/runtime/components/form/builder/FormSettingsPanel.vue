@@ -1,6 +1,20 @@
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 import type { PropType } from "vue";
 
 // دریافت props از والد: همان formProps که در config تعریف شده

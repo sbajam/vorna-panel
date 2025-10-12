@@ -38,6 +38,21 @@
 </template>
 
 <script setup>
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted, 
+} from "#imports";
+
 const props = defineProps({
   modelValue: { type: [File, Array, String, Object, null], default: null },
   label: { type: String, default: "" },

@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRuntimeConfig, useRoute, definePageMeta } from '#imports'
-import { useUserStore } from '../stores/user'
+import { useUserStore } from '#vorna-stores/user'
 
-definePageMeta({
-  // این صفحه فقط برای کاربران لاگین‌شده است
-  auth: true
-})
 
 const config    = useRuntimeConfig().public.vornaPanel
 const userStore = useUserStore()

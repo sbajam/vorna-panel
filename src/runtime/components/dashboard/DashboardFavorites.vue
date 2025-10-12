@@ -12,7 +12,6 @@
       - add(): emitted when the "+" button is clicked
 
     Notes:
-      - Uses <NuxtLink> to navigate
       - Thin horizontal scrollbar
   -->
   <Box class="w-full overflow-x-auto !py-4 !px-4 !mb-0">
@@ -60,6 +59,21 @@
 </template>
 
 <script setup>
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 defineProps({
   favorites: {
     type: Array,

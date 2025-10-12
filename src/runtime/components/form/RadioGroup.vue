@@ -230,6 +230,20 @@
  */
 import { nanoid } from "nanoid";
 import { computed, ref, type PropType } from "vue";
+import {
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted,
+} from "#imports";
+
+
 
 const props = defineProps({
   options: {

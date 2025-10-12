@@ -1,11 +1,19 @@
 <script setup>
-import { computed, ref, watch } from "vue";
-import { useRoute, useRouter, useRuntimeConfig, navigateTo } from "nuxt/app";
-import { useBreadcrumbStore } from "~vorna-stores/breadcrumb";
-import { useUserStore } from "~vorna-stores/user";
+import { useBreadcrumbStore } from "#vorna-stores/breadcrumb";
+import { useUserStore } from "#vorna-stores/user";
 import { Vue3SlideUpDown } from "vue3-slide-up-down";
 import { useOnline, useMediaQuery } from "@vueuse/core";
-import { useBadges } from "~vorna-stores/badges"; // ← اضافه کردن این خط برای استفاده از badges store
+import { useRoute, useRouter, useRuntimeConfig, navigateTo } from "nuxt/app";
+import {
+  computed,
+  ref,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted,
+} from "vue";
+
+import { useBadges } from "#vorna-stores/badges"; // ← اضافه کردن این خط برای استفاده از badges store
 // خواندن menuItems از config اگر از props نفرستاده باشند
 const config = useRuntimeConfig().public.vornaPanel;
 const user = useUserStore();
@@ -135,11 +143,11 @@ function onClick(to) {
         <!-- Slide menu -->
         <vue3-slide-up-down v-model="section.collapsed" :duration="200">
           <div class="menu-items">
+            <!-- v-slot="{ isActive }" -->
             <NuxtLink
               v-for="item in section.items"
               :key="item.path"
               :to="item.path"
-              v-slot="{ isActive }"
               @click.prevent="onClick(item.path)"
               class="menu-item"
               :class="{ 'has-badge': item.badge }"
@@ -159,7 +167,11 @@ function onClick(to) {
               <span class="item-label">{{ item.label }}</span>
               <!-- نمایش badge -->
               <span
-                v-if=" item.badge && badgesStore.getBadges(item.badge) !== null && badgesStore.getBadges(item.badge)!=0"
+                v-if="
+                  item.badge &&
+                  badgesStore.getBadges(item.badge) !== null &&
+                  badgesStore.getBadges(item.badge) != 0
+                "
                 class="item-badge"
               >
                 {{ badgesStore.getBadges(item.badge) }}

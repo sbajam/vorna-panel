@@ -1,18 +1,30 @@
 <script setup>
-import { ref } from "#imports";
-import { useNuxtApp } from "nuxt/app";
-import { useUserStore } from "../../stores/user";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted,
+} from "#imports";
+import { useUserStore } from "#vorna-stores/user";
 
 const username = ref("");
 const password = ref("");
 const userStore = useUserStore();
 const route = useRoute();
 const config = useRuntimeConfig().public.vornaPanel;
-const { pending,request, data } = useApi();
+const { pending, request, data } = useApi();
 const { $notifySuccess, $notifyDanger } = useNuxtApp();
 const adminCookie = useCookie("token");
 
-const redirectTo = (route.query.redirect) || "/";
+const redirectTo = route.query.redirect || "/";
 
 async function getFingerprint() {
   const key = "fp_hash_v1";
@@ -43,7 +55,7 @@ const login = async () => {
 
     // توجه: به روت سروری می‌زنیم، نه مستقیم بک‌اند
     await request("/api/auth/login", {
-      baseUrl:'../../',
+      baseUrl: "../../",
       method: "POST",
       data: { username, password, fingerprintHash },
     });
@@ -52,8 +64,8 @@ const login = async () => {
     if (!res?.status || !res?.accessToken) {
       $notifyDanger(res?.message || "ورود ناموفق");
       return;
-    } 
-     document.cookie = `token=${res.accessToken}; path=/;`;
+    }
+    document.cookie = `token=${res.accessToken}; path=/;`;
     // فقط اکسس‌توکن رو در حافظه نگه‌دار
     userStore.setUser(res.accessToken, res.roles || "company");
     userStore.setUsername(username.value.trim());
@@ -129,7 +141,7 @@ const login2 = async () => {
         :passwordOptions="false"
       />
 
-      <Button
+      <CustomeButton
         color="secondary-100"
         rounded="xl"
         size="md"
@@ -139,7 +151,7 @@ const login2 = async () => {
         :full-width="true"
       >
         ورود
-      </Button>
+      </CustomeButton>
     </section>
   </main>
 </template>

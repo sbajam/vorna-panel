@@ -1,4 +1,12 @@
 <script setup>
+import { ref, computed, onMounted } from "vue";
+import { useApi } from '~/composables/useApi';
+import { useNuxtApp } from '#imports';
+import Box from '../components/ui/Box.vue';
+import Header from '../components/ui/Header.vue';
+import CustomeButton from '../components/CustomeButton.vue';
+import { Icon } from '@nuxt/icon';
+
 const { request } = useApi();
 const { $notify } = useNuxtApp();
 
@@ -119,19 +127,19 @@ onMounted(fetchPermissions);
 
         <!-- دکمه‌ها -->
         <div class="flex flex-wrap gap-3 mt-6">
-          <Button
+          <CustomeButton
             color="secondary-100"
             variant="outline"
             @click="addMissingViewPermissions"
           >
             <Icon name="fa6-solid:eye" class="ml-1" />
             افزودن viewهای ناقص
-          </Button>
+          </CustomeButton>
 
-          <Button color="primary-100" variant="solid" @click="savePermissions">
+          <CustomeButton color="primary-100" variant="solid" @click="savePermissions">
             <Icon name="fa6-solid:floppy-disk" class="ml-1" />
             ذخیره تغییرات
-          </Button>
+          </CustomeButton>
         </div>
       </Box>
     </template>

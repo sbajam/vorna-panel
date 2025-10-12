@@ -1,5 +1,7 @@
 <!-- SmartTable.vue (Nuxt 3 / Vue 3) -->
 <script setup>
+import { ref } from 'vue';  // برای استفاده از reactive و ref
+import { defineProps, defineEmits } from 'vue';  //
 import _ from "lodash";
 import * as XLSX from "xlsx";
 

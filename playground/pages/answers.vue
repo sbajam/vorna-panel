@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { useRequestStore } from "~/stores/requestStore";
+// import { useRequestStore } from "#vorna-stores/requestStore";
 
 const { data, pending, request } = useApi();
 const { $notify, $notifyDanger } = useNuxtApp();

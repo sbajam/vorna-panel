@@ -18,6 +18,6 @@ export default {
     'which',
     'shebang-command',
     'isexe',
-    'shebang-regex'
+    'shebang-regex',
   ]
 }

@@ -1,10 +1,23 @@
-
 <script setup lang="ts">
 // -------------------------------
 // Part 1: Props and Emits
 // -------------------------------
 
-import { ref, watch } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted,
+} from "#imports";
+
 import type { PropType } from "vue";
 
 // دریافت sectionConfig از والد
@@ -73,21 +86,26 @@ function onClose() {
 }
 </script>
 <template>
-  <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm w-full space-y-4">
+  <div
+    class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm w-full space-y-4"
+  >
     <!-- ===== Header ===== -->
-    <h3 class="text-base sm:text-lg font-semibold bg-black text-white px-4 py-2 rounded-md">
+    <h3
+      class="text-base sm:text-lg font-semibold bg-black text-white px-4 py-2 rounded-md"
+    >
       Section Settings
     </h3>
 
     <!-- ===== Section Title ===== -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1"
+        >Section Title</label
+      >
       <input
         v-model="localTitle"
         @input="emitUpdate('title', localTitle)"
         type="text"
-        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400
-               focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
         placeholder="e.g. Basic Info"
       />
     </div>
@@ -136,11 +154,8 @@ function onClose() {
   </div>
 </template>
 
-
-
 <style scoped>
-:where(h3){ letter-spacing:.2px; }
+:where(h3) {
+  letter-spacing: 0.2px;
+}
 </style>
-
-
-

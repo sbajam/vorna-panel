@@ -1,16 +1,17 @@
 <!-- src/runtime/layouts/modal.vue -->
 <script setup>
+import Icon from "@nuxt/icon";
 const props = defineProps({
   show: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['update:show', 'close_popup']);
+const emit = defineEmits(["update:show", "close_popup"]);
 
 function onBackdropClick(e) {
   // اگر روی بک‌دراپ کلیک شد، ببند
-  if (e.target.classList.contains('back')) {
-    emit('update:show', false);
-    emit('close_popup');
+  if (e.target.classList.contains("back")) {
+    emit("update:show", false);
+    emit("close_popup");
   }
 }
 </script>
@@ -23,12 +24,15 @@ function onBackdropClick(e) {
       @click="onBackdropClick"
     >
       <div
-        class="relative bg-white rounded-xl p-6 md:p-10 max-w-11/12 w-fit   max-h-[90vh] overflow-auto"
+        class="relative bg-white rounded-xl p-6 md:p-10 max-w-11/12 w-fit max-h-[90vh] overflow-auto"
       >
         <!-- دکمه بستن -->
         <button
           class="absolute top-4 right-4 text-darkBlue bg-white p-2 rounded-full shadow"
-          @click="$emit('update:show', false); $emit('close_popup')"
+          @click="
+            $emit('update:show', false);
+            $emit('close_popup');
+          "
         >
           <Icon name="fa6-solid:x" />
         </button>

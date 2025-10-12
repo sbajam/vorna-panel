@@ -50,7 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+
+import { computed,defineEmits } from "vue";
 import InputField from "../InputField.vue";
 import DropDown from "../DropDown.vue";
 import CheckBoxGroup from "../CheckBoxGroup.vue";

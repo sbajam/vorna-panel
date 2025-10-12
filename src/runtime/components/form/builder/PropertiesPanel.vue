@@ -992,12 +992,27 @@
   </div>
 </template>
 <style scoped>
+
 /* مینیمال برای هماهنگی با تم */
 :where(h3){ letter-spacing: .2px; }
 </style>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+
 import type { PropType } from "vue";
 
 // کلیدهای ریسپانسیو

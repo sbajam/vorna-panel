@@ -1,17 +1,21 @@
 <script setup>
 import {
-  definePageMeta,
   ref,
   useCookie,
   useNuxtApp,
   useRoute,
   navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
 } from "#imports";
-import { useRuntimeConfig } from "nuxt/app";
-import { useUserStore } from "../../stores/user";
-const config = useRuntimeConfig().public.vornaPanel;
 
-definePageMeta({ auth: false });
+import { useUserStore } from "#vorna-stores/user";
+const config = useRuntimeConfig().public.vornaPanel;
 
 const { $notify } = useNuxtApp();
 const username = ref("");
@@ -21,7 +25,7 @@ const adminCookie = useCookie("token");
 const route = useRoute();
 const userStore = useUserStore();
 
-const redirectTo = (route.query.redirect) || "/";
+const redirectTo = route.query.redirect || "/";
 const passwordShow = ref(false);
 
 const login = async () => {
@@ -89,7 +93,7 @@ const login = async () => {
         label-position="right"
         :passwordOptions="false"
       />
-      <Button
+      <CustomeButton
         color="secondary-100"
         rounded="xl"
         size="md"
@@ -97,7 +101,7 @@ const login = async () => {
         :pending="pending"
         @click="login()"
         :full-width="true"
-        >ورود</Button
+        >ورود</CustomeButton
       >
     </section>
   </main>

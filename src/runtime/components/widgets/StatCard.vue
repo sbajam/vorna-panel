@@ -10,6 +10,8 @@
 </template>
 
 <script setup>
+import { computed,ref,onBeforeMount,watch,defineProps, } from 'vue';
+
 const prop = defineProps({
   config: Object,
   dataSources: Array, // ✅ الان درست

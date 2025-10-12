@@ -19,7 +19,12 @@
       </span>
     </label>
 
-    <div :class="['flex items-center', disabled ? 'opacity-60 cursor-not-allowed' : '']">
+    <div
+      :class="[
+        'flex items-center',
+        disabled ? 'opacity-60 cursor-not-allowed' : '',
+      ]"
+    >
       <button
         :class="[
           'relative inline-flex items-center transition-colors duration-200 focus:outline-none hover:shadow-none hover:translate-y-0',
@@ -50,7 +55,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted,
+} from "#imports";
+
 import type { PropType } from "vue";
 
 const props = defineProps({
@@ -60,7 +79,10 @@ const props = defineProps({
   offColor: { type: String, default: "bg-gray-300" },
   disabled: { type: Boolean, default: false },
   label: { type: String, default: "" },
-  labelPosition: { type: String as PropType<"top" | "right">, default: "right" },
+  labelPosition: {
+    type: String as PropType<"top" | "right">,
+    default: "right",
+  },
   errorMessage: { type: String, default: "" },
   icon: { type: String, default: "" },
   tooltip: { type: String, default: "" },

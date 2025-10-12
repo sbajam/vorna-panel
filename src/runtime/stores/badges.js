@@ -1,4 +1,4 @@
-// playground/stores/badges.js
+// /stores/badges.js
 import { defineStore } from "pinia";
 
 export const useBadges = defineStore("badges", {
