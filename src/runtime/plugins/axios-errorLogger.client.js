@@ -1,9 +1,9 @@
-// src/runtime/plugins/axios-logger.client.ts
+// src/runtime/plugins/axios-logger.client.js
 import { defineNuxtPlugin } from "#imports";
-import axios from "axios";             // instance پیش‌فرض axios
+import axios from "axios";
 import { UAParser } from "ua-parser-js";
 import html2canvas from "html2canvas";
-import { useUserStore } from "~vorna-stores/user"; 
+import { useUserStore } from "~vorna-stores/user";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const parser = new UAParser();
@@ -13,7 +13,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 // در پلاگینِ error-logger-with-details.client.ts
 
 // تابع کمکی: گرفتن اسکرین‌شات صفحه و برگرداندن Base64 (JPEG با کیفیت معقول)
-async function captureScreenshot(): Promise<string | null> {
+async function captureScreenshot() {
   try {
     // scale را برابر devicePixelRatio قرار می‌دهیم تا رزولوشن مناسبی داشته باشیم
     // اگر بخواهید حجم کمتر باشد می‌توانید scale را روی 0.8 یا 0.7 تنظیم کنید
@@ -35,7 +35,7 @@ async function captureScreenshot(): Promise<string | null> {
 
 
   // تابع کمکی: ارسال payload به سرور لاگ خطا
-  async function sendErrorLog(payload: any) {
+  async function sendErrorLog(payload) {
     try {
       await fetch("/api/error-logs", {
         method: "POST",
@@ -48,7 +48,7 @@ async function captureScreenshot(): Promise<string | null> {
   }
 
   // تابع ساخت payload مخصوص خطای API
-  async function buildApiErrorPayload(errorContext: any) {
+  async function buildApiErrorPayload(errorContext) {
     const username = userStore.username || "guest";
     const uaResult = parser.setUA(navigator.userAgent).getResult();
     const screenshot = await captureScreenshot();
@@ -57,12 +57,12 @@ async function captureScreenshot(): Promise<string | null> {
     // در این پلاگین، lastRoute را نمی‌گیریم؛ در صورت نیاز می‌توانید از router و afterEachِ پلاگین دیگر استخراج کنید
     const lastRoute = null;
 
-    const baseInfo: any = {
+    const baseInfo = {
       username,
       url: currentRoute,
       lastRoute,
       user_agent: navigator.userAgent,
-      ip: null as string | null,
+      ip: null,
       timestamp: new Date().toISOString(),
       device: uaResult.device.type || "Desktop",
       os: uaResult.os.name + (uaResult.os.version ? " " + uaResult.os.version : ""),
@@ -74,7 +74,7 @@ async function captureScreenshot(): Promise<string | null> {
     // استخراج IP اگر لازم باشد (معمولاً سمت کلاینت نداریم، ولی اگر هدر بگیرید)
     // این قسمت شرطی است و می‌توانید حذف کنید
     try {
-      const xff = (await nuxtApp.$h3.getRequestHeader("x-forwarded-for")) as string | string[] | undefined;
+      const xff = (await nuxtApp.$h3.getRequestHeader("x-forwarded-for"));
       if (xff) {
         baseInfo.ip = Array.isArray(xff) ? xff[0] : xff;
       } else {
@@ -86,7 +86,7 @@ async function captureScreenshot(): Promise<string | null> {
     }
 
     // جزئیات خطای API (payloadی که به سرور فرستاده یا پاسخ دریافتی)
-    const details: Record<string, any> = {
+    const details = {
       clientTimestamp: new Date().toISOString(),
       viewport: { width: window.innerWidth, height: window.innerHeight },
       language: navigator.language,

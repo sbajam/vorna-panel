@@ -1,4 +1,5 @@
 // server/api/roles.get.js
+import { defineEventHandler } from 'h3'
 import { prisma } from '../utils/db'
 import { safeJson } from '../utils/json'
 

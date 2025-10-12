@@ -2,7 +2,7 @@
 import { defineEventHandler, getCookie } from 'h3'
 
 // همون storage از فایل قبلی
-const sessions = globalThis.__SESS__ ??= new Map<string, { refreshToken: string }>()
+const sessions = globalThis.__SESS__ ??= new Map()
 
 export default defineEventHandler(async (event) => {
     const sid = getCookie(event, 'sid')
@@ -11,10 +11,10 @@ export default defineEventHandler(async (event) => {
         return { status: false, message: 'سشن یافت نشد' }
     }
 
-    const { refreshToken } = sessions.get(sid)!
+    const { refreshToken } = sessions.get(sid)
 
     // تماس با بک‌اند برای گرفتن اکسس جدید (و شاید رفرش جدید)
-    const res = await $fetch<{ status: boolean; token: string; refreshToken?: string }>(
+    const res = await $fetch(
         `${useRuntimeConfig().public.vornaPanel.baseUrl}/company/refresh`,
         { method: 'POST', body: { refreshToken } }
     )

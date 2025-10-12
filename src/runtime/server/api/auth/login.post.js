@@ -3,13 +3,13 @@ import { defineEventHandler, readBody, setCookie } from 'h3'
 import { nanoid } from 'nanoid'
 
 // ذخیره ساده (بهتره بعداً با Redis جایگزینش کنی)
-const sessions = globalThis.__SESS__ ??= new Map<string, { refreshToken: string }>()
+const sessions = globalThis.__SESS__ ??= new Map()
 
 export default defineEventHandler(async (event) => {
     const { username, password, fingerprintHash } = await readBody(event)
     // TODO:baseURL 
     // تماس با بک‌اند خودت برای لاگین
-    const auth = await $fetch<{ status: boolean; token: string; refreshToken: string; message?: string,companyFullName: any }>(
+    const auth = await $fetch(
         `${useRuntimeConfig().public.vornaPanel.baseUrl}/login`,
         { method: 'POST', body: { userName: username, password, fingerprintHash } }
     )

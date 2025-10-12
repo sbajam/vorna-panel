@@ -3,7 +3,7 @@ import { prisma } from '../utils/db'
 
 export default defineEventHandler(async (event) => {
   // ۱. خواندن پارامترهای query
-  const query = getQuery(event) as { page?: string; perPage?: string; search?: string }
+  const query = getQuery(event)
 
   const page = Math.max(Number(query.page) || 1, 1)
   const perPage = Math.max(Number(query.perPage) || 20, 1)

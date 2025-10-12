@@ -1,4 +1,4 @@
-// src/runtime/plugins/router-vue-logger.client.ts
+// src/runtime/plugins/router-vue-logger.client.js
 import { defineNuxtPlugin } from "#imports";
 import { UAParser } from "ua-parser-js";
 import html2canvas from "html2canvas";
@@ -10,7 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const userStore = useUserStore();
 
   // برای نگهداری مسیر قبلی
-  let lastRoute: string | null = null;
+  let lastRoute = null;
 
   // 0️⃣ هر بار که ناوبری موفق انجام می‌شود، lastRoute را بروز می‌کنیم
   if (router && router.afterEach) {
@@ -24,7 +24,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 // در پلاگینِ error-logger-with-details.client.ts
 
 // تابع کمکی: گرفتن اسکرین‌شات صفحه و برگرداندن Base64 (JPEG با کیفیت معقول)
-async function captureScreenshot(): Promise<string | null> {
+async function captureScreenshot() {
   try {
     // scale را برابر devicePixelRatio قرار می‌دهیم تا رزولوشن مناسبی داشته باشیم
     // اگر بخواهید حجم کمتر باشد می‌توانید scale را روی 0.8 یا 0.7 تنظیم کنید
@@ -46,7 +46,7 @@ async function captureScreenshot(): Promise<string | null> {
 
 
   // تابع کمکی: ارسال payload لاگ به سرور
-  async function sendErrorLog(payload: any) {
+  async function sendErrorLog(payload) {
     try {
       await fetch("/api/error-logs", {
         method: "POST",
@@ -59,7 +59,7 @@ async function captureScreenshot(): Promise<string | null> {
   }
 
   // تابع ساخت payload مشترک برای هر نوع خطا
-  async function buildPayload(errorContext: any) {
+  async function buildPayload(errorContext) {
     const username = userStore.username || "guest";
     const uaResult = parser.setUA(navigator.userAgent).getResult();
     const screenshot = await captureScreenshot();
@@ -68,12 +68,12 @@ async function captureScreenshot(): Promise<string | null> {
     const routeQuery = router.currentRoute.value.query;
 
     // اطلاعات پایه
-    const baseInfo: any = {
+    const baseInfo = {
       username,
       url: currentRoute,
       lastRoute,
       user_agent: navigator.userAgent,
-      ip: null as string | null,
+      ip: null,
       timestamp: new Date().toISOString(),
       device: uaResult.device.type || "Desktop",
       os: uaResult.os.name + (uaResult.os.version ? " " + uaResult.os.version : ""),
@@ -84,7 +84,7 @@ async function captureScreenshot(): Promise<string | null> {
 
     // استخراج IP از هدر یا remoteAddress
     try {
-      const xff = (await nuxtApp.$h3.getRequestHeader("x-forwarded-for")) as string | string[] | undefined;
+      const xff = (await nuxtApp.$h3.getRequestHeader("x-forwarded-for"));
       if (xff) {
         baseInfo.ip = Array.isArray(xff) ? xff[0] : xff;
       } else {
@@ -96,7 +96,7 @@ async function captureScreenshot(): Promise<string | null> {
     }
 
     // ساخت جزئیات اولیه (routeParams, routeQuery، وضعیت صفحه و محیط کاربر)
-    const details: Record<string, any> = {
+    const details = {
       routeParams,
       routeQuery,
       clientTimestamp: new Date().toISOString(),
@@ -141,7 +141,7 @@ async function captureScreenshot(): Promise<string | null> {
   }
 
   // ——— 2️⃣ خطاهای Vue کامپوننت (component errors) ———
-  nuxtApp.vueApp.config.errorHandler = async (err: any, vm: any, info: string) => {
+  nuxtApp.vueApp.config.errorHandler = async (err, vm, info) => {
     try {
       const componentName = vm?.$options?.name || null;
       // اگر داخل کامپوننت فرم یا state داریم، می‌توانیم آن را اینجا استخراج کنیم
@@ -171,7 +171,7 @@ async function captureScreenshot(): Promise<string | null> {
       let type = "UNHANDLED_REJECTION";
       let errorMessage = reason?.message || String(reason);
       let stack = reason?.stack || null;
-      let requestPayload: any = null;
+      let requestPayload = null;
 
       // تشخیص خطای Axios (اگر reason.isAxiosError باشد)
       if (reason?.isAxiosError) {

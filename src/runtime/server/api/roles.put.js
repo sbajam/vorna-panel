@@ -1,5 +1,5 @@
+import { defineEventHandler, readBody } from 'h3'
 import { prisma } from '../utils/db'
-import { readBody } from 'h3'
 
 // optional helper
 function safeJson(obj) {

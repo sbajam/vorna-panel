@@ -1,4 +1,4 @@
-// server/api/logs.post.ts
+// server/api/logs.post.js
 import { defineEventHandler, readBody, getRequestHeader } from "h3";
 import { prisma } from "../utils/db";
 
@@ -10,23 +10,10 @@ const SIX_MONTHS_AGO = (() => {
 })();
 
 export default defineEventHandler(async (event) => {
-  const body = (await readBody(event)) as {
-    username?: string;
-    type: string;
-    url: string;
-    method?: string;
-    status?: number;
-    params?: any;
-    responseData?: any;
-    userAgent: string;
-    device?: string;
-    os?: string;
-    browser?: string;
-    location?: { country?: string; city?: string };
-  };
+  const body = await readBody(event);
 
   // استخراج IP
-  let ip: string;
+  let ip;
   const xff = getRequestHeader(event, "x-forwarded-for");
   if (xff) {
     ip = Array.isArray(xff) ? xff[0] : xff;

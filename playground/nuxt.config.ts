@@ -32,14 +32,14 @@ export default defineNuxtConfig({
         title: 'اطلاعات و ویرایش',
         collapsed: false,
         items: [
-          { path: '/intro/information', label: 'اطلاعات پایه', icon: 'fa6-solid:gear' },
-          { path: '/intro/information?tab=social', label: 'اطلاعات اجتماعی', icon: 'fa-solid:users' },
-          { path: '/intro/information?tab=desing', label: 'اطلاعات طراحی', icon: 'fa6-solid:paintbrush' },
-          { path: '/intro/information?tab=domain', label: 'اطلاعات دامنه', icon: 'fa-solid:cloud' },
+          { path: '/information', label: 'اطلاعات پایه', icon: 'fa6-solid:gear' },
+          { path: '/information?tab=social', label: 'اطلاعات اجتماعی', icon: 'fa-solid:users' },
+          { path: '/information?tab=desing', label: 'اطلاعات طراحی', icon: 'fa6-solid:paintbrush' },
+          { path: '/information?tab=domain', label: 'اطلاعات دامنه', icon: 'fa-solid:cloud' },
         ],
       },
       {
-        title: 'اطلاعات صفحه اول',
+        title: 'اطلاعات برند',
         collapsed: false,
         items: [
           { path: '/clients', label: 'لوگو همکاران / مشتریان', icon: 'fa-solid:handshake' },
@@ -117,7 +117,7 @@ export default defineNuxtConfig({
     //       { path: '/permissions', label: 'دسترسی‌ها', icon: 'fa-solid:lock' },
     //       { path: '/access', label: 'دسترسی مسیرها', icon: 'fa-solid:route' },
     //       { path: '/logs', label: 'فعالیت‌ها', icon: 'fa-solid:clipboard-list' },
-    //       { path: '/errorsLog', label: 'لاگ خطاها', icon: 'fa-solid:triangle-exclamation' },
+    //       { path: '/errorsLog', label: 'لاگ خطاها', icon: 'fa6-solid:triangle-exclamation' },
     //       { path: '/formBuilder', label: 'فرمساز', icon: 'fa-solid:object-group' },
     //     ],
     //   },
@@ -125,8 +125,8 @@ export default defineNuxtConfig({
     //     title: 'صفحات تستی',
     //     collapsed: true,
     //     items: [
-    //       { path: '/form', label: 'فرم A', icon: 'fa-solid:wpforms', guest: true },
-    //       { path: '/formB', label: 'فرم B', icon: 'fa-solid:wpforms', guest: true },
+    //       { path: '/form', label: 'فرم A', icon: 'fa6-solid:wpforms', guest: true },
+    //       { path: '/formB', label: 'فرم B', icon: 'fa6-solid:wpforms', guest: true },
     //       { path: '/formTest', label: 'فرم تست', icon: 'fa-solid:flask', guest: true },
     //       { path: '/button', label: 'دکمه‌ها', icon: 'fa-solid:toggle-on', guest: true },
     //       { path: '/fcomponents', label: 'کامپوننت‌ها', icon: 'fa-solid:boxes', guest: true },
@@ -138,9 +138,9 @@ export default defineNuxtConfig({
     //     title: 'صفحات تستی',
 
     //     items: [
-    //       { path: '/', label: 'داشبورد', icon: 'fa-solid:house' },
+    //       { path: '/', label: 'داشبورد', icon: 'fa6-solid:house' },
     //       { path: '/auth', label: 'احراز هویت', icon: 'fa-solid:fingerprint' },
-    //       { path: '/information', label: 'ویرایش اطلاعات', icon: 'fa-solid:gear' },
+    //       { path: '/information', label: 'ویرایش اطلاعات', icon: 'fa6-solid:gear' },
     //     ],
     //   },
     //   {
@@ -156,21 +156,21 @@ export default defineNuxtConfig({
     //   {
     //     title: 'محصولات',
     //     items: [
-    //       { path: '/product', label: 'لیست محصولات', icon: 'fa-solid:bag-shopping' },
-    //       { path: '/product/add', label: 'اضافه کردن', icon: 'fa-solid:bag-shopping', subIcon: 'fa-solid:plus' },
+    //       { path: '/product', label: 'لیست محصولات', icon: 'fa6-solid:bag-shopping' },
+    //       { path: '/product/add', label: 'اضافه کردن', icon: 'fa6-solid:bag-shopping', subIcon: 'fa-solid:plus' },
     //     ],
     //   },
     //   {
     //     title: 'تعامل با کاربر',
     //     items: [
-    //       { path: '/cart', label: 'سبد‌های خرید', icon: 'fa-solid:cart-shopping', badge: { key: 'cart:unchecked' } },
+    //       { path: '/cart', label: 'سبد‌های خرید', icon: 'fa6-solid:cart-shopping', badge: { key: 'cart:unchecked' } },
     //       { path: '/question', label: 'پاسخگویی مشتریان', icon: 'fa-solid:question', badge: { key: 'questions:pending' } },
     //     ],
     //   },
     //   {
     //     title: 'باشگاه مشتریان',
     //     items: [
-    //       { path: '/customers', label: 'مشتریان (SMS)', icon: 'fa-solid:comment-sms' },
+    //       { path: '/customers', label: 'مشتریان (SMS)', icon: 'fa6-solid:comment-sms' },
     //       { path: '/feedbacks', label: 'نظرات مشتریان', icon: 'fa-solid:comment' },
     //     ],
     //   },
@@ -178,8 +178,8 @@ export default defineNuxtConfig({
     //     title: 'مالی',
     //     items: [
     //       { path: '/offer_codes', label: 'کد تخفیف', icon: 'fa-solid:percent' },
-    //       { path: '/payment', label: 'تسویه حساب', icon: 'fa-solid:money-bill-transfer' },
-    //       { path: '/subscriptions', label: 'اشتراک / سئو', icon: 'fa-solid:circle-up' },
+    //       { path: '/payment', label: 'تسویه حساب', icon: 'fa6-solid:money-bill-transfer' },
+    //       { path: '/subscriptions', label: 'اشتراک / سئو', icon: 'fa6-solid:circle-up' },
     //     ],
     //   },
     //   {
@@ -194,7 +194,7 @@ export default defineNuxtConfig({
     //     items: [
     //       { path: '/requests', label: 'درخواست خدمات', icon: 'ion:reader-outline' },
     //       { path: '/support/support', label: 'پشتیبانی', icon: 'fa-solid:headset' },
-    //       { path: '/login', label: 'ورود', icon: 'fa-solid:right-to-bracket', guest: true },
+    //       { path: '/login', label: 'ورود', icon: 'fa6-solid:right-to-bracket', guest: true },
     //       { path: '/403', label: 'عدم دسترسی', icon: 'fa-solid:ban', guest: true },
     //     ],
     //   },
@@ -210,7 +210,6 @@ export default defineNuxtConfig({
   build: {
     transpile: [
       'execa',
-      '@prisma/client',
       'cross-spawn',
       'signal-exit',
       'human-signals',

@@ -1,4 +1,4 @@
-// playground/src/runtime/server/api/error-logs.post.ts
+// src/runtime/server/api/error-logs.post.js
 import { defineEventHandler, readBody, getRequestHeader } from "h3";
 import { prisma } from "../utils/db";
 
@@ -10,21 +10,7 @@ const SIX_MONTHS_AGO = (() => {
 })();
 
 export default defineEventHandler(async (event) => {
-  const body = (await readBody(event)) as {
-    username: string;
-    type: string;          // NAVIGATION, COMPONENT, UNHANDLED_REJECTION, API_ERROR
-    url: string;
-    lastRoute?: string | null;
-    user_agent: string;
-    ip?: string | null;
-    timestamp: string;     // حتماً ISO string
-    device?: string | null;
-    os?: string | null;
-    browser?: string | null;
-    location?: any;        // می‌تواند JSON باشد
-    details?: any;         // JSON کلیهٔ جزئیات
-    screenshot?: string | null;
-  };
+  const body = await readBody(event);
 
   // استخراج IP اگر لازم باشد
   let ip = body.ip ?? null;
@@ -43,7 +29,7 @@ export default defineEventHandler(async (event) => {
     await prisma.errorLog.create({
       data: {
         username: body.username,
-        type: body.type as any,
+        type: body.type,
         url: body.url,
         lastRoute: body.lastRoute || null,
         user_agent: body.user_agent,

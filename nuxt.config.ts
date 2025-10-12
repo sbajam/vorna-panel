@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   rollupConfig: {
     external: [
       'execa',
-      '@prisma/client',
       'cross-spawn',
       'strip-final-newline',
       'npm-run-path',
@@ -18,11 +17,14 @@ export default defineNuxtConfig({
       'path-key',
       'mimic-fn',
       '#main-entry-point',
-      '@prisma/client/runtime/library.js',
       'which',
       'shebang-command',
       'isexe',
       'shebang-regex'
     ]
+  },
+
+  devtools: {
+    enabled: true
   }
 })

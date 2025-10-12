@@ -1,6 +1,6 @@
 {
   "name": "vorna-panel",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "A Nuxt 4 module for Vorna Company to simplify and accelerate building Persian-language admin panels.",
   "repository": {
     "type": "git",
@@ -93,6 +93,8 @@
     "@tiptap/extension-placeholder": "^3.6.6",
     "@tiptap/extension-text": "^3.6.6",
     "@tiptap/pm": "^3.6.6",
+    "@tiptap/starter-kit": "^3.6.6",
+    "@tiptap/vue-3": "^3.6.6",
     "apexcharts": "^5.3.1",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
