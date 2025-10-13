@@ -1,11 +1,22 @@
 <!-- SmartTable.vue (Nuxt 3 / Vue 3) -->
 <script setup>
-import { ref } from 'vue';  // برای استفاده از reactive و ref
-import { defineProps, defineEmits } from 'vue';  //
-import _ from "lodash";
+import {
+  ref,
+  useCookie,
+  useNuxtApp,
+  useRoute,
+  navigateTo,
+  useRouter,
+  useRuntimeConfig,
+  computed,
+  onBeforeMount,
+  watch,
+  nextTick,
+  onMounted
+} from "#imports";
+import _ from "lodash-es";
 import * as XLSX from "xlsx";
 
-const { $toast } = useNuxtApp();
 
 /* ===================== Props ===================== */
 const props = defineProps({
@@ -230,11 +241,11 @@ const trash = async (row) => {
 function exportToExcel() {
   const baseData = props.excelData.length ? props.excelData : props.data;
   if (!baseData || !baseData.length) {
-    $toast.show({
-      type: "danger",
-      class: "backToast",
-      message: "داده‌ای برای خروجی گرفتن نیست.",
-    });
+    // $toast.show({
+    //   type: "danger",
+    //   class: "backToast",
+    //   message: "داده‌ای برای خروجی گرفتن نیست.",
+    // });
     return;
   }
 

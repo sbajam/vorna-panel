@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { computed,ref,onBeforeMount,watch,defineProps, } from 'vue';
+import { computed,ref,onBeforeMount,watch, } from 'vue';
 
 const prop = defineProps({
   config: Object,

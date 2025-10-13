@@ -1,5 +1,6 @@
 // server/api/auth/refresh.post.ts
 import { defineEventHandler, getCookie } from 'h3'
+import {useRuntimeConfig} from '#imports'
 
 // همون storage از فایل قبلی
 const sessions = globalThis.__SESS__ ??= new Map()

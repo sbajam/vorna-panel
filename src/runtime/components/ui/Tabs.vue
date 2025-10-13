@@ -13,7 +13,7 @@
 // ──────────────────────────────────────────────────────────────────────────────
 
 import { useRoute, useRouter } from "nuxt/app";
-import { computed,ref,onBeforeMount,watch,defineProps, nextTick, onMounted } from 'vue';
+import { computed,ref,onBeforeMount,watch, nextTick, onMounted } from 'vue';
 
 export interface TabItem {
   label: string;

@@ -1,5 +1,6 @@
 // server/api/auth/login.post.ts
 import { defineEventHandler, readBody, setCookie } from 'h3'
+import {useRuntimeConfig} from '#imports'
 import { nanoid } from 'nanoid'
 
 // ذخیره ساده (بهتره بعداً با Redis جایگزینش کنی)

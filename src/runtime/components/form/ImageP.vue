@@ -94,7 +94,7 @@ async function submit() {
 
 // انتخاب یک تصویر و بستن مدال
 function choose(url) {
-  emit("choose", url);
+  emit("choose", `${config.public.vornaPanel.url}/${url}`);
   showModal.value = false;
 }
 
@@ -141,7 +141,7 @@ onMounted(fetchImages);
         >
         <!-- TODO :check work -->
           <img
-            :src="`${img.url}`"
+            :src="`..//${img.url}`"
             class="w-full h-32 object-cover min-w-32 rounded-lg border hover:border-primary-100 transition"
             @click="choose(img.url)"
           />

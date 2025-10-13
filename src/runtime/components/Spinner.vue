@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue';  // برای تعریف props
 
 const props = defineProps({
   /** هر واحد معتبر CSS برای ارتفاع کانتینر (مثلا '50vh', '300px') */

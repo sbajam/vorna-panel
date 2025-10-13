@@ -2,8 +2,7 @@
 import axios from "axios";
 import { ref, unref, isProxy, toRaw } from "vue"; // [CHANGE#1] اضافه شد
 import { useUserStore } from "#vorna-stores/user";
-import { useRuntimeConfig, useNuxtApp, navigateTo, useCookie } from '#imports'
-
+import { useRuntimeConfig, useNuxtApp, navigateTo, useCookie } from "#imports";
 
 /** [CHANGE#2] helper: حذف ری‌اکتیویتی و قطع حلقه‌های ارجاعی */
 function stripReactivity(value, seen = new WeakSet()) {
@@ -17,6 +16,11 @@ function stripReactivity(value, seen = new WeakSet()) {
   seen.add(v);
 
   const raw = isProxy(v) ? toRaw(v) : v;
+
+  // Handle special objects like FormData, Blob, etc. that should not be stripped
+  if (typeof FormData !== 'undefined' && raw instanceof FormData) return raw;
+  if (typeof Blob !== 'undefined' && raw instanceof Blob) return raw;
+  if (typeof File !== 'undefined' && raw instanceof File) return raw;
 
   if (Array.isArray(raw)) {
     return raw.map((item) => stripReactivity(item, seen));

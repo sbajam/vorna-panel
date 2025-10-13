@@ -1,6 +1,5 @@
 <!-- src/runtime/layouts/modal.vue -->
 <script setup>
-import Icon from "@nuxt/icon";
 const props = defineProps({
   show: { type: Boolean, default: false },
 });

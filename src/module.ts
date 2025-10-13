@@ -46,6 +46,7 @@ export interface ModuleOptions {
   guestRoutes?: string[] // Routes accessible to guest users
   isLoginRoute?: string
   authType: string // version1, version2, custom
+  url: string // The base URL of the panel
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -75,7 +76,8 @@ export default defineNuxtModule<ModuleOptions>({
     superAdmins: ['admin'],
     guestRoutes: ['/login', '/403', '/404'],
     isLoginRoute: 'is-login',
-    authType: 'version1'
+    authType: 'version1',
+    url: ''
   },
 
   async setup(options, nuxt) {
@@ -142,8 +144,12 @@ export default defineNuxtModule<ModuleOptions>({
         superAdmins: options.superAdmins,
         isLoginRoute: options.isLoginRoute,
         authType: options.authType,
+        url: options.url,
       }
     )
+
+    // Install and configure Pinia
+    await installModule('@pinia/nuxt')
 
     // Install and configure Tailwind
     await installModule('@nuxtjs/tailwindcss', {
@@ -189,7 +195,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.vite.optimizeDeps.include.push('vue3-grid-layout')
 
     // Plugins
-    addPlugin(resolve(runtimeDir, 'plugins/datepicker.client.js'))
+    // addPlugin(resolve(runtimeDir, 'plugins/datepicker.client.js'))
     addPlugin(resolve(runtimeDir, 'plugins/notifications.js'))
     addPlugin(resolve(runtimeDir, 'plugins/auto-animate.client.js'))
     addPlugin(resolve(runtimeDir, 'plugins/expose-composables.js'))

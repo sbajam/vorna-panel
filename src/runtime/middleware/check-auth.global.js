@@ -13,7 +13,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (['/login', '/403', '/404'].includes(to.path)) return true
   // ۱. مسیرهای مهمان
   const guestRoutes = config.guestRoutes || ['/login', '/403', '/404']
-  if (guestRoutes.some(route => to.path.startsWith(route))) return
+  if (guestRoutes.some(route => to.path.startsWith(route))) return true
+  for(let i of guestRoutes) {
+    if (to.path.startsWith(i) || to.path.includes(i)) return true
+  }
 
   // ۲. بررسی وضعیت لاگین
   let res

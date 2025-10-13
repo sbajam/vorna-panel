@@ -11,7 +11,7 @@
   </NuxtLayout>
 </template>
 <script setup>
-import { ref, defineProps } from 'vue';  // برای defineProps و ref
+import { ref } from 'vue';  // برای defineProps و ref
 
 const showModal = ref(true);
 let prop = defineProps(["config"]);

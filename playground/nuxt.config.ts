@@ -207,24 +207,6 @@ export default defineNuxtConfig({
       'process.env': {},
     },
   },
-  build: {
-    transpile: [
-      'execa',
-      'cross-spawn',
-      'signal-exit',
-      'human-signals',
-      'is-stream',
-      'get-stream',
-      'merge-stream',
-      'path-key',
-      'npm-run-path',
-      'onetime',
-      'mimic-fn',
-      'shebang-command',
-      'isexe',
-      'shebang-regex'
-    ],
-  },
   compatibilityDate: '2025-10-11',
 
 })

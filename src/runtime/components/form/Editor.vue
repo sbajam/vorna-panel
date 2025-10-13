@@ -166,8 +166,8 @@ import {
   watch,
   nextTick,
   onMounted,
+  onBeforeUnmount,
 } from "#imports";
-
 
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";

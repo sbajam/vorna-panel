@@ -29,7 +29,7 @@
       :maxFiles="maxFiles"
       :maxSize="maxSize"
       :disabled="disabled"
-      @update:modelValue="update"
+      @update:files="update"
       :initial-images="initialImages"
     />
 
@@ -68,7 +68,7 @@ const props = defineProps({
   maxSize: { type: Number, default: Infinity },
   initialImages: { type: [Array, String], default: () => [] },
   aspectRatio: { type: String, default: "1/1" },
-  watermark: { type: Boolean, default: false },
+  watermark: { type: Boolean, default: true },
   watermarkImage: { type: String, default: "" },
   watermarkText: { type: String, default: "" },
   showInfo: { type: Boolean, default: true },
@@ -83,10 +83,20 @@ watch(
   (v) => (local.value = v),
   { deep: true }
 );
+watch(
+  () => local.value,
+  (v) => {
+     emit("update:modelValue", v); // داده به پدر فرستاده می‌شود
+  },
+  { deep: true }
+);
 watch(local, (v) => emit("update:modelValue", v), { deep: true });
 
 function update(val) {
-  local.value = val; // ← هم state داخلی آپدیت می‌شود
-  emit("update:modelValue", val); // ← و به پدر هم برمی‌گردد
+  console.log("Updated images in second component:", val);
+  local.value = val; // state داخلی آپدیت می‌شود
+//   fileRef.value = val; // اینجا مقدار fileRef را بروزرسانی کنید
 }
+
+
 </script>

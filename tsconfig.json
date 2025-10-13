@@ -10,6 +10,6 @@
     "resolveJsonModule": true,
     "types": ["node", "vue"]
   },
-  "include": ["**/*.ts", "**/*.d.ts", "**/*.vue", "src/runtime/server/api/auth/login.post.js", "src/runtime/server/api/auth/refresh.post.js", "src/runtime/middleware/check-auth.global.js", "src/runtime/composables/field-schema.js"],
+  "include": ["**/*.ts", "**/*.d.ts", "**/*.vue", "src/runtime/server/api/auth/login.post.js", "src/runtime/server/api/auth/refresh.post.js", "src/runtime/middleware/check-auth.global.js", "src/runtime/composables/field-schema.js", "src/runtime/types/column-types.js", "src/runtime/types/permissions.js"],
   "exclude": ["node_modules"]
 }
