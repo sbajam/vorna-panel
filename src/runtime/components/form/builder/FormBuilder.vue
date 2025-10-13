@@ -645,8 +645,23 @@ onMounted(async () => {
 watch(
   () => formValues, // watch کردن formValues
   (newValues, oldValues) => {
-    emit("fieldChanged", JSON.parse(JSON.stringify(newValues)));
-
+    // Deep clone formValues, but preserve File objects since JSON.stringify turns them to {}
+    const clonedValues = {} as { [key: string]: any };
+    for (const key in newValues) {
+      const value = newValues[key];
+      if (value instanceof File) {
+        clonedValues[key] = value;
+      } else if (
+        Array.isArray(value) &&
+        value.some((item) => item instanceof File)
+      ) {
+        clonedValues[key] = [...value]; // shallow copy for arrays containing Files
+      } else {
+        clonedValues[key] = JSON.parse(JSON.stringify(value));
+      }
+    }
+    emit("fieldChanged", clonedValues);
+    // emit("fieldChanged", JSON.parse(JSON.stringify(newValues)));
     // }
   },
   { deep: true }
@@ -890,7 +905,22 @@ async function onSubmit() {
     focusFirstError();
     return;
   }
-  emit("submitForm", JSON.parse(JSON.stringify(formValues)));
+  // Deep clone formValues, but preserve File objects since JSON.stringify turns them to {}
+  const clonedValues = {} as { [key: string]: any };
+  for (const key in formValues) {
+    const value = formValues[key];
+    if (value instanceof File) {
+      clonedValues[key] = value;
+    } else if (
+      Array.isArray(value) &&
+      value.some((item) => item instanceof File)
+    ) {
+      clonedValues[key] = [...value]; // shallow copy for arrays containing Files
+    } else {
+      clonedValues[key] = JSON.parse(JSON.stringify(value));
+    }
+  }
+  emit("submitForm", clonedValues);
 }
 
 // ۹. Props مشترک برای همهٔ فیلدها
