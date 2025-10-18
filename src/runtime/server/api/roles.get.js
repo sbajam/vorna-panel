@@ -1,7 +1,7 @@
 // server/api/roles.get.js
 import { defineEventHandler } from 'h3'
-import { prisma } from '../utils/db'
-import { safeJson } from '../utils/json'
+import { prisma } from '#vorna-utils/db'
+import { safeJson } from '#vorna-utils/json'
 
 export default defineEventHandler(async () => {
   const roles = await prisma.role.findMany({

@@ -1,11 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useApi } from '~/composables/useApi';
+// import { useApi } from '~/composables/useApi';
 import { useNuxtApp } from '#imports';
 import Box from '../components/ui/Box.vue';
 import Header from '../components/ui/Header.vue';
 import CustomeButton from '../components/CustomeButton.vue';
-import { Icon } from '@nuxt/icon';
 
 const { request } = useApi();
 const { $notify } = useNuxtApp();

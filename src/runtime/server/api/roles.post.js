@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
-import { prisma } from "../utils/db";
-import { safeJson } from "../utils/json";
+import { prisma } from "#vorna-utils/db";
+import { safeJson } from "#vorna-utils/json";
 
 
 export default defineEventHandler(async (event) => {

@@ -1,6 +1,6 @@
 // src/runtime/server/api/error-logs.post.js
 import { defineEventHandler, readBody, getRequestHeader } from "h3";
-import { prisma } from "../utils/db";
+import { prisma } from "#vorna-utils/db";
 
 const MAX_ERROR_LOG_COUNT = 10_000; // حداکثر تعداد رکورد در جدول errorLog
 const SIX_MONTHS_AGO = (() => {

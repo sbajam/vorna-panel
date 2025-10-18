@@ -1,6 +1,6 @@
 // server/api/logs.post.js
 import { defineEventHandler, readBody, getRequestHeader } from "h3";
-import { prisma } from "../utils/db";
+import { prisma } from "#vorna-utils/db";
 
 const MAX_USER_LOG_COUNT = 100_000; // حداکثر تعداد رکورد در جدول userLog
 const SIX_MONTHS_AGO = (() => {

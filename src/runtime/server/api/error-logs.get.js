@@ -1,6 +1,6 @@
 // src/runtime/server/api/error-logs.get.js
 import { defineEventHandler, getQuery } from "h3";
-import { prisma } from "../utils/db";
+import { prisma } from "#vorna-utils/db";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);

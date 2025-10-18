@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { prisma } from '../utils/db'
+import { prisma } from '#vorna-utils/db'
 
 // تبدیل BigInt به string به صورت بازگشتی
 function fixBigInt(obj) {
