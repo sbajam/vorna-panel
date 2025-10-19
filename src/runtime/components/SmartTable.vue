@@ -15,7 +15,7 @@ import {
   onMounted
 } from "#imports";
 import _ from "lodash-es";
-import * as XLSX from "xlsx";
+import * as XLSX from "xlsx-js-style";
 
 
 /* ===================== Props ===================== */

@@ -90,8 +90,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.alias['#vorna-utils'] = resolve(runtimeDir, 'server/utils') // ✅ امن برای SSR
     nuxt.options.alias['~vorna-utils'] = resolve(runtimeDir, 'server/utils') // اختیاری برای سازگاری
     // // اضافه کردن مسیرهای مطلق برای Prisma client
-    nuxt.options.alias['#prisma/client'] = resolve(runtimeDir, '../../.prisma/client/index-browser.js')
-    nuxt.options.alias['~prisma/client'] = resolve(runtimeDir, '.././.prisma/client/index-browser.js')
+    nuxt.options.alias['.prisma/client'] = resolve(runtimeDir, '../../../../node_modules/.prisma/client')
 
     // Database & Prisma Setup
     const moduleSchema = resolve(runtimeDir, 'prisma/schema.prisma')
@@ -109,7 +108,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     nuxt.options.build.transpile ||= []
-    nuxt.options.build.transpile.push('./runtime')
+    nuxt.options.build.transpile.push(runtimeDir)
     // Nitro & Runtime Configuration
     nuxt.hook('nitro:config', (config) => {
       config.routeRules = {
@@ -124,10 +123,10 @@ export default defineNuxtModule<ModuleOptions>({
           maxAge: 60 * 60 * 24 * 30 // 30 days
         }
       ]
-      config.externals = {
-        trace: false,
-        inline: ['@prisma/client'], // اضافه کردن Prisma به externals
-      }
+      // config.externals = {
+      //   trace: false,
+      //   inline: ['@prisma/client', "prisma"],
+      // }
     })
 
     nuxt.options.runtimeConfig.private = defu(
