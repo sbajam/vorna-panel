@@ -12,11 +12,9 @@ import {
   onBeforeMount,
   watch,
   nextTick,
-  onMounted
+  onMounted,
 } from "#imports";
 import _ from "lodash-es";
-import * as XLSX from "xlsx-js-style";
-
 
 /* ===================== Props ===================== */
 const props = defineProps({
@@ -237,16 +235,19 @@ const trash = async (row) => {
   }
 };
 
-/* ===================== Excel ===================== */
-function exportToExcel() {
+// --- Excel export (ExcelJS version with notification) ---
+async function exportToExcel() {
+  // فقط در مرورگر اجرا می‌شود (برای سازگاری با Nuxt module و SSR)
+  if (typeof window === "undefined") return;
+
+  // import دینامیک (برای جلوگیری از خطا در SSR)
+const ExcelJS = (await import("exceljs")).default;
+
+  // داده‌ها
   const baseData = props.excelData.length ? props.excelData : props.data;
   if (!baseData || !baseData.length) {
-    // $toast.show({
-    //   type: "danger",
-    //   class: "backToast",
-    //   message: "داده‌ای برای خروجی گرفتن نیست.",
-    // });
-    return;
+    // اگر داده‌ای برای خروجی نیست
+    return nuxtApp.$notifyDanger("داده‌ای برای خروجی گرفتن وجود ندارد.");
   }
 
   const opt = props.excelOptions || {};
@@ -254,35 +255,89 @@ function exportToExcel() {
   const pickCols =
     Array.isArray(opt.columns) && opt.columns.length ? opt.columns : null;
 
+  // آماده‌سازی داده برای اکسل
   const worksheetData = baseData.map((row) => {
     if (useRaw) {
       if (!pickCols) return { ...row };
       const o = {};
-      pickCols.forEach((k) => {
-        o[k] = _.get(row, k);
-      });
+      pickCols.forEach((k) => (o[k] = _.get(row, k)));
       return o;
     }
     const formattedRow = {};
     (props.columns || []).forEach((col) => {
-      if (col.key === "index") return;
-      if (col.hidden) return;
+      if (col.key === "index" || col.hidden) return;
       if (pickCols && !pickCols.includes(col.key)) return;
       formattedRow[col.label] = getCellValue(row, col);
     });
     return formattedRow;
   });
 
-  const ws = XLSX.utils.json_to_sheet(worksheetData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Table Data");
+  // ساخت Workbook و Worksheet
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Table Data");
+
+  // تنظیم ستون‌ها
+  const firstRow = worksheetData[0];
+  const columns = Object.keys(firstRow).map((key) => ({
+    header: key,
+    key,
+    width: Math.max(key.length + 5, 15),
+  }));
+  worksheet.columns = columns;
+
+  // افزودن داده‌ها
+  worksheet.addRows(worksheetData);
+
+  // استایل هدر
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    cell.alignment = { vertical: "middle", horizontal: "center" };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF1D4ED8" }, // آبی پررنگ
+    };
+    cell.border = {
+      top: { style: "thin", color: { argb: "FFFFFFFF" } },
+      left: { style: "thin", color: { argb: "FFFFFFFF" } },
+      bottom: { style: "thin", color: { argb: "FFFFFFFF" } },
+      right: { style: "thin", color: { argb: "FFFFFFFF" } },
+    };
+  });
+
+  // استایل سلول‌های داده
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    row.eachCell((cell) => {
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+      cell.border = {
+        top: { style: "thin", color: { argb: "FFCCCCCC" } },
+        left: { style: "thin", color: { argb: "FFCCCCCC" } },
+        bottom: { style: "thin", color: { argb: "FFCCCCCC" } },
+        right: { style: "thin", color: { argb: "FFCCCCCC" } },
+      };
+    });
+  });
+
+  // تولید فایل برای دانلود
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
 
   const name =
     opt.filename ||
     `${useRoute().path.replace(/\//g, "-")}-${new Date()
       .toISOString()
       .replace(/[:]/g, "-")}.xlsx`;
-  XLSX.writeFile(wb, name);
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+
+  // اعلان موفقیت
+  nuxtApp.$notifySuccess("فایل Excel با موفقیت ساخته شد.");
 }
 
 /* ===================== Header Sort Click ===================== */
@@ -376,7 +431,9 @@ function onHeaderClick(index, evt) {
           <th
             v-for="(col, index) in props.columns"
             :key="index"
-            v-show="!(col.key === 'id'  && !props.idShow) && col.type!='checkbox'"
+            v-show="
+              !(col.key === 'id' && !props.idShow) && col.type != 'checkbox'
+            "
             @click="onHeaderClick(index, $event)"
             :aria-sort="
               sortIndex === index
@@ -392,7 +449,8 @@ function onHeaderClick(index, evt) {
               {{ col.label }}
               <Icon
                 v-if="
-                  props.sortable && col.sortable &&
+                  props.sortable &&
+                  col.sortable &&
                   (sortIndex === index ||
                     sortState.some((s) => s.index === index))
                 "
