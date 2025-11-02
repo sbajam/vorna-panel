@@ -64,10 +64,10 @@ const login = async () => {
 </script>
 
 <template>
-  <main
+  <!-- <main
     class="bg-[#EFEFF4] rtl flex justify-center items-center h-screen overflow-hidden w-full"
-  >
-    <section class="box !w-11/12 md:!w-6/12">
+  > -->
+    <!-- <section class="box !w-11/12 md:!w-6/12"> -->
       <a href="#" class="mx-auto mb-10 block w-[fit-content]">
         <img
           :src="config.logo"
@@ -103,6 +103,6 @@ const login = async () => {
         :full-width="true"
         >ورود</CustomeButton
       >
-    </section>
-  </main>
+    <!-- </section>
+  </main> -->
 </template>

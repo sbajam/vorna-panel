@@ -67,7 +67,6 @@ export default defineNuxtModule<ModuleOptions>({
     showOnlineStatus: true,
     font: 'Vazir',
     notifications: 'toast',
-
     // Logging configuration
     logBehavior: true,
     logErrors: true,
@@ -152,6 +151,7 @@ export default defineNuxtModule<ModuleOptions>({
         logErrors: options.logErrors,
         superAdmins: options.superAdmins,
         isLoginRoute: options.isLoginRoute,
+        guestRoutes: options.guestRoutes,
         authType: options.authType,
         url: options.url,
       }
@@ -232,11 +232,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Pages
     extendPages((pages) => {
-      pages.push({
-        name: 'login',
-        path: '/login',
-        file: resolve(runtimeDir, 'pages/login.vue')
-      })
+      // pages.push({
+      //   name: 'login',
+      //   path: '/login',
+      //   file: resolve(runtimeDir, 'pages/login.vue')
+      // })
       pages.push({
         name: '403',
         path: '/403',

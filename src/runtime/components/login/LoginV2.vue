@@ -111,47 +111,47 @@ const login2 = async () => {
 </script>
 
 <template>
-  <main
+  <!-- <main
     class="bg-[#EFEFF4] rtl flex justify-center items-center h-screen overflow-hidden w-full"
   >
-    <section class="box !w-11/12 md:!w-6/12">
-      <a href="#" class="mx-auto mb-10 block w-[fit-content]">
-        <img
-          :src="config.logo"
-          :alt="config.name"
-          class="logo-image block mb-10 h-32 max-w-[10rem] object-contain"
-        />
-      </a>
-      <h1 class="text-2xl text-primary-100 text-center font-bold mb-12">
-        پنل مدیریتی {{ config.name }}
-      </h1>
+    <section class="box !w-11/12 md:!w-6/12"> -->
+  <a href="#" class="mx-auto mb-10 block w-[fit-content]">
+    <img
+      :src="config.logo"
+      :alt="config.name"
+      class="logo-image block mb-10 h-32 max-w-[10rem] object-contain"
+    />
+  </a>
+  <h1 class="text-2xl text-primary-100 text-center font-bold mb-12">
+    پنل مدیریتی {{ config.name }}
+  </h1>
 
-      <InputField
-        v-model="username"
-        type="text"
-        label="نام کاربری"
-        label-position="right"
-        class="mb-4"
-      />
-      <InputField
-        v-model="password"
-        type="password"
-        label="رمز عبور"
-        label-position="right"
-        :passwordOptions="false"
-      />
+  <InputField
+    v-model="username"
+    type="text"
+    label="نام کاربری"
+    label-position="right"
+    class="mb-4"
+  />
+  <InputField
+    v-model="password"
+    type="password"
+    label="رمز عبور"
+    label-position="right"
+    :passwordOptions="false"
+  />
 
-      <CustomeButton
-        color="secondary-100"
-        rounded="xl"
-        size="md"
-        class="my-10"
-        :pending="pending"
-        @click="login()"
-        :full-width="true"
-      >
-        ورود
-      </CustomeButton>
-    </section>
-  </main>
+  <CustomeButton
+    color="secondary-100"
+    rounded="xl"
+    size="md"
+    class="my-10"
+    :pending="pending"
+    @click="login()"
+    :full-width="true"
+  >
+    ورود
+  </CustomeButton>
+  <!-- </section>
+  </main> -->
 </template>

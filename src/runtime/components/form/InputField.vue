@@ -91,7 +91,10 @@
     - For date/time types uses vue3-persian-datetime-picker with full options
   -->
   <div
-    :class="['input-div', { 'flex-col !items-start label-top ': labelPosition === 'top' }]"
+    :class="[
+      'input-div',
+      { 'flex-col !items-start label-top ': labelPosition === 'top' },
+    ]"
   >
     <!-- Label -->
     <label
@@ -197,6 +200,7 @@
       <span
         v-else-if="tooltip"
         class="absolute top-[20px] transform flex items-center justify-center px-1.5 aspect-square bg-secondary-100 text-white rounded-full -translate-y-1/2 left-4 cursor-pointer"
+        :class="{'left-8':suffix}"
         :title="tooltip"
       >
         <Icon name="fa6-solid:question" />
@@ -233,7 +237,7 @@ import {
   onBeforeMount,
   watch,
   nextTick,
-  onMounted
+  onMounted,
 } from "#imports";
 
 import { nanoid } from "nanoid";
@@ -302,7 +306,9 @@ const emit = defineEmits<{
 }>();
 
 const valueRef = ref<string | number>("");
-const locale = computed(() => (props.calendarType === "gregorian" ? "en" : "fa"));
+const locale = computed(() =>
+  props.calendarType === "gregorian" ? "en" : "fa"
+);
 
 // پردازش ماسک
 const rawMask = toRef(props, "mask");
@@ -387,8 +393,6 @@ const innerValue = computed({
   get: () => props.modelValue,
   set: (value) => {
     emit("update:modelValue", value);
-  }
+  },
 });
-
 </script>
-
