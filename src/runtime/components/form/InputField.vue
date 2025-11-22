@@ -90,18 +90,13 @@
     - Includes optional icon with tooltip or password visibility toggle
     - For date/time types uses vue3-persian-datetime-picker with full options
   -->
-  <div
-    :class="[
-      'input-div',
-      { 'flex-col !items-start label-top ': labelPosition === 'top' },
-    ]"
-  >
+  <div :class="[
+    'input-div',
+    { 'flex-col !items-start label-top ': labelPosition === 'top' },
+  ]">
     <!-- Label -->
-    <label
-      v-if="label"
-      :for="id"
-      class="text-primary-100 text-lg flex items-center gap-2 font-semibold w-4/12 text-right whitespace-nowrap"
-    >
+    <label v-if="label" :for="id"
+      class="text-primary-100 text-lg flex items-center gap-2 font-semibold w-4/12 text-right whitespace-nowrap">
       <Icon v-if="icon" :name="icon" />
       {{ label }}
     </label>
@@ -111,98 +106,48 @@
       <!-- Date/Time Picker -->
       <!-- {{ displayFormat }}- {{ inputFormat }}- {{ innerValue }}- {{ calendarType }} -->
 
-      <DatePicker
-        v-if="isDateType"
-        v-model="innerValue"
-        :type="type"
-        :format="inputFormat"
-        :display-format="displayFormat"
-        :locale="locale"
-        :placeholder="placeholder"
-        :clearable="clearable"
-        :disabled="disabled"
-        :range="!single || range"
-        class="w-full"
-      />
+      <DatePicker v-if="isDateType" v-model="innerValue" :type="type" :format="inputFormat"
+        :display-format="displayFormat" :locale="locale" :placeholder="placeholder" :clearable="clearable"
+        :disabled="disabled" :mode="single && !range ? 'single' : 'reange'" class="w-full" />
 
-      <div
-        v-else-if="type !== 'textarea'"
-        class="w-full relative flex items-stretch input focus:border-secondary-100 bg-white !p-0 overflow-hidden"
-      >
+      <div v-else-if="type !== 'textarea'"
+        class="w-full relative flex items-stretch input focus:border-secondary-100 bg-white !p-0 overflow-hidden">
         <!-- اگر mask پر شده، از imask و prefix/suffix استفاده کن -->
         <!-- پیشوند -->
-        <span
-          v-if="prefix"
-          class="px-2 bg-gray-100 text-gray-600 text-xs flex items-center justify-center"
-          >{{ prefix }}</span
-        >
+        <span v-if="prefix" class="px-2 bg-gray-100 text-gray-600 text-xs flex items-center justify-center">{{ prefix
+          }}</span>
         <!-- خود input با ماسک -->
         <!-- Standard Input/Textarea -->
-        <input
-          v-imask="maskOptions"
-          v-model="maskedValue"
-          :id="id"
-          :placeholder="placeholder"
-          :disabled="disabled"
-          :type="computedType"
-          :class="{
+        <input v-imask="maskOptions" v-model="maskedValue" :id="id" :placeholder="placeholder" :disabled="disabled"
+          :type="computedType" :class="{
             '!border-red-600': errorMessage,
             '!rounded-r': prefix,
             '!rounded-l': suffix,
-          }"
-          class="input flex-1 outline-none px-2 py-1 !border-none"
-        />
+          }" class="input flex-1 outline-none px-2 py-1 !border-none" />
         <!-- پسوند -->
-        <span
-          v-if="suffix"
-          class="px-2 bg-gray-100 text-gray-600 text-xs flex items-center justify-center"
-          >{{ suffix }}</span
-        >
+        <span v-if="suffix" class="px-2 bg-gray-100 text-gray-600 text-xs flex items-center justify-center">{{ suffix
+          }}</span>
       </div>
-      <textarea
-        v-else
-        :id="id"
-        :placeholder="placeholder"
-        :value="modelValue"
-        :disabled="disabled"
-        @input="$emit('update:modelValue', $event.target.value)"
-        class="input resize-none"
-      ></textarea>
-      <div
-        v-if="type === 'password' && !disabled && passwordOptions"
-        class="flex gap-4 items-center mt-4 justify-between px-2"
-      >
-        <div
-          class="h-2 mt-2 bg-gray-200 rounded-lg flex items-stretch justify-end"
-        >
-          <div
-            :style="{ width: strength.percent + '%' }"
-            class="bg-green-800 h-full transition-width rounded-lg"
-          ></div>
+      <textarea v-else :id="id" :placeholder="placeholder" :value="modelValue" :disabled="disabled"
+        @input="$emit('update:modelValue', $event.target.value)" class="input resize-none"></textarea>
+      <div v-if="type === 'password' && !disabled && passwordOptions"
+        class="flex gap-4 items-center mt-4 justify-between px-2">
+        <div class="h-2 mt-2 bg-gray-200 rounded-lg flex items-stretch justify-end">
+          <div :style="{ width: strength.percent + '%' }" class="bg-green-800 h-full transition-width rounded-lg"></div>
         </div>
-        <CustomeButton
-          @click="generatePassword"
-          class="text-xs bg-secondary-70 text-white"
-          >generate</CustomeButton
-        >
+        <CustomeButton @click="generatePassword" class="text-xs bg-secondary-70 text-white">generate</CustomeButton>
       </div>
 
       <!-- Password Toggle Icon -->
-      <span
-        v-if="type === 'password'"
-        class="absolute top-[0.75rem] left-4 cursor-pointer text-primary-100"
-        @click="togglePassword"
-      >
+      <span v-if="type === 'password'" class="absolute top-[0.75rem] left-4 cursor-pointer text-primary-100"
+        @click="togglePassword">
         <Icon :name="`fa6-solid:${showPassword ? 'eye-slash' : 'eye'}`" />
       </span>
 
       <!-- Tooltip Icon -->
-      <span
-        v-else-if="tooltip"
+      <span v-else-if="tooltip"
         class="absolute top-[20px] transform flex items-center justify-center px-1.5 aspect-square bg-secondary-100 text-white rounded-full -translate-y-1/2 left-4 cursor-pointer"
-        :class="{'left-8':suffix}"
-        :title="tooltip"
-      >
+        :class="{ 'left-8': suffix }" :title="tooltip">
         <Icon name="fa6-solid:question" />
       </span>
       <!-- Error message -->

@@ -29,7 +29,6 @@ const props = defineProps({
 
   // --- new ---
   multiSort: { type: Boolean, default: false }, // multi-column sorting (Ctrl/Cmd + click)
-  loading: { type: Boolean, default: false },
   error: { type: [String, Boolean], default: false },
   emptyText: { type: String, default: "موردی برای نمایش وجود ندارد." },
 
@@ -55,6 +54,15 @@ const props = defineProps({
   // appearance
   stickyHeader: { type: Boolean, default: true },
   responsive: { type: Boolean, default: true },
+
+  //pending
+  loader: {
+    type: String,
+    default: "skeleton", // "spinner" هم قبول می‌کند
+    validator: (v) => ["spinner", "skeleton", ""].includes(v),
+  },
+  pending: { type: Boolean, default: false },
+  skeletonRows: { type: Number, default: 6 },
 });
 
 const emit = defineEmits([
@@ -234,6 +242,22 @@ const trash = async (row) => {
     nuxtApp.$notifyDanger(res.message);
   }
 };
+// تعداد ستون‌های قابل‌نمایش برای اسکلتون/colspan
+const visibleColsCount = computed(() => {
+  return (
+    props.columns.filter(
+      (c) =>
+        c.key !== "index" &&
+        (props.idShow || c.key !== "id") &&
+        c.type !== "checkbox" &&
+        !c.hidden
+    ).length +
+    (props.edit ? 1 : 0) +
+    (Array.isArray(props.actions) ? props.actions.length : 0) +
+    (props.delete ? 1 : 0) +
+    (props.selected != null ? 1 : 0)
+  );
+});
 
 // --- Excel export (ExcelJS version with notification) ---
 async function exportToExcel() {
@@ -241,7 +265,7 @@ async function exportToExcel() {
   if (typeof window === "undefined") return;
 
   // import دینامیک (برای جلوگیری از خطا در SSR)
-const ExcelJS = (await import("exceljs")).default;
+  const ExcelJS = (await import("exceljs")).default;
 
   // داده‌ها
   const baseData = props.excelData.length ? props.excelData : props.data;
@@ -368,7 +392,7 @@ function onHeaderClick(index, evt) {
 <template>
   <div class="w-full overflow-x-auto smart-table has-sticky is-responsive">
     <!-- Toolbar (Refresh + Excel) -->
-    <div class="flex items-center gap-4">
+    <div v-if="!pending" class="flex items-center gap-4">
       <div
         v-if="props.refresh"
         @click="emit('refresh')"
@@ -397,10 +421,70 @@ function onHeaderClick(index, evt) {
       </div>
     </div>
 
-    <!-- States -->
-    <Spinner v-if="loading" class="p-6 text-center text-primary-100/80"
-      >در حال بارگیری...</Spinner
-    >
+    <!-- ==== STATES (Loader/Error) ==== -->
+    <template v-if="pending">
+      <!-- اگر spinner خواستی -->
+      <div v-if="loader === 'spinner'" class="p-8 text-center">
+        <Spinner>در حال بارگیری...</Spinner>
+      </div>
+
+      <!-- اسکلتون تماماً Tailwind -->
+      <div v-else class="rounded-xl overflow-hidden">
+        <div class="flex items-center justify-start gap-4 pr-4 mb-4">
+          <div
+            class="bg-gray-200 animate-pulse h-8 rounded-lg w-10"
+          ></div>
+            <div
+              class="bg-gray-200 animate-pulse h-8 rounded-lg w-20"
+            ></div>
+        </div>
+        <table class="w-full overflow-auto">
+          <thead>
+            <tr>
+              <th v-for="i in 4" :key="'skh' + i">
+                <div
+                  class="bg-gray-200 animate-pulse h-8 rounded-lg mx-auto w-32"
+                ></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="r in skeletonRows" :key="'skr' + r">
+              <td v-for="c in 4" :key="'skc' + r + '-' + c">
+                <div
+                  class="bg-gray-200 animate-pulse h-6 rounded-lg w-full max-w-[180px] mx-auto"
+                ></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="all" class="w-11/12 mx-auto mt-8 text-xl mb-4">
+        <div
+          style="box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.05)"
+          class="bg-white flex w-[fit-content] gap-2 px-4 py-2 items-center rounded-lg"
+        >
+          <div
+            class="bg-gray-200 animate-pulse h-6 rounded-lg w-10 mx-auto"
+          ></div>
+
+          <div
+            class="bg-gray-200 animate-pulse h-6 rounded-lg w-10 mx-auto"
+          ></div>
+
+          <div
+            class="bg-gray-200 animate-pulse h-6 rounded-lg w-10 mx-auto"
+          ></div>
+          <div
+            class="bg-gray-200 animate-pulse h-6 rounded-lg w-10 mx-auto"
+          ></div>
+          <div
+            class="bg-gray-200 animate-pulse h-6 rounded-lg w-10 mx-auto"
+          ></div>
+        </div>
+      </div>
+    </template>
+
     <div v-else-if="error" class="p-6 text-center text-rose-700">
       {{ error }}
     </div>
@@ -642,7 +726,7 @@ function onHeaderClick(index, evt) {
     </table>
 
     <!-- Pagination (unchanged visual; page state is internal via chunking) -->
-    <div v-if="all" class="w-11/12 mx-auto mt-10 text-xl mb-4">
+    <div v-if="all && !pending" class="w-11/12 mx-auto mt-10 text-xl mb-4">
       <div
         style="box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.05)"
         class="bg-white flex w-[fit-content] gap-2 px-4 py-2 items-center rounded-lg"
@@ -870,7 +954,7 @@ Place `SmartTable.vue` in your components directory (or module runtime). Ensure 
 - `selected?: boolean|null` – If not null, shows a header checkbox cell and emits `select` with `-1` when toggled.
 - `sortable?: boolean` – Enable header sorting (default `true`).
 - `multiSort?: boolean` – Enable **multi-column** sorting with Ctrl/Cmd+Click on headers.
-- `loading?: boolean` – Show loading state.
+- `pending?: boolean` – Show pending state.
 - `error?: string|boolean` – Show error message.
 - `emptyText?: string` – Message when there’s no data.
 - `excel?: boolean` – Show Excel button.
@@ -954,7 +1038,7 @@ On screens ≤ 768px, headers are hidden and each row appears as a card; each ce
       { icon: 'info', tooltip: 'Inspect', emit: 'check' },
       { icon: 'ban', tooltip: 'Suspend/Activate', emit: 'suspend' },
     ]"
-    :loading="isLoading"
+    :pending="ispending"
     :error="loadError"
     :sortable="true"
     :multiSort="true"

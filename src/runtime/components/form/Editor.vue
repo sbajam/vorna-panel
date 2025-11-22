@@ -364,4 +364,7 @@ onBeforeUnmount(() => {
     }
   }
 }
+.tiptap.ProseMirror{
+  max-height: max-content !important;
+}
 </style>
